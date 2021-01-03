@@ -59,7 +59,7 @@
             return {
                 user: {}
             };
-        }
+        },
         methods: {
             handleSubmit: function(){
                 let username = $("#username").val();
@@ -81,5 +81,6 @@
                     } 
                 });
             }
-        }
+		}
+	}
 </script>
