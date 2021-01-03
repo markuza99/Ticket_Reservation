@@ -33,4 +33,11 @@ public class ManifestationService {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		return  manifestationDao.getAllManifestations();
 	}
+	
+	@GET
+	@Path("/getcontextpath")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getContextPath() {
+		return ctx.getRealPath("");
+	}
 }
