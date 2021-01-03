@@ -1,6 +1,8 @@
 package beans;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class User {
 	private String username;
@@ -8,7 +10,7 @@ public class User {
 	private String lastName;
 	private String password;
 	private Gender gender;
-	private LocalDateTime birthDate;
+	private LocalDate birthDate;
 	private Role role;
 	
 public User() {
@@ -21,7 +23,7 @@ public User() {
 	}
 
 	public User(String username, String firstName, String lastName, String password, Gender gender,
-			LocalDateTime birthDate, Role role) {
+			LocalDate birthDate, Role role) {
 		this.username = username;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -72,12 +74,13 @@ public User() {
 		this.gender = gender;
 	}
 
-	public LocalDateTime getBirthDate() {
+	public LocalDate getBirthDate() {
 		return birthDate;
 	}
 
-	public void setBirthDate(LocalDateTime birthDate) {
-		this.birthDate = birthDate;
+	public void setBirthDate(String birthDate) {
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
+		this.birthDate = LocalDate.parse(birthDate, format);
 	}
 
 	public Role getRole() {

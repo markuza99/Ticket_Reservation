@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -61,8 +62,8 @@ public class UserDAO {
 					String firstName = st.nextToken().trim();
 					String lastName = st.nextToken().trim();
 					Gender gender = Gender.valueOf(st.nextToken().trim());
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");  
-					LocalDateTime birthDate = LocalDateTime.parse(st.nextToken().trim(), formatter);	
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");  
+					LocalDate birthDate = LocalDate.parse(st.nextToken().trim(), formatter);	
 					
 					users.put(username, new User(username, firstName, lastName, 
 							password, gender, birthDate, role));
@@ -85,7 +86,7 @@ public class UserDAO {
             return null;
         }
         users.put(user.getUsername(), user);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"); 
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
         String birthDate = user.getBirthDate().format(format);
         String userString = "CUSTOMER" + ";" + user.getUsername() + ";" + user.getPassword() + ";" 
                             + user.getFirstName() + ";" + user.getLastName() + ";"
@@ -102,6 +103,7 @@ public class UserDAO {
 	
 	private void write(String user, String customer) {
         File fileUsers = new File(contextPath + "/repositories/users.txt");
+        System.out.println(contextPath);
         File fileCustomers = new File(contextPath + "/repositories/customers.txt");
 
         PrintWriter pw = null;

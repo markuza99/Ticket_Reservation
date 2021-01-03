@@ -7,8 +7,13 @@
 					<div class="login-form mt-5">
 						<form @submit.prevent="handleSubmit">
 							<div class="form-group">
-								<label class="form-label">Fullname</label> 
-								<input type="text" class="form-control" id="fullname"/>
+								<label class="form-label">First name</label> 
+								<input type="text" class="form-control" id="firstName"/>
+							</div>
+
+							<div class="form-group">
+								<label class="form-label">Last name</label> 
+								<input type="text" class="form-control" id="lastName"/>
 							</div>
 
 							<div class="form-group">
@@ -41,7 +46,7 @@
 								</div>
 							</div>
 							
-							<a class="btn btn-primary" href="#/" role="button">Link</a>
+							<!-- <a class="btn btn-primary" href="#/" role="button">Link</a> -->
 							<button type="submit" class="btn btn-primary mt-2">Sign Up</button>
 						
 							<p id="error"></p>
@@ -66,10 +71,13 @@
                 let password = $("#password").val();
                 let firstName = $("#firstName").val();
                 let lastName = $("#lastName").val();
-                let gender = $('input[name="gender"]:checked').val();
-                // let birthday = $('#birthday').val();
-                user = {username, password, firstName, lastName, gender, birthday};
-                var jsonString = JSON.stringify(user);
+                let gender = "FEMALE";
+				let birthDate = $('#birthday').val();
+				let role = "CUSTOMER";
+				user = {username, password, firstName, lastName, gender, birthDate, role};
+				console.log(user);
+				var jsonString = JSON.stringify(user);
+				console.log(jsonString);
                 axios
                 .post("rest/userservice/registration", jsonString, {
                     headers: {'content-type':'application/json'}
