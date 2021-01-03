@@ -1,11 +1,13 @@
 
 const WelcomePage = { template: '<welcome-page></welcome-page>'}
 const Header = httpVueLoader('./app/components/Header.vue');
+const loginForm = httpVueLoader('./app/components/LoginForm.vue');
 
 const router = new VueRouter({
 	  mode: 'hash',
 	  routes: [
-		{ path: '/', component: WelcomePage}
+		{ path: '/', component: WelcomePage},
+		{ path: '/login', component: loginForm}
 	  ]
 });
 

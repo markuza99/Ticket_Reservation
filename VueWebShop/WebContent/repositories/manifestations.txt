@@ -1,0 +1,2 @@
+001;manifestacija1;CONCERT;50;13-01-2017 17:09:42;1200;1;001;one.jpg
+002;manifestacija2;FESTIVAL;60;13-01-2017 17:09:42;1500;1;002;two.jpg
