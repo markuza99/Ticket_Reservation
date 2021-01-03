@@ -1,6 +1,8 @@
 package services;
 
 
+import java.time.LocalDateTime;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -53,4 +55,20 @@ public class UserService {
 		return (User) request.getSession().getAttribute("user");
 	}
 	
+	@POST
+	@Path("/registration")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public User registration(@Context HttpServletRequest request, User user) {
+		UserDAO userDao = (UserDAO) ctx.getAttribute("userDAO");
+		return (User)userDao.registration(user);
+	}
+	
+	@GET
+    @Path("/testReg")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String testReg() {
+		LocalDateTime dt = LocalDateTime.now();
+        return dt.toString();
+    }
 }

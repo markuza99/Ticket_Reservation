@@ -80,5 +80,54 @@ public class UserDAO {
 		}
 		
 	}
+	public User registration(User user) {
+        if(usernameExists(user.getUsername())) {
+            return null;
+        }
+        users.put(user.getUsername(), user);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"); 
+        String birthDate = user.getBirthDate().format(format);
+        String userString = "CUSTOMER" + ";" + user.getUsername() + ";" + user.getPassword() + ";" 
+                            + user.getFirstName() + ";" + user.getLastName() + ";"
+                            + user.getGender() + ";" + birthDate;
+
+        String customerString = user.getUsername() + ";;" + 0;
+        write(userString, customerString);
+        return user;
+    }
+	
+	private Boolean usernameExists(String username) {
+        return users.containsKey(username);
+    }
+	
+	private void write(String user, String customer) {
+        File fileUsers = new File(contextPath + "/repositories/users.txt");
+        File fileCustomers = new File(contextPath + "/repositories/customers.txt");
+
+        PrintWriter pw = null;
+        PrintWriter pwCustomers = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileUsers, true)));
+            pwCustomers = new PrintWriter(new BufferedWriter(new FileWriter(fileCustomers, true)));
+            pw.println(user);
+            pwCustomers.println(customer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+
+            if(pwCustomers != null) {
+                try {
+                    pwCustomers.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+    }
 	
 }
