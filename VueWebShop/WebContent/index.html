@@ -3,23 +3,27 @@
 
 <head>
 	<link href="css/toast.css" rel="stylesheet" />
+	<link href="css/bootstrap.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/main.css"/>
 	<meta charset="utf-8"/>
+	<title>Ticket reservation</title>
 </head> 
 
 <body>
-<div id="webShop">
-<h3>Primer WebShop aplikacije u Vue.js tehnologiji</h3>
-	  <router-view></router-view>
+<div id="wrapper">
+	<my-header></my-header>
+	<router-view></router-view>
 </div>
 
+<script src="js/httpVueLoader.js"></script>
 <script src="js/vue.js"></script>
 <script src="js/vue-router.js"></script>
 <script src="js/axios.js"></script>
-<script src="js/jquery.min.js"></script>
+<script src="js/jquery-3.3.1.min.js"></script>
 <script src="js/toast.js"></script>
-<script src="app/webShop.js"></script>
-<script src="app/shoppingCart.js"></script>
+<script src="app/validation/user-validation.js"></script>
+<script src="app/welcomePage.js"></script>
 <script src="app/app.js"></script>
-
+<script src="js/bootstrap.min.js"></script>
 </body>
 </html>

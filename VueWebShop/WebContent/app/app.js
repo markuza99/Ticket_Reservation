@@ -1,16 +1,18 @@
-const WebShop = { template: '<web-shop></web-shop>' }
-const ShoppingCart = { template: '<shopping-cart></shopping-cart>' }
+
+const WelcomePage = { template: '<welcome-page></welcome-page>'}
+const Header = httpVueLoader('./app/components/Header.vue');
 
 const router = new VueRouter({
 	  mode: 'hash',
 	  routes: [
-	    { path: '/', component: WebShop},
-	    { path: '/sc', component: ShoppingCart }
+		{ path: '/', component: WelcomePage}
 	  ]
 });
 
 var app = new Vue({
 	router,
-	el: '#webShop'
+	el: '#wrapper',
+	components: {
+		"my-header" : Header
+	}
 });
-
