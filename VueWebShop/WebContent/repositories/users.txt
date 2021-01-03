@@ -1,0 +1,3 @@
+CUSTOMER;username;password;firstname;lastname;FEMALE;13-01-2017 17:09:42
+CUSTOMER;pera;pera;firstname;lastname;FEMALE;13-01-2017 17:09:42
+CUSTOMER;mika;mika123;Mika;Peric;MALE;13-01-2017 17:09:42
