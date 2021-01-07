@@ -1,2 +1,6 @@
-001;manifestacija1;CONCERT;50;13-01-2017 17:09:42;1200;1;001;colic.jpg
-002;manifestacija2;FESTIVAL;60;13-01-2017 17:09:42;1500;1;002;two.jpg
+001;Zdravko Colic;CONCERT;50;13-01-2017 17:09:42;1200;1;001;colic.jpg
+002;Jura Stublic;CONCERT;60;13-02-2017 17:09:42;1500;1;002;jura.jpg
+003;Aca Lukas;CONCERT;1200;22-02-2021 17:09:42;2000;1;003;lukas.jpeg
+004;Autobiografija - Branislav Nusic;THEATER;500;20-01-2021 18:00:00;1000;1;004;pozoriste.jpg
+005;Baja Mali Knindza;CONCERT;1000;10-08-2021 17:00:00;500;1;005;knindza.jpg
+006;Zare i Goci;CONCERT;1000;10-08-2021 17:00:00;600;1;005;zaregoci.jpg
