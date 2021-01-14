@@ -83,6 +83,7 @@ module.exports = {
 				
 				this.manifestations = response.data;
 				console.log(this.manifestations);
+				
 				this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 			});
 	}
