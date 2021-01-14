@@ -71,7 +71,7 @@
 	border:none;
 	height:calc(2.5em + .75rem + 2px);
 	padding:.375rem .75rem;
-	box-shadow: 0px 0px 8px #000000;
+	box-shadow: 0px 0px 8px #474747;
 }
 
 .search-panel li {

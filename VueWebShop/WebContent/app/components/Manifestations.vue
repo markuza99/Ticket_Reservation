@@ -2,20 +2,28 @@
 	<div id="manifestations" class="row" data-masonry='{"percentPosition": true }'>
 		<div class="col-lg-4 col-md-4 col-sm-6" v-bind:key="m.id" v-for="m in manifestations">
 				<div class="manifestation">
+					
 					<div class="image-holder">
 						<img class="fit-img" v-bind:src="'images/' + m.image">
 					</div>
-					<div class="text-center w-100 pt-1 pb-1 manifestation-type">{{m.type}}</div>
+					
 					<div class="description-holder">
 						
-                        <h3 class="name text-primary">{{m.name}}</h3>
-						<span>{{m.date.dayOfMonth}}</span>
-						<span>{{m.formattedMonth}}</span>
-						<span>{{m.date.year}}</span><br>
-						<span>{{m.location.street}}, </span>
-						<span>{{m.location.city}}</span>
+                        <h3 class="name">{{m.name}}</h3>
+						
+						<span class="text-info">{{m.location.street}}, </span>
+						<span class="text-info">{{m.location.city}}</span><br>
+						
 					</div>
+					<div class="date" style="text-align:right;white-space:nowrap;">
+						<div class="bg-warning" style="padding:0 7px;">
+						{{m.date.dayOfMonth}}
+						{{m.formattedMonth}}
+						{{m.date.year}}
+						</div>
+					</div>	
 					
+					<div class="text-center w-100 pt-1 pb-1 manifestation-type">{{m.type}}</div>
 				</div>
 			
 		</div>
@@ -93,20 +101,23 @@ module.exports = {
 <style>
 
 #manifestations {
-	margin-top:4em;
+	margin-top:2em;
 }
 
 .manifestation {
 	border:1px solid darkgray;
 	margin-bottom: 20px;
+	box-shadow: 0px 0px 12px #767676;
 }
 
-/* .image-holder img {
+.image-holder img {
 	max-width: 100%;
+	/* box-shadow: 0px 0px 8px #000000; */
 }
 
 .image-holder {
 	overflow: hidden;
+	
 }
 
 @media screen and (max-width: 1200px) {
@@ -118,7 +129,7 @@ module.exports = {
 
 @media screen and (min-width: 1200px) {
 	.image-holder {
-		height: 20em;
+		height: 15em;
 	}
 }
 
@@ -127,14 +138,17 @@ module.exports = {
 		min-height: 30em;
 	    max-height: 30em;
 	}
-} */
+}
 
-.fit-img {
-    width: 100%;
+.manifestation .date {
+	text-transform: uppercase;
+	font-family: 'Quicksand', sans-serif;
 }
 
 .manifestation .name {
 	font-size: 20px;
+	text-transform: uppercase;
+	color:#767676;
 }
 
 .manifestation .description-holder {
