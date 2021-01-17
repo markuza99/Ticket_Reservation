@@ -55,6 +55,7 @@ public class UserService {
 		return (User) request.getSession().getAttribute("user");
 	}
 	
+<<<<<<< Updated upstream
 	@POST
 	@Path("/registration")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -71,4 +72,17 @@ public class UserService {
 		LocalDateTime dt = LocalDateTime.now();
         return dt.toString();
     }
+=======
+	
+	@POST
+	@Path("/register")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public User registerUser(@Context HttpServletRequest request, User user) {
+		UserDAO userDao = (UserDAO) ctx.getAttribute("userDAO");
+		User u = userDao.registration(user);
+		return u;
+	}
+	
+>>>>>>> Stashed changes
 }
