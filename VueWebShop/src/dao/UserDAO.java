@@ -7,13 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-<<<<<<< Updated upstream
 import java.time.LocalDate;
-=======
-import java.util.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
->>>>>>> Stashed changes
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -62,19 +56,14 @@ public class UserDAO {
 					continue;
 				st = new StringTokenizer(line, ";");
 				while(st.hasMoreTokens()) {
-					String role = st.nextToken().trim();
+					Role role = Role.valueOf(st.nextToken().trim());
 					String username = st.nextToken().trim();
 					String password = st.nextToken().trim();
 					String firstName = st.nextToken().trim();
 					String lastName = st.nextToken().trim();
-<<<<<<< Updated upstream
 					Gender gender = Gender.valueOf(st.nextToken().trim());
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");  
 					LocalDate birthDate = LocalDate.parse(st.nextToken().trim(), formatter);	
-=======
-					String gender = st.nextToken().trim();
-					String birthDate = st.nextToken().trim();
->>>>>>> Stashed changes
 					
 					users.put(username, new User(username, firstName, lastName, 
 							password, gender, birthDate, role));
@@ -142,52 +131,5 @@ public class UserDAO {
             }
         }
     }
-	
-	public User registration(User user) {
-        if(usernameExists(user.getUsername())) {
-            return null;
-        }
-        users.put(user.getUsername(), user); 
-        String birthDate = user.getBirthDate();
-        String userString = "CUSTOMER" + ";" + user.getUsername() + ";" + user.getPassword() + ";" 
-                            + user.getFirstName() + ";" + user.getLastName() + ";"
-                            + user.getGender() + ";" + birthDate;
-
-        String customerString = user.getUsername() + ";;" + 0;
-        write(userString, customerString);
-        return user;
-    }
-	private Boolean usernameExists(String username) {
-	        return users.containsKey(username);
-	   }
-	private void write(String user, String customer) {
-	        File fileUsers = new File(contextPath + "/repositories/users.txt");
-	        File fileCustomers = new File(contextPath + "/repositories/customers.txt");
-	
-	        PrintWriter pw = null;
-	        PrintWriter pwCustomers = null;
-	        try {
-	            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileUsers, true)));
-	            pwCustomers = new PrintWriter(new BufferedWriter(new FileWriter(fileCustomers, true)));
-	            pw.println(user);
-	            pwCustomers.println(customer);
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        } finally {
-	            if(pw != null) {
-	                try {
-	                    pw.close();
-	                }
-	                catch (Exception e) {}
-	            }
-	
-	            if(pwCustomers != null) {
-	                try {
-	                    pwCustomers.close();
-	                }
-	                catch (Exception e) {}
-	            }
-	        }
-	    }
 	
 }
