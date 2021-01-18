@@ -1,4 +1,5 @@
 const manifestations = httpVueLoader("./app/components/Manifestations.vue");
+const filteringPanel = httpVueLoader("./app/components/FilteringPanel.vue");
 
 Vue.component("welcome-page", {
 	data: function() {
@@ -8,8 +9,9 @@ Vue.component("welcome-page", {
 	},
 	template: `
 		<div class="container">
-			<h4 class="najskorije-manifestacije">Najskorije manifestacije</h4>
-			<hr>
+			<filteringPanel></filteringPanel>
+			
+			
 			<manifestations></manifestations>
 		</div>
 		
@@ -18,6 +20,7 @@ Vue.component("welcome-page", {
 
 	},
 	components: {
-		"manifestations" : manifestations
+		"manifestations" : manifestations,
+		"filteringPanel" : filteringPanel
 	}
 });

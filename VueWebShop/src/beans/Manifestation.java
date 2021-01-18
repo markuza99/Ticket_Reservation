@@ -2,7 +2,7 @@ package beans;
 
 import java.time.LocalDateTime;
 
-public class Manifestation {
+public class Manifestation implements Comparable<Manifestation>{
 	private String id;
 	private String name;
 	private ManifestationType type;
@@ -103,6 +103,12 @@ public class Manifestation {
 		return "Manifestation [id=" + id + ", name=" + name + ", type=" + type + ", numberOfSeats=" + numberOfSeats
 				+ ", date=" + date + ", ticketPrice=" + ticketPrice + ", status=" + status + ", location=" + location
 				+ ", image=" + image + "]";
+	}
+
+	@Override
+	public int compareTo(Manifestation o) {
+		// TODO Auto-generated method stub
+		return getDate().compareTo(o.getDate());
 	}
 	
 	

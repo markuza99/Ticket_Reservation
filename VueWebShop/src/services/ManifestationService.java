@@ -22,6 +22,7 @@ public class ManifestationService {
 	public void init() {
 		if(ctx.getAttribute("ManifestationDAO") == null) {
 			String contextPath = ctx.getRealPath("");
+			System.out.println(contextPath);
 			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath));
 		}
 	}
@@ -31,7 +32,7 @@ public class ManifestationService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Manifestation> getManifestations() {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-		return  manifestationDao.getAllManifestations();
+		return  manifestationDao.getFirstNManifestations(10);
 	}
 	
 	@GET

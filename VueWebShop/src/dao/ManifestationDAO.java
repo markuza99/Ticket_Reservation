@@ -6,10 +6,12 @@ import java.io.FileReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 import beans.Location;
 import beans.Manifestation;
@@ -27,6 +29,28 @@ public class ManifestationDAO {
 	
 	public List<Manifestation> getAllManifestations() {
 		return new ArrayList<Manifestation>(manifestations.values());
+	}
+	
+	public List<Manifestation> getFirstNManifestations(int num) {
+		ArrayList<Manifestation> sortedManifestations = (ArrayList<Manifestation>) sortManifestations(true);
+		ArrayList<Manifestation> firstNManifestations = new ArrayList<Manifestation>();
+		for(Manifestation m : sortedManifestations) {
+			if(firstNManifestations.size() == num) {
+				break;
+			}
+			firstNManifestations.add(m);
+		}
+		return firstNManifestations;
+	}
+	
+	private List<Manifestation> sortManifestations(Boolean ascending) {
+		List<Manifestation> sortedManifestations = new ArrayList<>(manifestations.values());
+		if(ascending) {
+			Collections.sort(sortedManifestations);
+		} else {
+			Collections.sort(sortedManifestations, Collections.reverseOrder());
+		}
+		return sortedManifestations;
 	}
 	
 	private void loadManifestations() {

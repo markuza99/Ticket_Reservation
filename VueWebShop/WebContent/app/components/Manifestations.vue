@@ -2,18 +2,16 @@
 	<div id="manifestations" class="row" data-masonry='{"percentPosition": true }'>
 		<div class="col-lg-4 col-md-4 col-sm-6" v-bind:key="m.id" v-for="m in manifestations">
 				<div class="manifestation">
-					
 					<div class="image-holder">
 						<img class="fit-img" v-bind:src="'images/' + m.image">
 					</div>
-					
 					<div class="description-holder">
-						
                         <h3 class="name">{{m.name}}</h3>
-						
 						<span class="text-info">{{m.location.street}}, </span>
 						<span class="text-info">{{m.location.city}}</span><br>
-						
+					</div>
+					<div class="price" style="text-align:right;" >
+						<span class="p-2 bg-danger" style="color:white; position:relative;bottom:6px">{{m.ticketPrice}},00 RSD</span>
 					</div>
 					<div class="date" style="text-align:right;white-space:nowrap;">
 						<div class="bg-warning" style="padding:0 7px;">
@@ -110,14 +108,43 @@ module.exports = {
 	box-shadow: 0px 0px 12px #767676;
 }
 
-.image-holder img {
-	max-width: 100%;
-	/* box-shadow: 0px 0px 8px #000000; */
+.manifestation .image-holder {
+	
+	overflow:hidden;
+	position:relative;
+	cursor: pointer;
 }
 
-.image-holder {
-	overflow: hidden;
-	
+.manifestation .image-holder img {
+	max-width: 100%;
+	-webkit-transition:all .4s linear;
+    transition:all .4s linear;
+}
+
+.image-holder:hover img {
+	-ms-transform:scale(1.2);
+	-webkit-transform:scale(1.2);
+	transform:scale(1.2);
+	transition: all 0.2s;
+}
+
+.manifestation .date {
+	text-transform: uppercase;
+	font-family: 'Quicksand', sans-serif;
+}
+
+.manifestation .name {
+	font-size: 20px;
+	text-transform: uppercase;
+	color:#767676;
+}
+
+.manifestation .description-holder {
+	padding:20px;
+}
+
+.manifestation .manifestation-type {
+    background-color: #bbbb;
 }
 
 @media screen and (max-width: 1200px) {
@@ -140,23 +167,6 @@ module.exports = {
 	}
 }
 
-.manifestation .date {
-	text-transform: uppercase;
-	font-family: 'Quicksand', sans-serif;
-}
 
-.manifestation .name {
-	font-size: 20px;
-	text-transform: uppercase;
-	color:#767676;
-}
-
-.manifestation .description-holder {
-	padding:20px;
-}
-
-.manifestation .manifestation-type {
-    background-color: #bbbb;
-}
 
 </style>
