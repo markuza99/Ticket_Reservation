@@ -1,4 +1,5 @@
-const loginForm = httpVueLoader("./app/components/LoginForm.vue");
+const manifestations = httpVueLoader("./app/components/Manifestations.vue");
+const filteringPanel = httpVueLoader("./app/components/FilteringPanel.vue");
 
 Vue.component("welcome-page", {
 	data: function() {
@@ -7,9 +8,11 @@ Vue.component("welcome-page", {
 		}
 	},
 	template: `
-		<div>
-			<login-form></login-form>
-			test
+		<div class="container">
+			<filteringPanel></filteringPanel>
+			
+			
+			<manifestations></manifestations>
 		</div>
 		
 	`,
@@ -17,6 +20,7 @@ Vue.component("welcome-page", {
 
 	},
 	components: {
-		"login-form" : loginForm
+		"manifestations" : manifestations,
+		"filteringPanel" : filteringPanel
 	}
 });

@@ -11,7 +11,7 @@ public class User {
 	private LocalDateTime birthDate;
 	private Role role;
 	
-public User() {
+	public User() {
 		
 	}
 	
