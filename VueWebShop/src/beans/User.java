@@ -2,18 +2,18 @@ package beans;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
 public class User {
 	private String username;
 	private String firstName;
 	private String lastName;
 	private String password;
-	private String gender;
-	private String birthDate;
-	private String role;
+	private Gender gender;
+	private LocalDate birthDate;
+	private Role role;
 	
-public User() {
+	public User() {
 		
 	}
 	
@@ -22,8 +22,8 @@ public User() {
 		this.password = password;
 	}
 
-	public User(String username, String firstName, String lastName, String password, String gender,
-			String birthDate, String role) {
+	public User(String username, String firstName, String lastName, String password, Gender gender,
+			LocalDate birthDate, Role role) {
 		this.username = username;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -66,28 +66,29 @@ public User() {
 		this.password = password;
 	}
 
-	public String getGender() {
+	public Gender getGender() {
 		return gender;
 	}
 
 	public void setGender(String gender) {
-		this.gender = gender;
+		this.gender = Gender.valueOf(gender.toUpperCase());
 	}
 
-	public String getBirthDate() {
+	public LocalDate getBirthDate() {
 		return birthDate;
 	}
 
 	public void setBirthDate(String birthDate) {
-		this.birthDate = birthDate;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		this.birthDate = LocalDate.parse(birthDate, formatter);
 	}
 
-	public String getRole() {
+	public Role getRole() {
 		return role;
 	}
 
 	public void setRole(String role) {
-		this.role = role;
+		this.role = Role.valueOf(role);
 	}
 
 	
