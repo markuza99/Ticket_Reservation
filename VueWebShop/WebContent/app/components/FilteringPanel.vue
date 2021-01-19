@@ -37,7 +37,7 @@
 </template>
 
  <script>
- module.exports = {
+module.exports = {
 	data() {
 		return {
 			manifestation_type: ["TIP MANIFESTACIJE","SVE","THEATER"]

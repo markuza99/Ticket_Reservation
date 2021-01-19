@@ -1,39 +1,49 @@
 <template>
-	<div id="manifestations" class="row" data-masonry='{"percentPosition": true }'>
-		<div class="col-lg-4 col-md-4 col-sm-6" v-bind:key="m.id" v-for="m in manifestations">
-				<div class="manifestation">
-					<div class="image-holder">
-						<img class="fit-img" v-bind:src="'images/' + m.image">
-					</div>
-					<div class="description-holder">
-                        <h3 class="name">{{m.name}}</h3>
-						<span class="text-info">{{m.location.street}}, </span>
-						<span class="text-info">{{m.location.city}}</span><br>
-					</div>
-					<div class="price" style="text-align:right;" >
-						<span class="p-2 bg-danger" style="color:white; position:relative;bottom:6px">{{m.ticketPrice}},00 RSD</span>
-					</div>
-					<div class="date" style="text-align:right;white-space:nowrap;">
-						<div class="bg-warning" style="padding:0 7px;">
-						{{m.date.dayOfMonth}}
-						{{m.formattedMonth}}
-						{{m.date.year}}
+	<div>
+		<search-panel v-bind:manifestations="manifestations" v-on:change-manifestations="updateManifestations($event)"></search-panel>
+		<filtering-panel v-bind:manifestations="manifestations" ></filtering-panel>
+		<div id="manifestations" class="row" data-masonry='{"percentPosition": true }'>
+			<div class="col-lg-4 col-md-4 col-sm-6" v-for="m in manifestations" :key="m.id">
+					<div class="manifestation">
+						<div class="image-holder">
+							<img class="fit-img" v-bind:src="'images/' + m.image">
 						</div>
-					</div>	
-					
-					<div class="text-center w-100 pt-1 pb-1 manifestation-type">{{m.type}}</div>
-				</div>
-			
+						<div class="description-holder">
+							<h3 class="name">{{m.name}}</h3>
+							<span class="text-info">{{m.location.street}}, </span>
+							<span class="text-info">{{m.location.city}}</span><br>
+						</div>
+						<div class="price" style="text-align:right;" >
+							<span class="p-2 bg-danger" style="color:white; position:relative;bottom:6px">{{m.ticketPrice}},00 RSD</span>
+						</div>
+						<div class="date" style="text-align:right;white-space:nowrap;">
+							<div class="bg-warning" style="padding:0 7px;">
+							{{m.date.dayOfMonth}}
+							{{m.formattedMonth}}
+							{{m.date.year}}
+							</div>
+						</div>	
+						
+						<div class="text-center w-100 pt-1 pb-1 manifestation-type">{{m.type}}</div>
+					</div>
+				
+			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+var x = require("./SearchPanel.vue");
+var y = require("./FilteringPanel.vue");
 module.exports = {
 	data() {
 		return {
 			manifestations: []
 		}
+	},
+	components: {
+    "search-panel": httpVueLoader("./SearchPanel.vue"),
+	"filtering-panel": httpVueLoader("./FilteringPanel.vue")
 	},
 	methods: {
 		makeDate : (manifestation) => {
@@ -80,6 +90,11 @@ module.exports = {
 				default:
 					console.log("nista");
 			}
+		},
+		updateManifestations: function(updatedManifestations) {
+			console.log(this.manifestations);
+			this.manifestations = updatedManifestations;
+			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 		}
 	},
 	mounted() {

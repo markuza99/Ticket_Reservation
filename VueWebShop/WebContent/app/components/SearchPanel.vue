@@ -17,23 +17,26 @@
 		<div class="collapse navbar-collapse search-navbar" id="navbarSupportedContent">
 			<ul class="nav navbar-nav navbar-center mr-auto">
 			<li class="nav-item">
-				<input type="text" class="form-control" placeholder="Naziv manifestacije...">
+				<input type="text" class="form-control" placeholder="Naziv manifestacije..." id="nazivMan"/>
 			</li>
 			<li class="nav-item">
-				<input class="form-control" type="date"/>
+				<input class="form-control" type="date" id="datumOdMan"/>
 			</li>
 			<li class="nav-item">
-				<input class="form-control" type="date"/>
+				<input class="form-control" type="date" id="datumDoMan"/>
 			</li>
 			
 			<li class="nav-item">
-				<input class="form-control" type="text" placeholder="Cena"/>
+				<input class="form-control" type="text" placeholder="Cena od" id="cenaOdMan"/>
+			</li>
+			<li class="nav-item">
+				<input class="form-control" type="text" placeholder="Cena do" id="cenaDoMan"/>
 			</li>
 			<li>
-				<input class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search">
+				<input class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
 			</li>
 			<li>
-				<button class="my-2 my-sm-0 search-button" type="submit"><i class="fa fa-search"></i></button>
+				<button class="my-2 my-sm-0 search-button" type="submit" v-on:click="onaj"><i class="fa fa-search"></i></button>
 			</li>
 			</ul>
 			
@@ -44,6 +47,70 @@
 	</div>
 </template>
 
+<script>
+var x = require("./SearchPanel.vue");
+var y = require("./FilteringPanel.vue");
+module.exports = {
+	props: ['manifestations'],
+	data() {
+		return {		
+		}
+	},
+	methods: {
+		onaj: function() {
+			var naziv = $("#nazivMan").val();
+			var datOd = $("#datumOdMan").val();
+			var datDo = $("#datumDoMan").val();
+			var cenaOd = $("#cenaOdMan").val();
+			var cenaDo = $("#cenaDoMan").val();
+			var mesto = $("#mestoMan").val();
+			cenaOd = parseInt(cenaOd);
+			cenaDo = parseInt(cenaDo);
+			console.log(naziv+datOd+datDo+cenaOd+cenaDo+mesto);
+			axios
+			.get("http://localhost:3000/VueWebShop/rest/manifestationservice/getsearch", {
+				params: {
+					"naziv":naziv,
+					"datOd":datOd,
+					"datDo":datDo,
+					"mesto":mesto,
+					"cenaOd":cenaOd,
+					"cenaDo":cenaDo
+				}
+			})
+			.then(response => {
+				alert("BRAVO");
+				this.$emit('change-manifestations', response.data);				
+			}).catch((error) => {
+				// Error 😨
+				if (error.response) {
+					/*
+					* The request was made and the server responded with a
+					* status code that falls out of the range of 2xx
+					*/
+					console.log(error.response.data);
+					console.log(error.response.status);
+					console.log(error.response.headers);
+				} else if (error.request) {
+					/*
+					* The request was made but no response was received, `error.request`
+					* is an instance of XMLHttpRequest in the browser and an instance
+					* of http.ClientRequest in Node.js
+					*/
+					console.log(error.request);
+				} else {
+					// Something happened in setting up the request and triggered an Error
+					console.log('Error', error.message);
+				}
+				console.log(error.config);
+			});
+
+
+
+		}
+	}
+}
+</script>
 <style scoped>
 
 .search-panel {

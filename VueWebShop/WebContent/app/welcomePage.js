@@ -1,5 +1,4 @@
 const manifestations = httpVueLoader("./app/components/Manifestations.vue");
-const filteringPanel = httpVueLoader("./app/components/FilteringPanel.vue");
 
 Vue.component("welcome-page", {
 	data: function() {
@@ -8,12 +7,8 @@ Vue.component("welcome-page", {
 		}
 	},
 	template: `
-		<div class="container">
-			<filteringPanel></filteringPanel>
-			
 			
 			<manifestations></manifestations>
-		</div>
 		
 	`,
 	methods: {
@@ -21,6 +16,5 @@ Vue.component("welcome-page", {
 	},
 	components: {
 		"manifestations" : manifestations,
-		"filteringPanel" : filteringPanel
 	}
 });
