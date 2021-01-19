@@ -1,5 +1,6 @@
 const manifestations = httpVueLoader("./app/components/Manifestations.vue");
 
+
 Vue.component("welcome-page", {
 	data: function() {
 		return {
@@ -9,6 +10,7 @@ Vue.component("welcome-page", {
 	template: `
 	    <div>
 		    <manifestations></manifestations>
+
 		</div>
 	`,
 	methods: {

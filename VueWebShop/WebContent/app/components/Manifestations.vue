@@ -1,5 +1,6 @@
 <template>
 	<div class="container">
+
 		<div id="manifestations" class="row" data-masonry='{"percentPosition": true }'>
 			<div class="col-lg-4 col-md-4 col-sm-6" v-for="m in manifestations" :key="m.id">
 					<div class="manifestation">
