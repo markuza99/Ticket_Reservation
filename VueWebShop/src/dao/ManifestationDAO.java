@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import javax.ws.rs.QueryParam;
+
 import beans.Location;
 import beans.Manifestation;
 import beans.ManifestationType;
@@ -51,6 +53,28 @@ public class ManifestationDAO {
 			Collections.sort(sortedManifestations, Collections.reverseOrder());
 		}
 		return sortedManifestations;
+	}
+	
+	public void search(String naziv,  String datOd, String datDo, String mesto, String cenaOd, String cenaDo) {
+		List<Manifestation> searchedManifestations = new ArrayList<Manifestation>();
+		if(naziv != null && !naziv.trim().isEmpty()) {
+			for (Manifestation m : manifestations.values()) {
+				if(m.getName().toLowerCase().contains(naziv.toLowerCase())) {
+					searchedManifestations.add(m);
+				}
+			}
+		} else {
+			searchedManifestations = (List<Manifestation>) manifestations.values();
+		}
+		
+		datOd = datOd.trim() + " 00:00:00";
+		datDo = datDo.trim() + " 00:00:00";
+		 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		if(datOd != null && !datOd.isEmpty()) {
+			for (Manifestation m : searchedManifestations) {
+				
+			}
+		}
 	}
 	
 	private void loadManifestations() {

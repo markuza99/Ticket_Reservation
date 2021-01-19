@@ -53,10 +53,12 @@ public class ManifestationService {
 	}
 	
 	@GET
-	@Path("/getsearch")
+	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getSearchManifestations(@QueryParam("naziv") String naziv, @QueryParam("datOd") String datOd, @QueryParam("datDo") String datDo, @QueryParam("mesto") String mesto, @QueryParam("cenaOd") String cenaOd, @QueryParam("cenaDo") String cenaDo) throws ParseException {
+	public List<Manifestation> getSearchManifestations(@QueryParam("naziv") String naziv, @QueryParam("datumOdMan") String datOd, @QueryParam("datumDoMan") String datDo, @QueryParam("mestoMan") String mesto, @QueryParam("cenaOdMan") String cenaOd, @QueryParam("cenaDoMan") String cenaDo) throws ParseException {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+		
+		manifestationDao.search(naziv, datOd, datDo, mesto, cenaOd, cenaDo);
 		List<Manifestation> manSearch = new ArrayList<Manifestation>();
 		if(naziv != null && !naziv.trim().isEmpty()) {
 			for (Manifestation m : manifestationDao.getAllManifestations()) {
@@ -68,29 +70,7 @@ public class ManifestationService {
 			manSearch = (ArrayList<Manifestation>) manifestationDao.getAllManifestations();
 		}
 		if(datOd != null && !datOd.trim().isEmpty()) {
-			String splitArgs[] = datOd.split("\\-");
-			int yy = Integer.parseInt(splitArgs[0]);
-			int mm = Integer.parseInt(splitArgs[1]);
-			int dd = Integer.parseInt(splitArgs[2]);
-			ListIterator<Manifestation> iter = manSearch.listIterator();
-			while(iter.hasNext()){
-//				System.out.println(iter.next().getDate().getYear() + "!!" + yy);
-//				System.out.println(iter.next().getDate().getMonthValue() + "!!" + mm);
-//				System.out.println(iter.next().getDate().getDayOfMonth() + "!!" + dd);
-//				System.out.println("DUZINA NIZA JE " + manSearch.size());
-//				System.out.println("============================");
-			    if(iter.next().getDate().getYear() >= yy){
-			        iter.remove();
-			    } else {
-			    	if(iter.next().getDate().getMonthValue() >= mm) {
-			    		iter.remove();
-			    	} else {
-			    		if(iter.next().getDate().getDayOfMonth() >= dd) {
-			    			iter.remove();
-			    		}
-			    	}
-			    }
-			}
+			
 
 		}
 		

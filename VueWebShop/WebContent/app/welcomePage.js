@@ -7,9 +7,9 @@ Vue.component("welcome-page", {
 		}
 	},
 	template: `
-			
-			<manifestations></manifestations>
-		
+	    <div>
+		    <manifestations></manifestations>
+		</div>
 	`,
 	methods: {
 

@@ -1,7 +1,5 @@
 <template>
-	<div>
-		<search-panel v-bind:manifestations="manifestations" v-on:change-manifestations="updateManifestations($event)"></search-panel>
-		<filtering-panel v-bind:manifestations="manifestations" ></filtering-panel>
+	<div class="container">
 		<div id="manifestations" class="row" data-masonry='{"percentPosition": true }'>
 			<div class="col-lg-4 col-md-4 col-sm-6" v-for="m in manifestations" :key="m.id">
 					<div class="manifestation">
@@ -40,10 +38,6 @@ module.exports = {
 		return {
 			manifestations: []
 		}
-	},
-	components: {
-    "search-panel": httpVueLoader("./SearchPanel.vue"),
-	"filtering-panel": httpVueLoader("./FilteringPanel.vue")
 	},
 	methods: {
 		makeDate : (manifestation) => {

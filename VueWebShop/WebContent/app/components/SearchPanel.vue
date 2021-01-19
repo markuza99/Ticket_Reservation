@@ -1,12 +1,5 @@
 <template>
 	<div class="search-panel">
-		
-		<!-- <li></li>
-		<li></li>
-		<li><input type="date"/></li>
-		<li><input type="date"/></li>
-		<li><input type="text" value="od"></li>
-		<li></li> -->
 	
 		<nav class="navbar navbar-expand-lg navbar-light bg-primary">
 		
@@ -17,23 +10,23 @@
 		<div class="collapse navbar-collapse search-navbar" id="navbarSupportedContent">
 			<ul class="nav navbar-nav navbar-center mr-auto">
 			<li class="nav-item">
-				<input type="text" class="form-control" placeholder="Naziv manifestacije..." id="nazivMan"/>
+				<input v-model="naziv" type="text" class="form-control" placeholder="Naziv manifestacije..." id="nazivMan"/>
 			</li>
 			<li class="nav-item">
-				<input class="form-control" type="date" id="datumOdMan"/>
+				<input v-model="datumOd" class="form-control" type="date" id="datumOdMan"/>
 			</li>
 			<li class="nav-item">
-				<input class="form-control" type="date" id="datumDoMan"/>
+				<input v-model="datumDo" class="form-control" type="date" id="datumDoMan"/>
 			</li>
 			
 			<li class="nav-item">
-				<input class="form-control" type="text" placeholder="Cena od" id="cenaOdMan"/>
+				<input v-model="cenaOd" class="form-control" type="text" placeholder="Cena od" id="cenaOdMan"/>
 			</li>
 			<li class="nav-item">
-				<input class="form-control" type="text" placeholder="Cena do" id="cenaDoMan"/>
+				<input v-model="cenaDo" class="form-control" type="text" placeholder="Cena do" id="cenaDoMan"/>
 			</li>
 			<li>
-				<input class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
+				<input v-model="mesto" class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
 			</li>
 			<li>
 				<button class="my-2 my-sm-0 search-button" type="submit" v-on:click="onaj"><i class="fa fa-search"></i></button>
@@ -53,29 +46,32 @@ var y = require("./FilteringPanel.vue");
 module.exports = {
 	props: ['manifestations'],
 	data() {
-		return {		
+		return {	
+			naziv: "",
+			datOd:"",
+			datDo:"",
+			mesto:"",
+			cenaOd:"",
+			cenaDo:""		
 		}
 	},
 	methods: {
 		onaj: function() {
-			var naziv = $("#nazivMan").val();
-			var datOd = $("#datumOdMan").val();
-			var datDo = $("#datumDoMan").val();
-			var cenaOd = $("#cenaOdMan").val();
-			var cenaDo = $("#cenaDoMan").val();
-			var mesto = $("#mestoMan").val();
-			cenaOd = parseInt(cenaOd);
-			cenaDo = parseInt(cenaDo);
-			console.log(naziv+datOd+datDo+cenaOd+cenaDo+mesto);
+			
+			//cenaOd = parseInt(cenaOd);
+			//cenaDo = parseInt(cenaDo);
+			//console.log(naziv+datOd+datDo+cenaOd+cenaDo+mesto);
+			var paramsJSON = JSON.stringify(this.searchParams);
+			
 			axios
-			.get("http://localhost:3000/VueWebShop/rest/manifestationservice/getsearch", {
+			.get("rest/manifestationservice/search", {
 				params: {
-					"naziv":naziv,
-					"datOd":datOd,
-					"datDo":datDo,
-					"mesto":mesto,
-					"cenaOd":cenaOd,
-					"cenaDo":cenaDo
+					"naziv" : this.naziv,
+					"datOd":this.datOd,
+					"datDo":this.datDo,
+					"mesto":this.mesto,
+					"cenaOd":this.cenaOd,
+					"cenaDo":this.cenaDo
 				}
 			})
 			.then(response => {

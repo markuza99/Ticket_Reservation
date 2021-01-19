@@ -3,6 +3,8 @@ const WelcomePage = { template: '<welcome-page></welcome-page>'}
 const Header = httpVueLoader('./app/components/Header.vue');
 const loginForm = httpVueLoader('./app/components/LoginForm.vue');
 const Footer = httpVueLoader("./app/components/Footer.vue");
+const filteringPanel = httpVueLoader("./app/components/FilteringPanel.vue");
+const searchPanel = httpVueLoader("./app/components/SearchPanel.vue");
 
 const router = new VueRouter({
 	  mode: 'hash',
@@ -18,5 +20,7 @@ var app = new Vue({
 	components: {
 		"my-header" : Header,
 		"my-footer" : Footer,
+		"filtering-panel" : filteringPanel,
+		"search-panel" : searchPanel
 	}
 });
