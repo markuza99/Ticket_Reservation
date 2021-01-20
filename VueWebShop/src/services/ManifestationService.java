@@ -46,88 +46,12 @@ public class ManifestationService {
 	}
 	
 	@GET
-	@Path("/getcontextpath")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getContextPath() {
-		return ctx.getRealPath("");
-	}
-	
-	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getSearchManifestations(@QueryParam("naziv") String naziv, @QueryParam("datumOdMan") String datOd, @QueryParam("datumDoMan") String datDo, @QueryParam("mestoMan") String mesto, @QueryParam("cenaOdMan") String cenaOd, @QueryParam("cenaDoMan") String cenaDo) throws ParseException {
+	public List<Manifestation> getSearchManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo) throws ParseException {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		
-		manifestationDao.search(naziv, datOd, datDo, mesto, cenaOd, cenaDo);
-		List<Manifestation> manSearch = new ArrayList<Manifestation>();
-		if(naziv != null && !naziv.trim().isEmpty()) {
-			for (Manifestation m : manifestationDao.getAllManifestations()) {
-				if(m.getName().toLowerCase().startsWith(naziv.toLowerCase())) {
-					manSearch.add(m);
-				}
-			}
-		} else {
-			manSearch = (ArrayList<Manifestation>) manifestationDao.getAllManifestations();
-		}
-		if(datOd != null && !datOd.trim().isEmpty()) {
-			
+		return manifestationDao.search(name, dateFrom, dateTo, place, priceFrom, priceTo);
 
-		}
-		
-		if(datDo != null && !datDo.trim().isEmpty()) {
-			System.out.println("OVO  JE DATDO  " + datDo);
-			String splitArgs[] = datDo.split("\\-");
-			int yy = Integer.parseInt(splitArgs[0]);
-			int mm = Integer.parseInt(splitArgs[1]);
-			int dd = Integer.parseInt(splitArgs[2]);
-			ListIterator<Manifestation> iter = manSearch.listIterator();
-			while(iter.hasNext()){
-//				System.out.println(iter.next().getDate().getYear() + "@@" + yy);
-//				System.out.println(iter.next().getDate().getMonthValue() + "@@" + mm);
-//				System.out.println(iter.next().getDate().getDayOfMonth() + "@@" + dd);
-//				System.out.println("DUZINA NIZA JE " + manSearch.size());
-//				System.out.println("============================");
-			    if(iter.next().getDate().getYear() <= yy){
-			        iter.remove();
-			    } else {
-			    	if(iter.next().getDate().getMonthValue() <= mm) {
-			    		iter.remove();
-			    	} else {
-			    		if(iter.next().getDate().getDayOfMonth() <= dd) {
-			    			iter.remove();
-			    		}
-			    	}
-			    }
-			}
-			
-		}
-
-		if(mesto != null && !mesto.trim().isEmpty()) {
-			ListIterator<Manifestation> iter = manSearch.listIterator();
-			while(iter.hasNext()){
-			    if(!iter.next().getLocation().getCity().toLowerCase().startsWith(mesto)) {
-			    	iter.remove();
-			    }
-			}
-		}
-		
-		if(cenaOd != null && !cenaOd.trim().isEmpty()) {
-			ListIterator<Manifestation> iter = manSearch.listIterator();
-			while(iter.hasNext()){
-			    if(iter.next().getTicketPrice() <= Integer.parseInt(cenaOd.trim())) {
-			    	iter.remove();
-			    }
-			}
-		}
-		
-		if(cenaDo != null && !cenaDo.trim().isEmpty()) {
-			ListIterator<Manifestation> iter = manSearch.listIterator();
-			while(iter.hasNext()){
-			    if(iter.next().getTicketPrice() >= Integer.parseInt(cenaDo.trim())) {
-			    	iter.remove();
-			    }
-			}
-		}
-		return manSearch;
 	}
 }

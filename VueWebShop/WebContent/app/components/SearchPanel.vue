@@ -10,26 +10,26 @@
 		<div class="collapse navbar-collapse search-navbar" id="navbarSupportedContent">
 			<ul class="nav navbar-nav navbar-center mr-auto">
 			<li class="nav-item">
-				<input v-model="naziv" type="text" class="form-control" placeholder="Naziv manifestacije..." id="nazivMan"/>
+				<input v-model="name" type="text" class="form-control" placeholder="Naziv manifestacije..." id="nazivMan"/>
 			</li>
 			<li class="nav-item">
-				<input v-model="datumOd" class="form-control" type="date" id="datumOdMan"/>
+				<input v-model="dateFrom" class="form-control" type="date" id="datumOdMan"/>
 			</li>
 			<li class="nav-item">
-				<input v-model="datumDo" class="form-control" type="date" id="datumDoMan"/>
+				<input v-model="dateTo" class="form-control" type="date" id="datumDoMan"/>
 			</li>
 			
 			<li class="nav-item">
-				<input v-model="cenaOd" class="form-control" type="text" placeholder="Cena od" id="cenaOdMan"/>
+				<input v-model="priceFrom" class="form-control" type="text" placeholder="Cena od" id="cenaOdMan"/>
 			</li>
 			<li class="nav-item">
-				<input v-model="cenaDo" class="form-control" type="text" placeholder="Cena do" id="cenaDoMan"/>
+				<input v-model="priceTo" class="form-control" type="text" placeholder="Cena do" id="cenaDoMan"/>
 			</li>
 			<li>
-				<input v-model="mesto" class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
+				<input v-model="place" class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
 			</li>
 			<li>
-				<button class="my-2 my-sm-0 search-button" type="submit" v-on:click="onaj"><i class="fa fa-search"></i></button>
+				<button class="my-2 my-sm-0 search-button" type="submit" v-on:click="search"><i class="fa fa-search"></i></button>
 			</li>
 			</ul>
 			
@@ -47,61 +47,38 @@ module.exports = {
 	props: ['manifestations'],
 	data() {
 		return {	
-			naziv: "",
-			datOd:"",
-			datDo:"",
-			mesto:"",
-			cenaOd:"",
-			cenaDo:""		
+			name: "",
+			dateFrom:"",
+			dateTo:"",
+			place:"",
+			priceFrom:"",
+			priceTo:""		
 		}
 	},
 	methods: {
-		onaj: function() {
-			
-			//cenaOd = parseInt(cenaOd);
-			//cenaDo = parseInt(cenaDo);
-			//console.log(naziv+datOd+datDo+cenaOd+cenaDo+mesto);
-			var paramsJSON = JSON.stringify(this.searchParams);
-			
+	//za front provera:
+	//za datum:
+	//da li je start before end 
+	// za cenu:
+	//da li je vrednost negativna,
+	// da li je max veci od nula
+	//da li je broj
+	
+		search: function() {
 			axios
 			.get("rest/manifestationservice/search", {
 				params: {
-					"naziv" : this.naziv,
-					"datOd":this.datOd,
-					"datDo":this.datDo,
-					"mesto":this.mesto,
-					"cenaOd":this.cenaOd,
-					"cenaDo":this.cenaDo
+					"name" : this.name,
+					"dateFrom":this.dateFrom,
+					"dateTo":this.dateTo,
+					"place":this.place,
+					"priceFrom":this.priceFrom,
+					"priceTo":this.priceTo
 				}
 			})
 			.then(response => {
-				alert("BRAVO");
-				this.$emit('change-manifestations', response.data);				
-			}).catch((error) => {
-				// Error 😨
-				if (error.response) {
-					/*
-					* The request was made and the server responded with a
-					* status code that falls out of the range of 2xx
-					*/
-					console.log(error.response.data);
-					console.log(error.response.status);
-					console.log(error.response.headers);
-				} else if (error.request) {
-					/*
-					* The request was made but no response was received, `error.request`
-					* is an instance of XMLHttpRequest in the browser and an instance
-					* of http.ClientRequest in Node.js
-					*/
-					console.log(error.request);
-				} else {
-					// Something happened in setting up the request and triggered an Error
-					console.log('Error', error.message);
-				}
-				console.log(error.config);
+				this.$root.$emit('searched-manifestations',response.data);			
 			});
-
-
 
 		}
 	}

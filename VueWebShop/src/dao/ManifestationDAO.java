@@ -55,26 +55,44 @@ public class ManifestationDAO {
 		return sortedManifestations;
 	}
 	
-	public void search(String naziv,  String datOd, String datDo, String mesto, String cenaOd, String cenaDo) {
+	public List<Manifestation> search(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo) {
 		List<Manifestation> searchedManifestations = new ArrayList<Manifestation>();
-		if(naziv != null && !naziv.trim().isEmpty()) {
-			for (Manifestation m : manifestations.values()) {
-				if(m.getName().toLowerCase().contains(naziv.toLowerCase())) {
-					searchedManifestations.add(m);
-				}
-			}
-		} else {
-			searchedManifestations = (List<Manifestation>) manifestations.values();
+		name = name.trim();
+		place = place.trim();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime LdateFrom = null;
+		LocalDateTime LdateTo = null;
+		
+		if(!dateFrom.equals("")) {
+			dateFrom = dateFrom.trim() + " 00:00:00";
+			LdateFrom = LocalDateTime.parse(dateFrom, formatter);;
+		}
+		if(!dateTo.equals("")) {
+			dateTo = dateTo.trim() + " 00:00:00";
+			LdateTo = LocalDateTime.parse(dateTo, formatter);
 		}
 		
-		datOd = datOd.trim() + " 00:00:00";
-		datDo = datDo.trim() + " 00:00:00";
-		 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		if(datOd != null && !datOd.isEmpty()) {
-			for (Manifestation m : searchedManifestations) {
-				
+		//ako datum je prazan string, prosledi se null
+		//ako je mesto prazan string, to je svakako true jer contains radi za prazan string
+		//isto i za naziv
+		for (Manifestation m : manifestations.values()) {
+			if(correspondsSearch(m, name.toLowerCase(), LdateFrom, LdateTo, place.toLowerCase(), priceFrom, priceTo)) {
+				searchedManifestations.add(m);
 			}
 		}
+		return searchedManifestations;		
+
+	}
+	
+	private boolean correspondsSearch(Manifestation m,String name,  LocalDateTime dateFrom, LocalDateTime dateTo, String place, int priceFrom, int priceTo) {
+		boolean bname = m.getName().toLowerCase().contains(name); //true
+		//svaki string sadrzi prazan string
+		boolean bplace = m.getLocation().getCity().toLowerCase().contains(place);
+		boolean bdateFrom = dateFrom == null ? true : m.getDate().isAfter(dateFrom);
+		boolean bdateTo = dateTo == null ? true : m.getDate().isBefore(dateTo);
+		boolean bpriceFrom = priceFrom == 0 ? true : (m.getTicketPrice() >= priceFrom);
+		boolean bpriceTo = priceTo == 0 ? true : (m.getTicketPrice() <= priceTo);
+		return bname && bplace && bdateFrom && bdateTo && bpriceFrom && bpriceTo;
 	}
 	
 	private void loadManifestations() {

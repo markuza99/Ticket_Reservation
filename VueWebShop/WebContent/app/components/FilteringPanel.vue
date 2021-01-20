@@ -27,7 +27,7 @@
 				</li>
 				
 				<li>
-					<button type="button" class="btn btn-primary">Filtriraj</button>
+					<button type="button" class="btn btn-primary" v-on:click="sendToManifestation">Filtriraj</button>
 				</li>
 				
 				
@@ -41,6 +41,11 @@ module.exports = {
 	data() {
 		return {
 			manifestation_type: ["TIP MANIFESTACIJE","SVE","THEATER"]
+		}
+	},
+	methods: {
+		sendToManifestation : function() {
+			this.$root.$emit('messageFromFilteringToManifestations','Hello Manifestations from filtering');
 		}
 	}
  }

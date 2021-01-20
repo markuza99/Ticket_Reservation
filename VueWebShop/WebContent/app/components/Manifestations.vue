@@ -32,8 +32,8 @@
 </template>
 
 <script>
-var x = require("./SearchPanel.vue");
-var y = require("./FilteringPanel.vue");
+//var x = require("./SearchPanel.vue");
+//var y = require("./FilteringPanel.vue");
 module.exports = {
 	data() {
 		return {
@@ -93,6 +93,16 @@ module.exports = {
 		}
 	},
 	mounted() {
+		//pretplata na metode
+		// search panel prosledjuje manifestacije u Manifestations
+		this.$root.$on('searched-manifestations',(manifestations) => {
+			console.log("pretplata na search panel");
+			this.manifestations = manifestations;
+			console.log(this.manifestations);
+		});
+		this.$root.$on('messageFromFilteringToManifestations',(message) =>{
+			console.log(message);
+		});
 		axios
 			.get("rest/manifestationservice/getall")
 			.then(response => {
