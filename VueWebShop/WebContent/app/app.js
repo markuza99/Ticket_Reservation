@@ -6,6 +6,7 @@ const Footer = httpVueLoader("./app/components/Footer.vue");
 const filteringPanel = httpVueLoader("./app/components/FilteringPanel.vue");
 const searchPanel = httpVueLoader("./app/components/SearchPanel.vue");
 
+
 const router = new VueRouter({
     mode: 'hash',
     routes: [

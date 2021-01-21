@@ -1,9 +1,9 @@
 <template>
-	<div class="container">
+	<div class="container" v-if="displayManifestations">
 
 		<div id="manifestations" class="row" data-masonry='{"percentPosition": true }'>
 			<div class="col-lg-4 col-md-4 col-sm-6" v-for="m in manifestations" :key="m.id">
-					<div class="manifestation">
+					<div class="manifestation" v-bind:id="m.id" v-on:click="goToManifestation(m.id, m)">
 						<div class="image-holder">
 							<img class="fit-img" v-bind:src="'images/' + m.image">
 						</div>
@@ -32,12 +32,11 @@
 </template>
 
 <script>
-//var x = require("./SearchPanel.vue");
-//var y = require("./FilteringPanel.vue");
 module.exports = {
 	data() {
 		return {
-			manifestations: []
+			manifestations: [],
+			displayManifestations : true
 		}
 	},
 	methods: {
@@ -46,7 +45,6 @@ module.exports = {
 			switch(manifestation.date.month) {
 				
 				case "JANUARY":
-					console.log("tu");
 					manifestation.formattedMonth = "januar";
 					break;
 				case "FEBRUARY":
@@ -86,10 +84,16 @@ module.exports = {
 					console.log("nista");
 			}
 		},
-		updateManifestations: function(updatedManifestations) {
-			console.log(this.manifestations);
-			this.manifestations = updatedManifestations;
-			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
+		// updateManifestations: function(updatedManifestations) {
+		// 	console.log(this.manifestations);
+		// 	this.manifestations = updatedManifestations;
+		// 	this.manifestations.forEach(manifestation => this.makeDate(manifestation));
+		// }
+		goToManifestation(id, manifestation) {
+			
+			console.log(manifestation);
+			this.displayManifestations = false;
+			this.$root.$emit('display-manifestation', manifestation);
 		}
 	},
 	mounted() {
@@ -141,7 +145,7 @@ module.exports = {
     transition:all .4s linear;
 }
 
-.image-holder:hover img {
+.manifestation .image-holder:hover img {
 	-ms-transform:scale(1.2);
 	-webkit-transform:scale(1.2);
 	transform:scale(1.2);
@@ -168,20 +172,20 @@ module.exports = {
 }
 
 @media screen and (max-width: 1200px) {
-  .image-holder {
+  .manifestation .image-holder {
 	min-height: 10em;
 	max-height: 10em;
   }
 }
 
 @media screen and (min-width: 1200px) {
-	.image-holder {
+	.manifestation .image-holder {
 		height: 15em;
 	}
 }
 
 @media screen and (max-width: 575px) {
-	.image-holder {
+	.manifestation .image-holder {
 		min-height: 30em;
 	    max-height: 30em;
 	}

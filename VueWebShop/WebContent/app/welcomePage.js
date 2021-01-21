@@ -1,5 +1,5 @@
 const manifestations = httpVueLoader("./app/components/Manifestations.vue");
-
+const manifestationPage = httpVueLoader("./app/components/Manifestation.vue");
 
 Vue.component("welcome-page", {
 	data: function() {
@@ -10,7 +10,7 @@ Vue.component("welcome-page", {
 	template: `
 	    <div>
 		    <manifestations></manifestations>
-
+			<manifestationPage></manifestationPage>
 		</div>
 	`,
 	methods: {
@@ -18,5 +18,6 @@ Vue.component("welcome-page", {
 	},
 	components: {
 		"manifestations" : manifestations,
+		"manifestationPage" : manifestationPage
 	}
 });

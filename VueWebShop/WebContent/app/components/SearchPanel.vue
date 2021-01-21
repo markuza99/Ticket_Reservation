@@ -59,7 +59,7 @@ module.exports = {
 				$('.nav').addClass("error");
 				return;
 			}
-						
+			
 			axios
 			.get("rest/manifestationservice/search", {
 				params: {
