@@ -20,10 +20,10 @@
 			</li>
 			
 			<li class="nav-item">
-				<input v-model="priceFrom" class="form-control" type="text" placeholder="Cena od" id="cenaOdMan"/>
+				<input v-model="priceFrom" class="form-control" type="number" placeholder="Cena od" id="cenaOdMan"/>
 			</li>
 			<li class="nav-item">
-				<input v-model="priceTo" class="form-control" type="text" placeholder="Cena do" id="cenaDoMan"/>
+				<input v-model="priceTo" class="form-control" type="number" pattern="[1-9][0-9]*" placeholder="Cena do" id="cenaDoMan"/>
 			</li>
 			<li>
 				<input v-model="place" class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
@@ -41,10 +41,7 @@
 </template>
 
 <script>
-var x = require("./SearchPanel.vue");
-var y = require("./FilteringPanel.vue");
 module.exports = {
-	props: ['manifestations'],
 	data() {
 		return {	
 			name: "",
@@ -52,19 +49,17 @@ module.exports = {
 			dateTo:"",
 			place:"",
 			priceFrom:"",
-			priceTo:""		
+			priceTo:""
 		}
 	},
 	methods: {
-	//za front provera:
-	//za datum:
-	//da li je start before end 
-	// za cenu:
-	//da li je vrednost negativna,
-	// da li je max veci od nula
-	//da li je broj
 	
 		search: function() {
+			if(!(validatePrice(this.priceFrom, this.priceTo) && validateDateRange(this.dateFrom, this.dateTo))) {
+				$('.nav').addClass("error");
+				return;
+			}
+						
 			axios
 			.get("rest/manifestationservice/search", {
 				params: {
@@ -77,6 +72,7 @@ module.exports = {
 				}
 			})
 			.then(response => {
+				$('.nav').removeClass("error");
 				this.$root.$emit('searched-manifestations',response.data);			
 			});
 
@@ -86,15 +82,19 @@ module.exports = {
 </script>
 <style scoped>
 
+
+.error {
+    outline: none !important;
+    border:1px solid red;
+    box-shadow: 0 0 10px #f40b0b;
+}
+
 .search-panel {
 	background-color: #007bff;
 	padding: 0px;
 	margin:0;
-	/* height: 20px; */
-	/* font-size: 0; */
 	text-align: center;
 	padding-bottom: 20px;
-	/* margin-top:19px; */
 }
 
 .navbar-nav.navbar-center {
@@ -104,7 +104,6 @@ module.exports = {
 	right: 0;
 }
 
-
 .search-panel li input {
 	background-color: #fff;
 	border-radius: 0;
@@ -112,10 +111,6 @@ module.exports = {
 	height:calc(2.5em + .75rem + 2px);
 	padding:.375rem .75rem;
 	box-shadow: 0px 0px 8px #474747;
-}
-
-.search-panel li {
-	/* padding: 10px 0 10px 0; */
 }
 
 .search-panel li input:focus {
@@ -144,12 +139,16 @@ module.exports = {
 	color:rgb(0, 123, 255);
 	transition:color .15s ease-in-out, background-color .15s ease-in-out;
 }
+
 .search-panel i {
 	border:none;
 }
 
 .search-panel .navbar .navbar-toggler{
 	background-color: #ffffff;
+	
 }
+
+
 
 </style>

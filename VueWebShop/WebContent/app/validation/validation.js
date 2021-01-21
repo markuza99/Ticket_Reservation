@@ -1,3 +1,23 @@
+const validatePrice = (...prices) => {
+	let validation = true;
+	prices.forEach(elem => {
+		if(elem == "") return;
+		if ((isNaN(elem) || elem > 100000 || elem < 0)) {
+		
+			validation = false;
+		}
+	});
+	return validation;
+}
+
+const validateDateRange = (from, to) => {
+	let fromDate = Date.parse(from);
+	let toDate = Date.parse(to);
+	if(toDate < fromDate)
+		return false;
+	return true;
+}
+
 const isEmpty = (elem) => {
     return (elem == null || elem == undefined || elem =="") 
 }
