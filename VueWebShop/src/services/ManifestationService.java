@@ -1,12 +1,22 @@
 package services;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -36,9 +46,12 @@ public class ManifestationService {
 	}
 	
 	@GET
-	@Path("/getcontextpath")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getContextPath() {
-		return ctx.getRealPath("");
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Manifestation> getSearchManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo) throws ParseException {
+		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+		
+		return manifestationDao.search(name, dateFrom, dateTo, place, priceFrom, priceTo);
+
 	}
 }

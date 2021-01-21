@@ -1,12 +1,5 @@
 <template>
 	<div class="search-panel">
-		
-		<!-- <li></li>
-		<li></li>
-		<li><input type="date"/></li>
-		<li><input type="date"/></li>
-		<li><input type="text" value="od"></li>
-		<li></li> -->
 	
 		<nav class="navbar navbar-expand-lg navbar-light bg-primary">
 		
@@ -17,23 +10,26 @@
 		<div class="collapse navbar-collapse search-navbar" id="navbarSupportedContent">
 			<ul class="nav navbar-nav navbar-center mr-auto">
 			<li class="nav-item">
-				<input type="text" class="form-control" placeholder="Naziv manifestacije...">
+				<input v-model="name" type="text" class="form-control" placeholder="Naziv manifestacije..." id="nazivMan"/>
 			</li>
 			<li class="nav-item">
-				<input class="form-control" type="date"/>
+				<input v-model="dateFrom" class="form-control" type="date" id="datumOdMan"/>
 			</li>
 			<li class="nav-item">
-				<input class="form-control" type="date"/>
+				<input v-model="dateTo" class="form-control" type="date" id="datumDoMan"/>
 			</li>
 			
 			<li class="nav-item">
-				<input class="form-control" type="text" placeholder="Cena"/>
+				<input v-model="priceFrom" class="form-control" type="number" placeholder="Cena od" id="cenaOdMan"/>
+			</li>
+			<li class="nav-item">
+				<input v-model="priceTo" class="form-control" type="number" pattern="[1-9][0-9]*" placeholder="Cena do" id="cenaDoMan"/>
 			</li>
 			<li>
-				<input class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search">
+				<input v-model="place" class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
 			</li>
 			<li>
-				<button class="my-2 my-sm-0 search-button" type="submit"><i class="fa fa-search"></i></button>
+				<button class="my-2 my-sm-0 search-button" type="submit" v-on:click="search"><i class="fa fa-search"></i></button>
 			</li>
 			</ul>
 			
@@ -44,17 +40,61 @@
 	</div>
 </template>
 
+<script>
+module.exports = {
+	data() {
+		return {	
+			name: "",
+			dateFrom:"",
+			dateTo:"",
+			place:"",
+			priceFrom:"",
+			priceTo:""
+		}
+	},
+	methods: {
+	
+		search: function() {
+			if(!(validatePrice(this.priceFrom, this.priceTo) && validateDateRange(this.dateFrom, this.dateTo))) {
+				$('.nav').addClass("error");
+				return;
+			}
+						
+			axios
+			.get("rest/manifestationservice/search", {
+				params: {
+					"name" : this.name,
+					"dateFrom":this.dateFrom,
+					"dateTo":this.dateTo,
+					"place":this.place,
+					"priceFrom":this.priceFrom,
+					"priceTo":this.priceTo
+				}
+			})
+			.then(response => {
+				$('.nav').removeClass("error");
+				this.$root.$emit('searched-manifestations',response.data);			
+			});
+
+		}
+	}
+}
+</script>
 <style scoped>
+
+
+.error {
+    outline: none !important;
+    border:1px solid red;
+    box-shadow: 0 0 10px #f40b0b;
+}
 
 .search-panel {
 	background-color: #007bff;
 	padding: 0px;
 	margin:0;
-	/* height: 20px; */
-	/* font-size: 0; */
 	text-align: center;
 	padding-bottom: 20px;
-	/* margin-top:19px; */
 }
 
 .navbar-nav.navbar-center {
@@ -64,7 +104,6 @@
 	right: 0;
 }
 
-
 .search-panel li input {
 	background-color: #fff;
 	border-radius: 0;
@@ -72,10 +111,6 @@
 	height:calc(2.5em + .75rem + 2px);
 	padding:.375rem .75rem;
 	box-shadow: 0px 0px 8px #474747;
-}
-
-.search-panel li {
-	/* padding: 10px 0 10px 0; */
 }
 
 .search-panel li input:focus {
@@ -104,12 +139,16 @@
 	color:rgb(0, 123, 255);
 	transition:color .15s ease-in-out, background-color .15s ease-in-out;
 }
+
 .search-panel i {
 	border:none;
 }
 
 .search-panel .navbar .navbar-toggler{
 	background-color: #ffffff;
+	
 }
+
+
 
 </style>
