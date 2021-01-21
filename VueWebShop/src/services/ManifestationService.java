@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -48,10 +49,18 @@ public class ManifestationService {
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getSearchManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo) throws ParseException {
+	public List<Manifestation> getSearchManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("selected") String selected, @QueryParam("izborTipa") String izborTipa) throws ParseException {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		
-		return manifestationDao.search(name, dateFrom, dateTo, place, priceFrom, priceTo);
+		return manifestationDao.search(name, dateFrom, dateTo, place, priceFrom, priceTo, selected, izborTipa);
+	}
+	
+	@GET
+	@Path("/searchSort")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Manifestation> getSearchSortManifestations(@QueryParam("sortByArg") String sortByArg) throws ParseException {
+		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+		return manifestationDao.sorting(sortByArg);
 
 	}
 }

@@ -11,13 +11,16 @@
 					</option>
 					</select>
 
-					<select class="pl-3 pr-3 pt-2 pb-2 mr-3">
-					<option>
-						Najskorije
-					</option>
-					<option>
-						Najkasnije
-					</option>
+					<select class="pl-3 pr-3 pt-2 pb-2 mr-3" v-model="selected">
+						<option>Default</option>
+						<option>Sortiraj po nazivu manifestacije rastuce</option>
+						<option>Sortiraj po nazivu manifestacije opadajuce</option>
+						<option>Sortiraj po datumu manifestacije rastuce</option>
+						<option>Sortiraj po datumu manifestacije opadajuce</option>
+						<option>Sortiraj po ceni manifestacije rastuce</option>
+						<option>Sortiraj po ceni manifestacije opadajuce</option>
+						<option>Sortiraj po lokaciji manifestacije rastuce</option>
+						<option>Sortiraj po lokaciji manifestacije opadajuce</option>
 					</select>
 
 					<span class="mr-1">Nerasprodato: </span>
@@ -40,12 +43,13 @@
 module.exports = {
 	data() {
 		return {
-			manifestation_type: ["TIP MANIFESTACIJE","SVE","THEATER"]
+			manifestation_type: ["TIP MANIFESTACIJE","SVE","THEATER"],
+			selected: ""
 		}
 	},
 	methods: {
 		sendToManifestation : function() {
-			this.$root.$emit('messageFromFilteringToManifestations','Hello Manifestations from filtering');
+			this.$root.$emit('messageFromFilteringToManifestations', this.selected );
 		}
 	}
  }

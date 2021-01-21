@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class ManifestationDAO {
 		return sortedManifestations;
 	}
 	
-	public List<Manifestation> search(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo) {
+	public List<Manifestation> search(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo, String selected, String izborTipa) {
 		List<Manifestation> searchedManifestations = new ArrayList<Manifestation>();
 		name = name.trim();
 		place = place.trim();
@@ -76,23 +77,110 @@ public class ManifestationDAO {
 		//ako je mesto prazan string, to je svakako true jer contains radi za prazan string
 		//isto i za naziv
 		for (Manifestation m : manifestations.values()) {
-			if(correspondsSearch(m, name.toLowerCase(), LdateFrom, LdateTo, place.toLowerCase(), priceFrom, priceTo)) {
+			if(correspondsSearch(m, name.toLowerCase(), LdateFrom, LdateTo, place.toLowerCase(), priceFrom, priceTo, izborTipa)) {
 				searchedManifestations.add(m);
 			}
+		}
+		
+		if(selected.equals("Sortiraj po ceni manifestacije rastuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o1.getTicketPrice() - o2.getTicketPrice();
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po ceni manifestacije opadajuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO sAuto-generated mssethod stub
+					return o2.getTicketPrice() - o1.getTicketPrice();
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po nazivu manifestacije rastuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po nazivu manifestacije opadajuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o2.getName().compareTo(o1.getName());
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po lokaciji manifestacije rastuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o1.getLocation().getCity().compareTo(o2.getLocation().getCity());
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po lokaciji manifestacije opadajuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o2.getLocation().getCity().compareTo(o1.getLocation().getCity());
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po datumu manifestacije rastuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o1.getDate().compareTo(o2.getDate());
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po datumu manifestacije opadajuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o2.getDate().compareTo(o1.getDate());
+				}
+			});
 		}
 		return searchedManifestations;		
 
 	}
 	
-	private boolean correspondsSearch(Manifestation m,String name,  LocalDateTime dateFrom, LocalDateTime dateTo, String place, int priceFrom, int priceTo) {
+	private boolean correspondsSearch(Manifestation m,String name,  LocalDateTime dateFrom, LocalDateTime dateTo, String place, int priceFrom, int priceTo, String type) {
 		boolean bname = m.getName().toLowerCase().contains(name); //true
 		//svaki string sadrzi prazan string
+		boolean btip;
+		if(type.equals("CONCERT") || type.equals("FESTIVAL") || type.equals("THEATER")) {
+			btip = m.getType().equals(ManifestationType.valueOf(type));
+		} else {
+			btip = true;
+		}
 		boolean bplace = m.getLocation().getCity().toLowerCase().contains(place);
 		boolean bdateFrom = dateFrom == null ? true : m.getDate().isAfter(dateFrom);
 		boolean bdateTo = dateTo == null ? true : m.getDate().isBefore(dateTo);
 		boolean bpriceFrom = priceFrom == 0 ? true : (m.getTicketPrice() >= priceFrom);
 		boolean bpriceTo = priceTo == 0 ? true : (m.getTicketPrice() <= priceTo);
-		return bname && bplace && bdateFrom && bdateTo && bpriceFrom && bpriceTo;
+		return bname && btip && bplace && bdateFrom && bdateTo && bpriceFrom && bpriceTo;
 	}
 	
 	private void loadManifestations() {
@@ -172,5 +260,91 @@ public class ManifestationDAO {
 			}
 		}
 		return null;
+	}
+
+	public List<Manifestation> sorting(String selected) {
+		// TODO Auto-generated method stub
+		List<Manifestation> searchedManifestations = (List<Manifestation>) manifestations.values();
+		if(selected.equals("Sortiraj po ceni manifestacije rastuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o1.getTicketPrice() - o2.getTicketPrice();
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po ceni manifestacije opadajuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO sAuto-generated method stub
+					return o2.getTicketPrice() - o1.getTicketPrice();
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po nazivu manifestacije rastuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o1.getName().compareTo(o2.getName());
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po nazivu manifestacije opadajuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o2.getName().compareTo(o1.getName());
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po lokaciji manifestacije rastuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o1.getLocation().getCity().compareTo(o2.getLocation().getCity());
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po lokaciji manifestacije opadajuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o2.getLocation().getCity().compareTo(o1.getLocation().getCity());
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po datumu manifestacije rastuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o1.getDate().compareTo(o2.getDate());
+				}
+			});
+		}
+		else if(selected.equals("Sortiraj po datumu manifestacije opadajuce")) {
+			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
+
+				@Override
+				public int compare(Manifestation o1, Manifestation o2) {
+					// TODO Auto-generated method stub
+					return o2.getDate().compareTo(o1.getDate());
+				}
+			});
+		}
+		return searchedManifestations;
 	}
 }

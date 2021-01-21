@@ -98,10 +98,21 @@ module.exports = {
 		this.$root.$on('searched-manifestations',(manifestations) => {
 			console.log("pretplata na search panel");
 			this.manifestations = manifestations;
+			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 			console.log(this.manifestations);
 		});
 		this.$root.$on('messageFromFilteringToManifestations',(message) =>{
-			console.log(message);
+			axios
+			.get("rest/manifestationservice/searchSort", {
+				params: {
+					"sortByArg" : message
+				}
+			})
+			.then(response => {
+				$('.nav').removeClass("error");
+				this.manifestations = response.data;
+				this.manifestations.forEach(manifestation => this.makeDate(manifestation));			
+			});
 		});
 		axios
 			.get("rest/manifestationservice/getall")
