@@ -25,18 +25,33 @@
 			<li class="nav-item">
 				<input v-model="priceTo" class="form-control" type="number" pattern="[1-9][0-9]*" placeholder="Cena do" id="cenaDoMan"/>
 			</li>
-			<li>
+			<li class="nav-item">
 				<input v-model="place" class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
 			</li>
-			<li>
+			
+			<li class = "nav-item">
 				<button class="my-2 my-sm-0 search-button" type="submit" v-on:click="search"><i class="fa fa-search"></i></button>
 			</li>
 			</ul>
+				
 			
-				
-				
 		</div>
+		
 		</nav>
+		
+		<div>
+				<select name="order" id="order" v-model="selected">
+					<option>Default</option>
+					<option>Sortiraj po nazivu manifestacije rastuce</option>
+					<option>Sortiraj po nazivu manifestacije opadajuce</option>
+					<option>Sortiraj po datumu manifestacije rastuce</option>
+					<option>Sortiraj po datumu manifestacije opadajuce</option>
+					<option>Sortiraj po ceni manifestacije rastuce</option>
+					<option>Sortiraj po ceni manifestacije opadajuce</option>
+					<option>Sortiraj po lokaciji manifestacije rastuce</option>
+					<option>Sortiraj po lokaciji manifestacije opadajuce</option>
+				</select>
+		</div>
 	</div>
 </template>
 
@@ -49,7 +64,9 @@ module.exports = {
 			dateTo:"",
 			place:"",
 			priceFrom:"",
-			priceTo:""
+			priceTo:"",
+			selected: "",
+			izborTipa: ""
 		}
 	},
 	methods: {
@@ -68,12 +85,15 @@ module.exports = {
 					"dateTo":this.dateTo,
 					"place":this.place,
 					"priceFrom":this.priceFrom,
-					"priceTo":this.priceTo
+					"priceTo":this.priceTo,
+					"selected":this.selected,
+					// "izborTipa":this.izborTipa
 				}
 			})
 			.then(response => {
 				$('.nav').removeClass("error");
-				this.$root.$emit('searched-manifestations',response.data);			
+				this.$root.$emit('searched-manifestations',response.data);
+				this.$root.$emit('from-search-to-filter', response.data,this.name,this.dateFrom,this.dateTo,this.place,this.priceFrom,this.priceTo,this.selected);			
 			});
 
 		}

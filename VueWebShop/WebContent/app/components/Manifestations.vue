@@ -32,8 +32,7 @@
 </template>
 
 <script>
-//var x = require("./SearchPanel.vue");
-//var y = require("./FilteringPanel.vue");
+
 module.exports = {
 	data() {
 		return {
@@ -56,53 +55,49 @@ module.exports = {
 					manifestation.formattedMonth = "mart";
 					break;
 				case "APRIL":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "april";
 					break;
 				case "MAY":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "maj";
 					break;
 				case "JUNE":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "jun";
 					break;
 				case "JULY":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "jul";
 					break;
 				case "AUGUST":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "avgust";
 					break;
 				case "SEPTEMBER":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "septembar";
 					break;
 				case "OCTOBER":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "oktobar";
 					break;
 				case "NOVEMBER":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "novembar";
 					break;
 				case "DECEMBER":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "decembar";
 					break;
 				default:
 					console.log("nista");
 			}
-		},
-		updateManifestations: function(updatedManifestations) {
-			console.log(this.manifestations);
-			this.manifestations = updatedManifestations;
-			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 		}
 	},
 	mounted() {
 		//pretplata na metode
 		// search panel prosledjuje manifestacije u Manifestations
 		this.$root.$on('searched-manifestations',(manifestations) => {
-			console.log("pretplata na search panel");
 			this.manifestations = manifestations;
-			console.log(this.manifestations);
+			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 		});
-		this.$root.$on('messageFromFilteringToManifestations',(message) =>{
-			console.log(message);
+		this.$root.$on('filtered-manifestations',(manifestations) => {
+			this.manifestations = manifestations;
+			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 		});
+		
 		axios
 			.get("rest/manifestationservice/getall")
 			.then(response => {
