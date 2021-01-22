@@ -5,32 +5,19 @@
 	<ul class="filtering-panel d-flex justify-content-between">
 				<li>
 					
-					<select class="form-select pl-3 pr-3 pt-2 pb-2 mr-3">
-					<option v-bind:key="v.id" v-for="v in manifestation_type">
-						{{v}}
-					</option>
+					<select class="form-select pl-3 pr-3 pt-2 pb-2 mr-3" v-model="izborTipa">
+							<option>SVE</option>
+							<option>CONCERT</option>
+							<option>THEATER</option>
+							<option>FESTIVAL</option>
 					</select>
-
-					<select class="pl-3 pr-3 pt-2 pb-2 mr-3" v-model="selected">
-						<option>Default</option>
-						<option>Sortiraj po nazivu manifestacije rastuce</option>
-						<option>Sortiraj po nazivu manifestacije opadajuce</option>
-						<option>Sortiraj po datumu manifestacije rastuce</option>
-						<option>Sortiraj po datumu manifestacije opadajuce</option>
-						<option>Sortiraj po ceni manifestacije rastuce</option>
-						<option>Sortiraj po ceni manifestacije opadajuce</option>
-						<option>Sortiraj po lokaciji manifestacije rastuce</option>
-						<option>Sortiraj po lokaciji manifestacije opadajuce</option>
-					</select>
-
 					<span class="mr-1">Nerasprodato: </span>
-					<input type="checkbox" id="" name="" value="Boat">
-
+					<input type="checkbox" id="" name="" value="Boat" v-model="nijeRasprodato">
 					
 				</li>
 				
 				<li>
-					<button type="button" class="btn btn-primary" v-on:click="sendToManifestation">Filtriraj</button>
+					<button type="button" class="btn btn-primary" v-on:click="filtriraj">Filtriraj</button>
 				</li>
 				
 				
@@ -43,16 +30,58 @@
 module.exports = {
 	data() {
 		return {
-			manifestation_type: ["TIP MANIFESTACIJE","SVE","THEATER"],
-			selected: ""
+			manifestations: [],
+			name: "",
+			dateFrom:"",
+			dateTo:"",
+			place:"",
+			priceFrom:"",
+			priceTo:"",
+			selected: "",
+			izborTipa: "",
+			nijeRasprodato: true
 		}
 	},
 	methods: {
-		sendToManifestation : function() {
-			this.$root.$emit('messageFromFilteringToManifestations', this.selected );
+		filtriraj : function() {
+			axios
+			.get("rest/manifestationservice/filter", {
+				params: {
+					"name" : this.name,
+					"dateFrom":this.dateFrom,
+					"dateTo":this.dateTo,
+					"place":this.place,
+					"priceFrom":this.priceFrom,
+					"priceTo":this.priceTo,
+					"selected":this.selected,
+					"izborTipa": this.izborTipa,
+					"nijeRasprodato": this.nijeRasprodato
+				}
+			})
+			.then(response => {
+				$('.nav').removeClass("error");
+				this.$root.$emit('filtered-manifestations',response.data);
+				// this.$root.$emit('from-search-to-filter', response.data);			
+			});
 		}
+	},
+	mounted() {
+		//pretplata na metode
+		// search panel prosledjuje manifestacije u Manifestations
+		this.$root.$on('from-search-to-filter',(manifestations,name,dateFrom,dateTo,place,priceFrom,priceTo,selected) => {
+			// console.log("pretplata na search panel");
+			this.manifestations = manifestations;
+			this.name = name;
+			this.dateFrom = dateFrom;
+			this.dateTo = dateTo;
+			this.place = place;
+			this.PriceFrom = priceFrom;
+			this.priceTo = priceTo;
+			this.selected = selected;
+			// this.manifestations.forEach(manifestation => this.makeDate(manifestation));
+		});
 	}
- }
+}
  </script>
 
  <style>

@@ -56,31 +56,31 @@ module.exports = {
 					manifestation.formattedMonth = "mart";
 					break;
 				case "APRIL":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "april";
 					break;
 				case "MAY":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "maj";
 					break;
 				case "JUNE":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "jun";
 					break;
 				case "JULY":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "jul";
 					break;
 				case "AUGUST":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "avgust";
 					break;
 				case "SEPTEMBER":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "septembar";
 					break;
 				case "OCTOBER":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "oktobar";
 					break;
 				case "NOVEMBER":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "novembar";
 					break;
 				case "DECEMBER":
-					manifestation.formattedMonth = "mart";
+					manifestation.formattedMonth = "decembar";
 					break;
 				default:
 					console.log("nista");
@@ -101,19 +101,25 @@ module.exports = {
 			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 			console.log(this.manifestations);
 		});
-		this.$root.$on('messageFromFilteringToManifestations',(message) =>{
-			axios
-			.get("rest/manifestationservice/searchSort", {
-				params: {
-					"sortByArg" : message
-				}
-			})
-			.then(response => {
-				$('.nav').removeClass("error");
-				this.manifestations = response.data;
-				this.manifestations.forEach(manifestation => this.makeDate(manifestation));			
-			});
+		this.$root.$on('filtered-manifestations',(manifestations) => {
+			console.log("pretplata na filter panel");
+			this.manifestations = manifestations;
+			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
+			console.log(this.manifestations);
 		});
+		// this.$root.$on('messageFromFilteringToManifestations',(message) =>{
+		// 	axios
+		// 	.get("rest/manifestationservice/searchSort", {
+		// 		params: {
+		// 			"sortByArg" : message
+		// 		}
+		// 	})
+		// 	.then(response => {
+		// 		$('.nav').removeClass("error");
+		// 		this.manifestations = response.data;
+		// 		this.manifestations.forEach(manifestation => this.makeDate(manifestation));			
+		// 	});
+		// });
 		axios
 			.get("rest/manifestationservice/getall")
 			.then(response => {

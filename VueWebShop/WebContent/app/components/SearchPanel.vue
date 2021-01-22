@@ -40,19 +40,11 @@
 					<option>Sortiraj po lokaciji manifestacije rastuce</option>
 					<option>Sortiraj po lokaciji manifestacije opadajuce</option>
 				</select>
-			<li class="nav-item">
-				<select class="form-control" v-model="izborTipa">
-						<option>SVE</option>
-						<option>CONCERT</option>
-						<option>THEATER</option>
-						<option>FESTIVAL</option>
-				</select>
 			</li>
 			<li class = "nav-item">
 				<button class="my-2 my-sm-0 search-button" type="submit" v-on:click="search"><i class="fa fa-search"></i></button>
 			</li>
 			</ul>
-			
 				
 				
 		</div>
@@ -92,13 +84,13 @@ module.exports = {
 					"priceFrom":this.priceFrom,
 					"priceTo":this.priceTo,
 					"selected":this.selected,
-					"izborTipa":this.izborTipa
+					// "izborTipa":this.izborTipa
 				}
 			})
 			.then(response => {
 				$('.nav').removeClass("error");
-				alert(this.selected);
-				this.$root.$emit('searched-manifestations',response.data);			
+				this.$root.$emit('searched-manifestations',response.data);
+				this.$root.$emit('from-search-to-filter', response.data,this.name,this.dateFrom,this.dateTo,this.place,this.priceFrom,this.priceTo,this.selected);			
 			});
 
 		}

@@ -56,7 +56,7 @@ public class ManifestationDAO {
 		return sortedManifestations;
 	}
 	
-	public List<Manifestation> search(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo, String selected, String izborTipa) {
+	public List<Manifestation> search(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo, String selected) {
 		List<Manifestation> searchedManifestations = new ArrayList<Manifestation>();
 		name = name.trim();
 		place = place.trim();
@@ -77,7 +77,7 @@ public class ManifestationDAO {
 		//ako je mesto prazan string, to je svakako true jer contains radi za prazan string
 		//isto i za naziv
 		for (Manifestation m : manifestations.values()) {
-			if(correspondsSearch(m, name.toLowerCase(), LdateFrom, LdateTo, place.toLowerCase(), priceFrom, priceTo, izborTipa)) {
+			if(correspondsSearch(m, name.toLowerCase(), LdateFrom, LdateTo, place.toLowerCase(), priceFrom, priceTo)) {
 				searchedManifestations.add(m);
 			}
 		}
@@ -166,8 +166,24 @@ public class ManifestationDAO {
 
 	}
 	
-	private boolean correspondsSearch(Manifestation m,String name,  LocalDateTime dateFrom, LocalDateTime dateTo, String place, int priceFrom, int priceTo, String type) {
+	private boolean correspondsSearch(Manifestation m,String name,  LocalDateTime dateFrom, LocalDateTime dateTo, String place, int priceFrom, int priceTo) {
 		boolean bname = m.getName().toLowerCase().contains(name); //true
+		//svaki string sadrzi prazan string
+//		boolean btip;
+//		if(type.equals("CONCERT") || type.equals("FESTIVAL") || type.equals("THEATER")) {
+//			btip = m.getType().equals(ManifestationType.valueOf(type));
+//		} else {
+//			btip = true;
+//		}
+		boolean bplace = m.getLocation().getCity().toLowerCase().contains(place);
+		boolean bdateFrom = dateFrom == null ? true : m.getDate().isAfter(dateFrom);
+		boolean bdateTo = dateTo == null ? true : m.getDate().isBefore(dateTo);
+		boolean bpriceFrom = priceFrom == 0 ? true : (m.getTicketPrice() >= priceFrom);
+		boolean bpriceTo = priceTo == 0 ? true : (m.getTicketPrice() <= priceTo);
+		return bname && bplace && bdateFrom && bdateTo && bpriceFrom && bpriceTo;
+	}
+	
+	private boolean correspondsFilter(Manifestation m, String type, boolean nijeRasprodato) {
 		//svaki string sadrzi prazan string
 		boolean btip;
 		if(type.equals("CONCERT") || type.equals("FESTIVAL") || type.equals("THEATER")) {
@@ -175,12 +191,21 @@ public class ManifestationDAO {
 		} else {
 			btip = true;
 		}
-		boolean bplace = m.getLocation().getCity().toLowerCase().contains(place);
-		boolean bdateFrom = dateFrom == null ? true : m.getDate().isAfter(dateFrom);
-		boolean bdateTo = dateTo == null ? true : m.getDate().isBefore(dateTo);
-		boolean bpriceFrom = priceFrom == 0 ? true : (m.getTicketPrice() >= priceFrom);
-		boolean bpriceTo = priceTo == 0 ? true : (m.getTicketPrice() <= priceTo);
-		return bname && btip && bplace && bdateFrom && bdateTo && bpriceFrom && bpriceTo;
+		boolean bnotrasp;
+		if(nijeRasprodato) {
+			if(m.getNumberOfSeats() > 0) {
+				bnotrasp = true;
+			} else {
+				bnotrasp = false;
+			}
+		} else {
+			if(m.getNumberOfSeats() > 0) {
+				bnotrasp = false;
+			} else {
+				bnotrasp = true;
+			}
+		}
+		return btip && bnotrasp;
 	}
 	
 	private void loadManifestations() {
@@ -346,5 +371,17 @@ public class ManifestationDAO {
 			});
 		}
 		return searchedManifestations;
+	}
+	//OOOOOOOOO
+	public List<Manifestation> filter(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo, String selected,String izborTipa, boolean nijeRasprodato) {
+		// TODO Auto-generated method stub
+		List<Manifestation> searchedManifestations = search(name, dateFrom, dateTo, place, priceFrom, priceTo, selected);
+		List<Manifestation> filteredMan = new ArrayList<Manifestation>();
+		for (Manifestation m : searchedManifestations) {
+			if(correspondsFilter(m, izborTipa, nijeRasprodato)) {
+				filteredMan.add(m);
+			}
+		}
+		return filteredMan;
 	}
 }

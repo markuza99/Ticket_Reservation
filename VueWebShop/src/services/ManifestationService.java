@@ -45,22 +45,22 @@ public class ManifestationService {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		return  manifestationDao.getFirstNManifestations(10);
 	}
-	
+	//fdsfds
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getSearchManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("selected") String selected, @QueryParam("izborTipa") String izborTipa) throws ParseException {
+	public List<Manifestation> getSearchManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("selected") String selected) throws ParseException {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		
-		return manifestationDao.search(name, dateFrom, dateTo, place, priceFrom, priceTo, selected, izborTipa);
+		return manifestationDao.search(name, dateFrom, dateTo, place, priceFrom, priceTo, selected);
 	}
 	
 	@GET
-	@Path("/searchSort")
+	@Path("/filter")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getSearchSortManifestations(@QueryParam("sortByArg") String sortByArg) throws ParseException {
+	public List<Manifestation> getFilterManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("selected") String selected, @QueryParam("izborTipa") String izborTipa, @QueryParam("nijeRasprodato") boolean nijeRasprodato) throws ParseException {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-		return manifestationDao.sorting(sortByArg);
-
+		return manifestationDao.filter(name, dateFrom, dateTo, place, priceFrom, priceTo, selected,izborTipa, nijeRasprodato);
 	}
+
 }
