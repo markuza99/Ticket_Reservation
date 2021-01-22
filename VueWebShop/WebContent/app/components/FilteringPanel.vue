@@ -3,25 +3,19 @@
 	<h4 class="latest-manifestations mr-5 mt-3">Najskorije manifestacije</h4>
 	<hr>
 	<ul class="filtering-panel d-flex justify-content-between">
-				<li>
-					
-					<select class="form-select pl-3 pr-3 pt-2 pb-2 mr-3" v-model="izborTipa">
-							<option>SVE</option>
-							<option>CONCERT</option>
-							<option>THEATER</option>
-							<option>FESTIVAL</option>
-					</select>
-					<span class="mr-1">Nerasprodato: </span>
-					<input type="checkbox" id="" name="" value="Boat" v-model="nijeRasprodato">
-					
-				</li>
-				
-				<li>
-					<button type="button" class="btn btn-primary" v-on:click="filtriraj">Filtriraj</button>
-				</li>
-				
-				
-
+		<li>
+			<select class="form-select pl-3 pr-3 pt-2 pb-2 mr-3" v-model="izborTipa">
+					<option selected>SVE</option>
+					<option>CONCERT</option>
+					<option>THEATER</option>
+					<option>FESTIVAL</option>
+			</select>
+			<span class="mr-1">Nerasprodato: </span>
+			<input type="checkbox" v-model="nijeRasprodato">
+		</li>
+		<li>
+			<button type="button" class="btn btn-primary" v-on:click="filtriraj">Filtriraj</button>
+		</li>
 	</ul>
 	</div>
 </template>
@@ -30,7 +24,6 @@
 module.exports = {
 	data() {
 		return {
-			manifestations: [],
 			name: "",
 			dateFrom:"",
 			dateTo:"",
@@ -60,8 +53,7 @@ module.exports = {
 			})
 			.then(response => {
 				$('.nav').removeClass("error");
-				this.$root.$emit('filtered-manifestations',response.data);
-				// this.$root.$emit('from-search-to-filter', response.data);			
+				this.$root.$emit('filtered-manifestations',response.data);			
 			});
 		}
 	},
@@ -78,8 +70,8 @@ module.exports = {
 			this.PriceFrom = priceFrom;
 			this.priceTo = priceTo;
 			this.selected = selected;
-			// this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 		});
+
 	}
 }
  </script>

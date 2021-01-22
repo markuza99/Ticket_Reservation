@@ -45,7 +45,7 @@ public class ManifestationService {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		return  manifestationDao.getFirstNManifestations(10);
 	}
-	//fdsfds
+	
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)

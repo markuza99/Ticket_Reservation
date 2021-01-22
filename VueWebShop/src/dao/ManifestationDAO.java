@@ -82,6 +82,7 @@ public class ManifestationDAO {
 			}
 		}
 		
+		// TO DO : srediti sorting (napraviti klasu)
 		if(selected.equals("Sortiraj po ceni manifestacije rastuce")) {
 			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
 
@@ -167,14 +168,7 @@ public class ManifestationDAO {
 	}
 	
 	private boolean correspondsSearch(Manifestation m,String name,  LocalDateTime dateFrom, LocalDateTime dateTo, String place, int priceFrom, int priceTo) {
-		boolean bname = m.getName().toLowerCase().contains(name); //true
-		//svaki string sadrzi prazan string
-//		boolean btip;
-//		if(type.equals("CONCERT") || type.equals("FESTIVAL") || type.equals("THEATER")) {
-//			btip = m.getType().equals(ManifestationType.valueOf(type));
-//		} else {
-//			btip = true;
-//		}
+		boolean bname = m.getName().toLowerCase().contains(name);
 		boolean bplace = m.getLocation().getCity().toLowerCase().contains(place);
 		boolean bdateFrom = dateFrom == null ? true : m.getDate().isAfter(dateFrom);
 		boolean bdateTo = dateTo == null ? true : m.getDate().isBefore(dateTo);
@@ -185,25 +179,12 @@ public class ManifestationDAO {
 	
 	private boolean correspondsFilter(Manifestation m, String type, boolean nijeRasprodato) {
 		//svaki string sadrzi prazan string
-		boolean btip;
-		if(type.equals("CONCERT") || type.equals("FESTIVAL") || type.equals("THEATER")) {
-			btip = m.getType().equals(ManifestationType.valueOf(type));
-		} else {
-			btip = true;
-		}
+		boolean btip = type.equals("SVE") || type.equals("") ? true : m.getType().equals(ManifestationType.valueOf(type));
 		boolean bnotrasp;
 		if(nijeRasprodato) {
-			if(m.getNumberOfSeats() > 0) {
-				bnotrasp = true;
-			} else {
-				bnotrasp = false;
-			}
+			bnotrasp = m.getNumberOfSeats() > 0 ? true : false;
 		} else {
-			if(m.getNumberOfSeats() > 0) {
-				bnotrasp = false;
-			} else {
-				bnotrasp = true;
-			}
+			bnotrasp = m.getNumberOfSeats() > 0 ? false : true;
 		}
 		return btip && bnotrasp;
 	}
@@ -287,9 +268,11 @@ public class ManifestationDAO {
 		return null;
 	}
 
+	// ??? 
 	public List<Manifestation> sorting(String selected) {
 		// TODO Auto-generated method stub
 		List<Manifestation> searchedManifestations = (List<Manifestation>) manifestations.values();
+		
 		if(selected.equals("Sortiraj po ceni manifestacije rastuce")) {
 			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
 
@@ -372,7 +355,7 @@ public class ManifestationDAO {
 		}
 		return searchedManifestations;
 	}
-	//OOOOOOOOO
+	
 	public List<Manifestation> filter(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo, String selected,String izborTipa, boolean nijeRasprodato) {
 		// TODO Auto-generated method stub
 		List<Manifestation> searchedManifestations = search(name, dateFrom, dateTo, place, priceFrom, priceTo, selected);

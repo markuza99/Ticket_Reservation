@@ -32,8 +32,7 @@
 </template>
 
 <script>
-//var x = require("./SearchPanel.vue");
-//var y = require("./FilteringPanel.vue");
+
 module.exports = {
 	data() {
 		return {
@@ -85,41 +84,20 @@ module.exports = {
 				default:
 					console.log("nista");
 			}
-		},
-		updateManifestations: function(updatedManifestations) {
-			console.log(this.manifestations);
-			this.manifestations = updatedManifestations;
-			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 		}
 	},
 	mounted() {
 		//pretplata na metode
 		// search panel prosledjuje manifestacije u Manifestations
 		this.$root.$on('searched-manifestations',(manifestations) => {
-			console.log("pretplata na search panel");
 			this.manifestations = manifestations;
 			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
-			console.log(this.manifestations);
 		});
 		this.$root.$on('filtered-manifestations',(manifestations) => {
-			console.log("pretplata na filter panel");
 			this.manifestations = manifestations;
 			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
-			console.log(this.manifestations);
 		});
-		// this.$root.$on('messageFromFilteringToManifestations',(message) =>{
-		// 	axios
-		// 	.get("rest/manifestationservice/searchSort", {
-		// 		params: {
-		// 			"sortByArg" : message
-		// 		}
-		// 	})
-		// 	.then(response => {
-		// 		$('.nav').removeClass("error");
-		// 		this.manifestations = response.data;
-		// 		this.manifestations.forEach(manifestation => this.makeDate(manifestation));			
-		// 	});
-		// });
+		
 		axios
 			.get("rest/manifestationservice/getall")
 			.then(response => {

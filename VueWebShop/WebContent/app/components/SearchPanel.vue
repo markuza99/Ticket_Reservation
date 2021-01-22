@@ -28,8 +28,19 @@
 			<li class="nav-item">
 				<input v-model="place" class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
 			</li>
-			<li class="nav-item">
-				<select name="order" id="order" v-model="selected" class="form-control">
+			
+			<li class = "nav-item">
+				<button class="my-2 my-sm-0 search-button" type="submit" v-on:click="search"><i class="fa fa-search"></i></button>
+			</li>
+			</ul>
+				
+			
+		</div>
+		
+		</nav>
+		
+		<div>
+				<select name="order" id="order" v-model="selected">
 					<option>Default</option>
 					<option>Sortiraj po nazivu manifestacije rastuce</option>
 					<option>Sortiraj po nazivu manifestacije opadajuce</option>
@@ -40,15 +51,7 @@
 					<option>Sortiraj po lokaciji manifestacije rastuce</option>
 					<option>Sortiraj po lokaciji manifestacije opadajuce</option>
 				</select>
-			</li>
-			<li class = "nav-item">
-				<button class="my-2 my-sm-0 search-button" type="submit" v-on:click="search"><i class="fa fa-search"></i></button>
-			</li>
-			</ul>
-				
-				
 		</div>
-		</nav>
 	</div>
 </template>
 
