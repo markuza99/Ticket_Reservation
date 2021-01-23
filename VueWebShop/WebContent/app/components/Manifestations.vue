@@ -1,9 +1,9 @@
 <template>
-	<div class="container" v-if="displayManifestations">
+	<div class="container">
 
 		<div id="manifestations" class="row" data-masonry='{"percentPosition": true }'>
 			<div class="col-lg-4 col-md-4 col-sm-6" v-for="m in manifestations" :key="m.id">
-					<div class="manifestation" v-bind:id="m.id" v-on:click="goToManifestation(m.id, m)">
+					<div class="manifestation" v-bind:id="m.id" v-on:click="goToManifestation(m.id)">
 						<div class="image-holder">
 							<img class="fit-img" v-bind:src="'images/' + m.image">
 						</div>
@@ -17,9 +17,9 @@
 						</div>
 						<div class="date" style="text-align:right;white-space:nowrap;">
 							<div class="bg-warning" style="padding:0 7px;">
-							{{m.date.dayOfMonth}}
+							<!-- {{m.date.dayOfMonth}}
 							{{m.formattedMonth}}
-							{{m.date.year}}
+							{{m.date.year}} -->
 							</div>
 						</div>	
 						
@@ -35,72 +35,22 @@
 module.exports = {
 	data() {
 		return {
-			manifestations: [],
-			displayManifestations : true
+			manifestations: []
 		}
 	},
 	methods: {
 		makeDate : (manifestation) => {
-			
-			switch(manifestation.date.month) {
-				
-				case "JANUARY":
-					manifestation.formattedMonth = "januar";
-					break;
-				case "FEBRUARY":
-					manifestation.formattedMonth = "februar";
-					break;
-				case "MARCH":
-					manifestation.formattedMonth = "mart";
-					break;
-				case "APRIL":
-					manifestation.formattedMonth = "mart";
-					break;
-				case "MAY":
-					manifestation.formattedMonth = "mart";
-					break;
-				case "JUNE":
-					manifestation.formattedMonth = "mart";
-					break;
-				case "JULY":
-					manifestation.formattedMonth = "mart";
-					break;
-				case "AUGUST":
-					manifestation.formattedMonth = "mart";
-					break;
-				case "SEPTEMBER":
-					manifestation.formattedMonth = "mart";
-					break;
-				case "OCTOBER":
-					manifestation.formattedMonth = "mart";
-					break;
-				case "NOVEMBER":
-					manifestation.formattedMonth = "mart";
-					break;
-				case "DECEMBER":
-					manifestation.formattedMonth = "mart";
-					break;
-				default:
-					console.log("nista");
-			}
+			makeDate(manifestation);
 		},
-		// updateManifestations: function(updatedManifestations) {
-		// 	console.log(this.manifestations);
-		// 	this.manifestations = updatedManifestations;
-		// 	this.manifestations.forEach(manifestation => this.makeDate(manifestation));
-		// }
-		goToManifestation(id, manifestation) {
-			
-			console.log(manifestation);
-			this.displayManifestations = false;
-			this.$root.$emit('display-manifestation', manifestation);
+		goToManifestation(id) {
+			location.replace("#/manifestation/" + id);
+			// this.$root.$emit('display-manifestation', manifestation);
 		}
 	},
 	mounted() {
 		//pretplata na metode
 		// search panel prosledjuje manifestacije u Manifestations
 		this.$root.$on('searched-manifestations',(manifestations) => {
-			console.log("pretplata na search panel");
 			this.manifestations = manifestations;
 			console.log(this.manifestations);
 		});

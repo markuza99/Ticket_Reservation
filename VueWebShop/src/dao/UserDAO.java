@@ -28,7 +28,6 @@ public class UserDAO {
 	
 	public UserDAO(String contextPath) {
 		this.contextPath = contextPath;
-		System.out.println(contextPath);
 		loadUsers();
 	}
 	
@@ -42,6 +41,11 @@ public class UserDAO {
 	
 	public List<User> getAllUsers() {
 		return new ArrayList<User>(users.values());
+	}
+	
+	public User getOneUser(String id) {
+		System.out.println(users);
+		return users.get(id);
 	}
 	
 	private void loadUsers() {

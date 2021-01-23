@@ -15,6 +15,7 @@ import java.util.TreeMap;
 
 import javax.ws.rs.QueryParam;
 
+import beans.Comment;
 import beans.Location;
 import beans.Manifestation;
 import beans.ManifestationType;
@@ -27,6 +28,10 @@ public class ManifestationDAO {
 	public ManifestationDAO(String contextPath) {
 		this.contextPath = contextPath;
 		loadManifestations();
+	}
+	
+	public ManifestationDAO() {
+		
 	}
 	
 	public List<Manifestation> getAllManifestations() {
@@ -95,6 +100,8 @@ public class ManifestationDAO {
 		return bname && bplace && bdateFrom && bdateTo && bpriceFrom && bpriceTo;
 	}
 	
+	
+	
 	private void loadManifestations() {
 		BufferedReader reader = null;
 		try {
@@ -116,7 +123,7 @@ public class ManifestationDAO {
 					LocalDateTime maintenance = LocalDateTime.parse(st.nextToken().trim(), formatter);
 					int ticketPrice = Integer.parseInt(st.nextToken().trim());
 					Status status = (Integer.parseInt(st.nextToken().trim())) == 1 ? 
-							Status.ACTIVE : Status.NONACTIVE;
+							Status.AKTIVNA : Status.NEAKTIVNA;
 					//location
 					Location location = getManifestationLocation(st.nextToken().trim());
 					String imagePath = st.nextToken().trim();
@@ -173,4 +180,11 @@ public class ManifestationDAO {
 		}
 		return null;
 	}
+			
+
+	public Manifestation getOneManifestation(String id) {
+		return manifestations.get(id);
+	}
+
+	
 }

@@ -1,5 +1,5 @@
 package beans;
 
 public enum Status {
-	ACTIVE, NONACTIVE
+	AKTIVNA, NEAKTIVNA
 }

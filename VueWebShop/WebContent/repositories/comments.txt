@@ -1,0 +1,3 @@
+pera;001;Moj komentar;4
+mika;001;Onako;3
+mika;002;Dobro je;5

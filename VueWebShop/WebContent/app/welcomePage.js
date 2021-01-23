@@ -1,5 +1,6 @@
 const manifestations = httpVueLoader("./app/components/Manifestations.vue");
-const manifestationPage = httpVueLoader("./app/components/Manifestation.vue");
+const filteringPanel = httpVueLoader("./app/components/FilteringPanel.vue");
+const searchPanel = httpVueLoader("./app/components/SearchPanel.vue");
 
 Vue.component("welcome-page", {
 	data: function() {
@@ -8,9 +9,12 @@ Vue.component("welcome-page", {
 		}
 	},
 	template: `
-	    <div>
+		<div>
+			<search-panel></search-panel>
+			<div class="container">
+				<filtering-panel></filtering-panel>
+			</div>
 		    <manifestations></manifestations>
-			<manifestationPage></manifestationPage>
 		</div>
 	`,
 	methods: {
@@ -18,6 +22,7 @@ Vue.component("welcome-page", {
 	},
 	components: {
 		"manifestations" : manifestations,
-		"manifestationPage" : manifestationPage
+		"filtering-panel":filteringPanel,
+		"search-panel":searchPanel
 	}
 });

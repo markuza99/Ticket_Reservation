@@ -54,7 +54,7 @@
 				.then(response => {
 					this.user = response.data;
 					if(!isEmpty(this.user)) {
-						location.replace("#/home");
+						location.replace("#/");
 					}
 				});
 		},

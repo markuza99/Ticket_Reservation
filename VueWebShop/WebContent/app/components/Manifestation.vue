@@ -1,9 +1,9 @@
 <template>
-	<div id="manifestation-page" class="container-fluid" v-if="displayOneManifestation">
+	<div id="manifestation-page" class="container-fluid" v-if="manifestation">
 		<div class="row">
 			<div class="col-lg-6 col-md-6 col-sm-12">
 				<div class="image-holder">
-					<img class="fit-img" v-bind:src="'images/' + manifestation.image">
+					<img class="fit-img" v-bind:class="{ gray : sold(manifestation) }" v-bind:src="'images/' + manifestation.image">
 				</div>
 			</div>
 			<div class="col-lg-6 col-md-6 col-sm-12">
@@ -22,93 +22,54 @@
 					</div>
 				
 				
-					<div class="ticket-price text-danger text-white">{{manifestation.ticketPrice}},00 RSD</div>
+					<div class="ticket-price text-danger text-white" v-if="!sold(manifestation)">{{manifestation.ticketPrice}},00 RSD</div>
+					<div class="ticket-price text-danger text-white" v-if="sold(manifestation)">RASPRODATO</div>
 					<div class="text-success">{{manifestation.status}}</div>
-				<!-- </div> -->
-					<div class="rating">
-						Oceni:
-						<!-- <span class="fa fa-star checked" v-for="star in manifestation.rating" :key="star">
-
-						</span> -->
-						<span class="fa fa-star checked"></span>
-						<span class="fa fa-star checked"></span>
-						<span class="fa fa-star checked"></span>
-						<span class="fa fa-star"></span>
-						<span class="fa fa-star"></span>
-					</div>
+				</div>
+					
 					
 					<div class="manifestation-location map" id="map" ref="map">
-						<!-- position relative, bottom 1 -->
-						<div v-if="!mapShowed" v-on:click="klik">Pogledaj mapu</div>
+						<div v-if="!mapShowed" v-on:click="displayMap">Pogledaj mapu</div>
 					</div>
 				</div>
-			</div>
 		</div>
 
 		<div class="row">
 			<div class="comment-section">
-				<h3 class="text-center">Komentari</h3>
-				<!-- <hr> -->
-				<div class="comment">
-					<ul class="comment-info bg-light">
-						<li class="text-warning comment-username">Petar Markovic</li>
-						<li class="comment-date">20 Oktobar 2020</li>
+				<h3 v-if="comments.length > 0">Komentari</h3>
+				<h3 v-if="comments.length == 0">Nema komentara</h3>
+				<div class="comment" v-for="comment in comments" :key="comment.id">
+					<ul class="comment-info bg-light d-flex justify-content-between">
+						<li class="text-secondary comment-username">{{comment.user}}</li>
+						<!-- <li class="comment-date">20 Oktobar 2020</li> -->
 						<li>
-							<div class="rating">
-								<!-- <span class="fa fa-star checked" v-for="star in manifestation.rating" :key="star">
-
-								</span> -->
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star checked"></span>
-								<span class="fa fa-star"></span>
-								<span class="fa fa-star"></span>
-							</div>
+							<span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
+							<span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
+							<span class="fa fa-star" v-bind:class="{ checked : isCounted(3, comment) }"></span>
+							<span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
+							<span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
 						</li>
 					</ul>
 					<div class="comment-description">
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-							tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-							quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-							Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat 
-							nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia 
-							deserunt mollit anim id est laborum.
-						</p>
+						<p>{{comment.description}}</p>
 					</div>
 				</div>
-
 				<div class="comment">
-					<ul class="comment-info">
-						<li>Petar Markovic</li>
-						<li>20 Oktobar 2020</li>
-					</ul>
-					<div class="comment-description">
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-							tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-							quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-							Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat 
-							nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia 
-							deserunt mollit anim id est laborum.
-						</p>
+					<div class="input-group mb-3">
+						<div class="input-group-prepend">
+							<button class="btn btn-outline-secondary" type="button" v-on:click="comment">Komentarisi</button>
+						</div>
+						<input type="text" class="form-control comment-holder" placeholder="" aria-label="" aria-describedby="basic-addon1">
+						<div class="rating">
+						<span class="fa fa-star one-star" v-on:click="clickedStar('one-star')"></span>
+						<span class="fa fa-star two-stars" v-on:click="clickedStar('two-stars')"></span>
+						<span class="fa fa-star three-stars" v-on:click="clickedStar('three-stars')"></span>
+						<span class="fa fa-star four-stars" v-on:click="clickedStar('four-stars')"></span>
+						<span class="fa fa-star five-stars" v-on:click="clickedStar('five-stars')"></span>
+						</div>
 					</div>
+					
 				</div>
-
-				<div class="comment">
-					<ul class="comment-info">
-						<li>Petar Markovic</li>
-						<li>20 Oktobar 2020</li>
-					</ul>
-					<div class="comment-description">
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-							tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-							quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-							Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat 
-							nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia 
-							deserunt mollit anim id est laborum.
-						</p>
-					</div>
-				</div>
-				
 			</div>
 		</div>
 	</div>
@@ -119,51 +80,111 @@
 module.exports = {
 	data() {
 		return {
-			displayOneManifestation : false,
-			manifestation: {},
+			manifestation: null,
 			user_checked : false,
-			mapShowed : false
+			mapShowed : false,
+			comments : [],
+			rating : 0
 		}
 	},
 	methods: {
-		klik : () => {
-			console.log("konacno");
+		clickedStar : (whichstar) => {
+			switch(whichstar) {
+				case "one-star":
+					this.rating = 1;
+					break;
+				case "two-stars":
+					this.rating = 2;
+					break;
+				case "three-stars":
+					this.rating = 3;
+					break;
+				case "four-stars":
+					this.rating = 4;
+					break;
+				case "five-stars":
+					this.rating = 5;
+					break;
+				default:
+					this.rating = 0;
+			}
+		},
+		comment : () => {
+			let description = $('.comment-holder').val();
+			if(this.rating == 0) {
+				//ne moze da komentarise ako nije ocenio
+				return;
+			}
+			
+			comment = { user : "",
+						manifestation : this.manifestation, //undefined
+						description : description,
+						rating : this.rating,  //undefined
+						};	//user-a izvlacimo iz sesije
+			console.log(JSON.stringify(comment));
+			console.log(comment);
+			axios
+				.post("rest/manifestationservice/postcomment",JSON.stringify(comment),{
+					headers: {'content-type':'application/json'}
+				})
+				.then(response => {
+					//reloaduj komentare?
+					this.comments = response.data;
+				});
+		},
+		sold : (manifestation) => {
+			if(manifestation.remainingTickets > 0) {
+				sold = false;
+			}
+			sold = true;
+		},
+		isCounted : (num, comment) => {
+			return num > comment.rating
+		},
+		displayMap : () => {
+			if(this.mapShowed)
+				return;
 			displayMap();
-			mapShowed = true;
+			this.mapShowed = true;
 		}
 	},
 	mounted() {
-		//pretplata na goToManifestation
-		console.log("udje");
-		this.$root.$on('display-manifestation', (manifestation) => {
-			this.manifestation = manifestation;
-			console.log(this.manifestation);
-			this.displayOneManifestation = true;
-			//setTimeout(displayMap(),3000);
 
-			// var map = new ol.Map({
-			// 	target: this.$refs['map'],
-			// 	layers: [
-			// 	new ol.layer.Tile({
-			// 		source: new ol.source.OSM()
-			// 	})
-			// 	],
-			// 	view: new ol.View({
-			// 		center: ol.proj.fromLonLat([37.41, 8.82]),
-			// 		zoom: 4
-			// 	})
-			// });
-		});
-		//displayMap();
-		// axios
-			// .get('rest/manifestationservice/manifestation/' + )
-			// .then();
+		let path = window.location.href;
+		let pathparams = path.split("//")[1];
+		let manifestationId = pathparams.split("/")[4];
+		console.log(manifestationId);
+
+		axios
+			.get("rest/manifestationservice/getonemanifestation/" + manifestationId)
+			.then(response => {
+				if(response.data == "") {
+					makeErrorPage();
+				}
+				this.manifestation = response.data;
+				
+				makeDate(this.manifestation);
+				console.log(this.manifestation);
+			});
+		
+		axios
+			.get("rest/manifestationservice/getcomments/" + manifestationId)
+			.then(response => {
+				this.comments = response.data;
+				console.log(this.comments.length);
+				console.log(this.comments);
+			});
 	}
 
 }
 </script>
 
 <style scoped>
+
+#manifestation-page {
+	margin-top: 2em;
+}
+
 #manifestation-page .image-holder {
 	
 	overflow:hidden;
@@ -193,21 +214,31 @@ module.exports = {
 	font-family: 'Quicksand', sans-serif;
 }
 
-.manifestation-info .rating {
-	position: absolute;
-	right:5em;
+.gray {
+  -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+  filter: grayscale(100%);
+}
+
+.rating {
+	/* position: absolute; */
+	/* right:5em; */
+	direction: rtl;
+  	unicode-bidi: bidi-override;
+}
+
+.rating > span:hover:before,
+.rating > span:hover ~ span:before {
+   color:orange;
 }
 
 .comment-section {
 	margin-top:1em;
+	width:100%;
 }
 
 .comment-section h3 {
 	font-family: 'Quicksand', sans-serif;
-}
-
-.comment-section .rating {
-
+	padding-left: 1em;
 }
 
 .comment {
@@ -237,8 +268,12 @@ module.exports = {
 }
 
 .comment-info li{
-	display: inline;
+	/* display: inline; */
 	list-style: none;
+}
+
+.comment:last-child {
+	border:none;
 }
 
 .checked {
