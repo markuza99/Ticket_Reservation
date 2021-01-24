@@ -14,19 +14,16 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import beans.Comment;
+import beans.Manifestation;
 import beans.Status;
 
 
 public class CommentDAO {
 	private Map<String, Comment> comments = new HashMap<>();
 	private String contextPath;
-	private ManifestationDAO manifestationDAO;
-	private UserDAO userDAO;
 	
-	public CommentDAO(String contextPath, ManifestationDAO manifestationDAO, UserDAO userDAO) {
+	public CommentDAO(String contextPath) {
 		this.contextPath = contextPath;
-		this.manifestationDAO = manifestationDAO;
-		this.userDAO = userDAO;
 		loadComments();
 	}
 	
@@ -105,4 +102,34 @@ public class CommentDAO {
             }
         }
     }
+
+	public Comment getUserCommentForManifestation(String manifestationId, String username) {
+		for(Comment c : comments.values()) {
+			if(c.getManifestation().equals(manifestationId)
+					&& c.getUser().equals(username)
+					&& c.getCommentStatus() == Status.NONACTIVE) {
+				return c;
+			}
+		}
+		return null;
+	}
+
+	public Comment userAttended(String manifestationId, String username) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int getManifestationRating(String manifestationId) {
+		// TODO Auto-generated method stub
+		int sumOfRatings = 0;
+		int n = 0;
+		for(Comment comment : comments.values()) {
+			if(comment.getManifestation().equals(manifestationId)) {
+				sumOfRatings += comment.getRating();
+				n++;
+			}
+		}
+		// TO DO -- srediti average rating
+		return sumOfRatings / n;
+	}
 }

@@ -25,6 +25,13 @@
 					<div class="ticket-price text-danger text-white" v-if="!sold(manifestation)">{{manifestation.ticketPrice}},00 RSD</div>
 					<div class="ticket-price text-danger text-white" v-if="sold(manifestation)">RASPRODATO</div>
 					<div class="text-success">{{manifestation.status}}</div>
+					<div class="average_rating">
+						<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(1) }"></span>
+						<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(2) }"></span>
+						<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(3) }"></span>
+						<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(4) }"></span>
+						<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(5) }"></span>
+					</div>
 				</div>
 					
 					
@@ -54,7 +61,7 @@
 						<p>{{comment.description}}</p>
 					</div>
 				</div>
-				<div class="logged-user-comment" v-if="user && !comment_success">
+				<div class="logged-user-comment" v-if="correspondsCommentPermision()">
 					<div class="input-group mb-3">
 						<div class="input-group-prepend">
 							<button class="btn btn-outline-secondary" type="button" v-on:click="comment">Komentarisi</button>
@@ -90,95 +97,88 @@ module.exports = {
 	data() {
 		return {
 			manifestation: null,
-			user_checked : false,
 			mapShowed : false,
 			comments : [],
-			rating : 0,
+			user_rating : 0,
+			manifestation_rating : 0,
 			user : null, //treba mi i user,
-			comment_success : false
+			comment_success : false,
+			user_attended : false
 		}
 	},
 	methods: {
-		clickedStar(whichstar) {
-			console.log("pozvano u zvezdama:" + this.manifestation.id)
-			console.log(whichstar);
-			switch(whichstar) {
-				case "one-star":
-					console.log("jedna");
-					this.rating = 1;
-					break;
-				case "two-stars":
-					this.rating = 2;
-					break;
-				case "three-stars":
-					this.rating = 3;
-					break;
-				case "four-stars":
-					this.rating = 4;
-					break;
-				case "five-stars":
-					this.rating = 5;
-					break;
-				default:
-					this.rating = 0;
-			}
-			this.colorStars(whichstar);
+		correspondsCommentPermision() {
+			console.log(this.user + " user")
+			console.log(!this.comment_success + " comment");
+			console.log("hey");
+			return (this.user && !this.comment_success 
+							  && validateDateRange(this.manifestation.date, Date.now()));
+							 // 
+			//TO DO -- dodati i && user_attended
 		},
-		colorStars(whichstar) {
-			//svi su crni na pocetku
-			console.log(whichstar);
+		clickedStar(whichstar) {
 			$('.one-star').removeClass("checked");
 			$('.two-stars').removeClass("checked");
 			$('.three-stars').removeClass("checked");
 			$('.four-stars').removeClass("checked");
 			$('.five-stars').removeClass("checked");
+
 			switch(whichstar) {
+				case "one-star":
+					console.log("jedna");
+					this.user_rating = 1;
+
+					$('.one-star').addClass("checked");
+					break;
+				case "two-stars":
+					this.user_rating = 2;
+
+					$('.one-star').addClass("checked");
+					$('.two-stars').addClass("checked");
+					break;
+				case "three-stars":
+					this.user_rating = 3;
+
+					$('.one-star').addClass("checked");
+					$('.two-stars').addClass("checked");
+					$('.three-stars').addClass("checked");
+					break;
+				case "four-stars":
+					this.user_rating = 4;
+
+					$('.one-star').addClass("checked");
+					$('.two-stars').addClass("checked");
+					$('.three-stars').addClass("checked");
+					$('.four-stars').addClass("checked");
+					break;
 				case "five-stars":
+					this.user_rating = 5;
+
 					$('.one-star').addClass("checked");
 					$('.two-stars').addClass("checked");
 					$('.three-stars').addClass("checked");
 					$('.four-stars').addClass("checked");
 					$('.five-stars').addClass("checked");
 					break;
-				case "four-stars":
-					$('.one-star').addClass("checked");
-					$('.two-stars').addClass("checked");
-					$('.three-stars').addClass("checked");
-					$('.four-stars').addClass("checked");
-					break;
-				case "three-stars":
-					$('.one-star').addClass("checked");
-					$('.two-stars').addClass("checked");
-					$('.three-stars').addClass("checked");
-					break;
-				case "two-stars":
-					$('.one-star').addClass("checked");
-					$('.two-stars').addClass("checked");
-					break;
-				case "one-star":
-					$('.one-star').addClass("checked");
-					break;
 				default:
-					this.rating = 0;
+					this.user_rating = 0;
 			}
 		},
 		comment() {
 			let description = $('.comment-holder').val();
-			if(this.rating == 0) {
+			if(this.user_rating == 0) {
 				//ne moze da komentarise ako nije ocenio
 				$('.logged-user-comment input').addClass("error");
 				return;
 			}
 			
 			comment = { user : "",
-						manifestation : this.manifestation.id, //undefined
+						manifestation : this.manifestation.id,
 						description : description,
-						rating : this.rating,  //undefined
+						rating : this.user_rating, 
 						};	//user-a izvlacimo iz sesije
-			console.log(JSON.stringify(comment));
-			console.log(comment);
 			axios
-				.post("rest/manifestationservice/postcomment",JSON.stringify(comment),{
+				.post("rest/commentservice/postcomment",JSON.stringify(comment),{
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
@@ -187,13 +187,13 @@ module.exports = {
 				});
 		},
 		sold(manifestation) {
-			if(manifestation.remainingTickets > 0) {
-				sold = false;
-			}
-			sold = true;
+			sold = manifestation.remainingTickets > 0 ? false : true;
 		},
 		isCounted(num, comment) {
-			return num > comment.rating
+			return !(num > comment.rating);
+		},
+		isCountedInAverageRating(num) {
+			return !(num > this.manifestation_rating);
 		},
 		displayMap() {
 			if(this.mapShowed)
@@ -207,7 +207,6 @@ module.exports = {
 		let path = window.location.href;
 		let pathparams = path.split("//")[1];
 		let manifestationId = pathparams.split("/")[4];
-		console.log(manifestationId);
 
 		axios
 			.get("rest/manifestationservice/getonemanifestation/" + manifestationId)
@@ -227,14 +226,34 @@ module.exports = {
 			});
 		
 		axios
-			.get("rest/manifestationservice/getcomments/" + manifestationId)
+			.get("rest/commentservice/getcomments/" + manifestationId)
 			.then(response => {
 				this.comments = response.data;
-				console.log(this.comments.length);
-				console.log(this.comments);
 			});
-		//treba axios za komentar(da li je vec poslao komentar)
-		//ako je nasao id i manifestaciju i ako je komentar NONACTIVE onda se ceka
+
+		axios
+			.get("rest/commentservice/usercommented/" + manifestationId)
+			.then(response => {
+				if(response.data) {
+					this.comment_success = true;
+				}
+			});
+
+		axios
+			.get("rest/commentservice/manifestationrating/" + manifestationId)
+			.then(response => {
+				console.log(response.data);
+				this.manifestation_rating = response.data;
+			})
+
+		// TO DO
+		// axios
+		// 	.get("rest/commentservice/userattended/" + manifestationId)
+		// 	.then(response => {
+		// 		if(response.data) {
+		// 			this.user_attended = true;
+		// 		}
+		// 	});
 	}
 
 }

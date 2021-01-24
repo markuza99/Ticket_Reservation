@@ -1,12 +1,11 @@
 package beans;
 
 public class CustomerType {
-	private String typeName;
-	private int discount;
-	private int points;
+	private String typeName; //zlatni, srebrni, bronzani
+	private int discount; //popust(koristi se za obracunavanje cene)
+	private int points; //potrebni broj bodova
 	
 	public CustomerType(String typeName, int discount, int points) {
-		super();
 		this.typeName = typeName;
 		this.discount = discount;
 		this.points = points;

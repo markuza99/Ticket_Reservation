@@ -1,6 +1,6 @@
 package dao;
 
-import java.io.BufferedReader;
+import java.io.BufferedReader; 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -104,7 +103,7 @@ public class UserDAO {
     }
 	
 	private Boolean usernameExists(String username) {
-	        return users.containsKey(username);
+	    return users.containsKey(username);
 	}
 	
 	private void write(String user, String customer) {

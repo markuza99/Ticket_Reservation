@@ -41,9 +41,7 @@ public class ManifestationService {
 			ctx.setAttribute("UserDAO", new UserDAO(contextPath));
 		}
 		if(ctx.getAttribute("CommentDAO") == null) {
-			ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-			UserDAO userDAO = (UserDAO) ctx.getAttribute("UserDAO");
-			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath, manifestationDao, userDAO));
+			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath));
 		}
 		
 	}
@@ -67,29 +65,12 @@ public class ManifestationService {
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getSearchManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo) throws ParseException {
+	public List<Manifestation> getSearchedManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo) throws ParseException {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		
 		return manifestationDao.search(name, dateFrom, dateTo, place, priceFrom, priceTo);
 
 	}
 	
-	@GET
-	@Path("/getcomments/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Comment> getCommentsForManifestation(@PathParam("id") String id) {
-		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
-		return commentDAO.getCommentsForManifestation(id, Status.ACTIVE);
-	}
-	
-	@POST
-	@Path("/postcomment")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Comment> postComment(@Context HttpServletRequest request, Comment comment) {
-		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
-		User u = (User) request.getSession().getAttribute("user");
-		comment.setUser(u.getUsername());
-		return commentDAO.postComment(comment);
-	}
+
 }
