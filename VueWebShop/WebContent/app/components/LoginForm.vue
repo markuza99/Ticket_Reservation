@@ -54,12 +54,14 @@
 				.then(response => {
 					this.user = response.data;
 					if(!isEmpty(this.user)) {
-						location.replace("#/");
+						// this.$root.$emit('logged-in-user',response.data);
+						window.location.replace("#/");
+						window.location.reload();
 					}
 				});
 		},
 		redirect : () => {
-			location.replace("#/home");
+			location.replace("#/");
 		}
     },
 	

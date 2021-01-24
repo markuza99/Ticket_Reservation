@@ -4,14 +4,15 @@ const Registration = httpVueLoader('./app/components/RegistrationForm.vue');
 const loginForm = httpVueLoader('./app/components/LoginForm.vue');
 const Footer = httpVueLoader("./app/components/Footer.vue");
 const Manifestation = httpVueLoader("./app/components/Manifestation.vue");
-
+const UserInfoPage = httpVueLoader("./app/components/UserInfoPage.vue");
 const router = new VueRouter({
     mode: 'hash',
     routes: [
 		{ path: '/', component: WelcomePage },
 		{ path: '/login', component: loginForm },
         { path: '/registration', component: Registration },
-        { path: '/manifestation/:id', component: Manifestation}
+        { path: '/manifestation/:id', component: Manifestation},
+        { path: '/userinfo', component: UserInfoPage}
     ]
 });
 

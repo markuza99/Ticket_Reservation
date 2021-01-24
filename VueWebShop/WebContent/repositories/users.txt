@@ -1,3 +1,9 @@
-CUSTOMER;username;password;firstname;lastname;FEMALE;13-01-2017 17:09:42
-CUSTOMER;pera;pera;firstname;lastname;FEMALE;13-01-2017 17:09:42
-CUSTOMER;mika;mika123;Mika;Peric;MALE;13-01-2017 17:09:42
+CUSTOMER;username;password;firstname;lastname;FEMALE;2021-01-23
+CUSTOMER;pera;pera;firstname;lastname;FEMALE;2021-01-23
+CUSTOMER;mika;mika123;Mika;Peric;MALE;2021-01-23
+CUSTOMER;pera12345;pera;Jelena;Stojanovic;FEMALE;2016-02-29
+CUSTOMER;pera1235;pera;Jelena;Stojanovic;FEMALE;2016-02-29
+CUSTOMER;seka;seka12345;Jelena;Stojanovic;FEMALE;2021-01-14
+CUSTOMER;pera123456;seka;Jelena;Stojanovic;MALE;2021-01-16
+CUSTOMER;jelenastojanovicftn@gmail.com;seka;Jelena;Stojanovic;MALE;2021-01-23
+CUSTOMER;bozidar.arsic@uns.ac.rs;bokna;Bozidar;Arsic;MALE;1998-11-01

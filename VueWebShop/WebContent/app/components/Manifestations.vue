@@ -60,6 +60,7 @@ module.exports = {
 			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 		});
 		
+		
 		axios
 			.get("rest/manifestationservice/getall")
 			.then(response => {

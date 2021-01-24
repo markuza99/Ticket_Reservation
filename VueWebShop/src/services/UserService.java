@@ -55,6 +55,19 @@ public class UserService {
 		return (User) request.getSession().getAttribute("user");
 	}
 	
+	@GET
+	@Path("/logout")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public boolean doLogOut(@Context HttpServletRequest request) {
+		User u = null;
+		u = (User) request.getSession().getAttribute("user");
+		if(u != null) {
+			request.getSession().invalidate();
+		}
+		return true;
+	}
+	
 	
 	@POST
 	@Path("/register")
