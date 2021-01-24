@@ -40,6 +40,7 @@ module.exports = {
 	},
 	methods: {
 		makeDate : (manifestation) => {
+
 			makeDate(manifestation);
 		},
 		goToManifestation(id) {
@@ -52,11 +53,13 @@ module.exports = {
 		// search panel prosledjuje manifestacije u Manifestations
 		this.$root.$on('searched-manifestations',(manifestations) => {
 			this.manifestations = manifestations;
-			console.log(this.manifestations);
+			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 		});
-		this.$root.$on('messageFromFilteringToManifestations',(message) =>{
-			console.log(message);
+		this.$root.$on('filtered-manifestations',(manifestations) => {
+			this.manifestations = manifestations;
+			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 		});
+		
 		axios
 			.get("rest/manifestationservice/getall")
 			.then(response => {
