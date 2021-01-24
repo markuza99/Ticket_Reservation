@@ -119,15 +119,18 @@ public class ManifestationDAO {
 					String name = st.nextToken().trim();
 					ManifestationType type = ManifestationType.valueOf(st.nextToken().trim());
 					int numberOfSeats = Integer.parseInt(st.nextToken().trim());
+					int remainingNumberOfSeats = Integer.parseInt(st.nextToken().trim());
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");  
 					LocalDateTime maintenance = LocalDateTime.parse(st.nextToken().trim(), formatter);
 					int ticketPrice = Integer.parseInt(st.nextToken().trim());
 					Status status = (Integer.parseInt(st.nextToken().trim())) == 1 ? 
-							Status.AKTIVNA : Status.NEAKTIVNA;
+							Status.ACTIVE : Status.NONACTIVE;
 					//location
 					Location location = getManifestationLocation(st.nextToken().trim());
 					String imagePath = st.nextToken().trim();
-					manifestations.put(id, new Manifestation(id, name, type, numberOfSeats, maintenance, ticketPrice,
+					manifestations.put(id, new Manifestation(
+							id, name, type, numberOfSeats,
+							remainingNumberOfSeats, maintenance, ticketPrice,
 							status, location, imagePath));
 				}
 			}

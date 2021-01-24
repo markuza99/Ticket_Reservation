@@ -8,6 +8,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 
 import beans.Comment;
 import beans.Manifestation;
+import beans.Status;
 import beans.User;
 import dao.CommentDAO;
 import dao.ManifestationDAO;
@@ -77,10 +79,10 @@ public class ManifestationService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Comment> getCommentsForManifestation(@PathParam("id") String id) {
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
-		return commentDAO.getCommentsForManifestation(id);
+		return commentDAO.getCommentsForManifestation(id, Status.ACTIVE);
 	}
 	
-	@GET
+	@POST
 	@Path("/postcomment")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)

@@ -54,22 +54,31 @@
 						<p>{{comment.description}}</p>
 					</div>
 				</div>
-				<div class="comment">
+				<div class="logged-user-comment" v-if="user && !comment_success">
 					<div class="input-group mb-3">
 						<div class="input-group-prepend">
 							<button class="btn btn-outline-secondary" type="button" v-on:click="comment">Komentarisi</button>
 						</div>
 						<input type="text" class="form-control comment-holder" placeholder="" aria-label="" aria-describedby="basic-addon1">
 						<div class="rating">
-						<span class="fa fa-star one-star" v-on:click="clickedStar('one-star')"></span>
-						<span class="fa fa-star two-stars" v-on:click="clickedStar('two-stars')"></span>
-						<span class="fa fa-star three-stars" v-on:click="clickedStar('three-stars')"></span>
-						<span class="fa fa-star four-stars" v-on:click="clickedStar('four-stars')"></span>
 						<span class="fa fa-star five-stars" v-on:click="clickedStar('five-stars')"></span>
+						<span class="fa fa-star four-stars" v-on:click="clickedStar('four-stars')"></span>
+						<span class="fa fa-star three-stars" v-on:click="clickedStar('three-stars')"></span>
+						<span class="fa fa-star two-stars" v-on:click="clickedStar('two-stars')"></span>
+						<span class="fa fa-star one-star" v-on:click="clickedStar('one-star')"></span>
 						</div>
 					</div>
 					
 				</div>
+
+				<div v-if="comment_success">
+					<div class="comment-success">
+						<input type="text" class="form-control comment-holder " placeholder="Vas komentar je uspesno poslat! Ceka se odobrenje."
+				 		aria-label="" aria-describedby="basic-addon1" readonly>
+					</div>
+					
+				</div>
+					
 			</div>
 		</div>
 	</div>
@@ -84,13 +93,18 @@ module.exports = {
 			user_checked : false,
 			mapShowed : false,
 			comments : [],
-			rating : 0
+			rating : 0,
+			user : null, //treba mi i user,
+			comment_success : false
 		}
 	},
 	methods: {
-		clickedStar : (whichstar) => {
+		clickedStar(whichstar) {
+			console.log("pozvano u zvezdama:" + this.manifestation.id)
+			console.log(whichstar);
 			switch(whichstar) {
 				case "one-star":
+					console.log("jedna");
 					this.rating = 1;
 					break;
 				case "two-stars":
@@ -108,16 +122,56 @@ module.exports = {
 				default:
 					this.rating = 0;
 			}
+			this.colorStars(whichstar);
 		},
-		comment : () => {
+		colorStars(whichstar) {
+			//svi su crni na pocetku
+			console.log(whichstar);
+			$('.one-star').removeClass("checked");
+			$('.two-stars').removeClass("checked");
+			$('.three-stars').removeClass("checked");
+			$('.four-stars').removeClass("checked");
+			$('.five-stars').removeClass("checked");
+			switch(whichstar) {
+				case "five-stars":
+					$('.one-star').addClass("checked");
+					$('.two-stars').addClass("checked");
+					$('.three-stars').addClass("checked");
+					$('.four-stars').addClass("checked");
+					$('.five-stars').addClass("checked");
+					break;
+				case "four-stars":
+					$('.one-star').addClass("checked");
+					$('.two-stars').addClass("checked");
+					$('.three-stars').addClass("checked");
+					$('.four-stars').addClass("checked");
+					break;
+				case "three-stars":
+					$('.one-star').addClass("checked");
+					$('.two-stars').addClass("checked");
+					$('.three-stars').addClass("checked");
+					break;
+				case "two-stars":
+					$('.one-star').addClass("checked");
+					$('.two-stars').addClass("checked");
+					break;
+				case "one-star":
+					$('.one-star').addClass("checked");
+					break;
+				default:
+					this.rating = 0;
+			}
+		},
+		comment() {
 			let description = $('.comment-holder').val();
 			if(this.rating == 0) {
 				//ne moze da komentarise ako nije ocenio
+				$('.logged-user-comment input').addClass("error");
 				return;
 			}
 			
 			comment = { user : "",
-						manifestation : this.manifestation, //undefined
+						manifestation : this.manifestation.id, //undefined
 						description : description,
 						rating : this.rating,  //undefined
 						};	//user-a izvlacimo iz sesije
@@ -128,20 +182,20 @@ module.exports = {
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
-					//reloaduj komentare?
-					this.comments = response.data;
+					$('.logged-user-comment input').removeClass("error");
+					this.comment_success = true;
 				});
 		},
-		sold : (manifestation) => {
+		sold(manifestation) {
 			if(manifestation.remainingTickets > 0) {
 				sold = false;
 			}
 			sold = true;
 		},
-		isCounted : (num, comment) => {
+		isCounted(num, comment) {
 			return num > comment.rating
 		},
-		displayMap : () => {
+		displayMap() {
 			if(this.mapShowed)
 				return;
 			displayMap();
@@ -162,9 +216,14 @@ module.exports = {
 					makeErrorPage();
 				}
 				this.manifestation = response.data;
-				
 				makeDate(this.manifestation);
 				console.log(this.manifestation);
+			});
+
+		axios
+			.get("rest/userservice/testlogin")
+			.then(response => {
+				this.user = response.data;
 			});
 		
 		axios
@@ -174,6 +233,8 @@ module.exports = {
 				console.log(this.comments.length);
 				console.log(this.comments);
 			});
+		//treba axios za komentar(da li je vec poslao komentar)
+		//ako je nasao id i manifestaciju i ako je komentar NONACTIVE onda se ceka
 	}
 
 }
@@ -272,10 +333,6 @@ module.exports = {
 	list-style: none;
 }
 
-.comment:last-child {
-	border:none;
-}
-
 .checked {
   color: orange;
 }
@@ -283,6 +340,29 @@ module.exports = {
 .map {
 	height: 200px;
 	width: 100%;
+}
+
+.logged-user-comment {
+	/* border: 1px solid #bebebe; */
+	margin: 1em 2em;
+	/* font-family: 'Quicksand', sans-serif; */
+}
+
+.comment-success {
+	padding: 2em;
+}
+
+.comment-success input {
+	border: 1px solid  rgb(40,167,69);
+	box-shadow: 0 0 10px rgb(40,167,69);
+	padding: 2em;
+	color: rgb(40,167,69);
+}
+
+.error {
+    outline: none !important;
+    border:1px solid red;
+    box-shadow: 0 0 10px #f40b0b;
 }
 
 @media screen and (min-width: 1200px) {

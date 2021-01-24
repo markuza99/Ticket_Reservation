@@ -5,13 +5,17 @@ public class Comment {
 	private String manifestation;
 	private String description;
 	private int rating;
+	private Status commentStatus;
 	
-	public Comment(String user, String manifestation, String description, int rating) {
+	public Comment(String user, String manifestation, String description, int rating, Status commentStatus) {
 		this.user = user;
 		this.manifestation = manifestation;
 		this.description = description;
 		this.rating = rating;
+		this.commentStatus = commentStatus;
 	}
+	
+	public Comment() {}
 
 	public String getUser() {
 		return user;
@@ -43,6 +47,14 @@ public class Comment {
 
 	public void setRating(int rating) {
 		this.rating = rating;
+	}
+
+	public Status getCommentStatus() {
+		return commentStatus;
+	}
+
+	public void setCommentStatus(String commentStatus) {
+		this.commentStatus = Status.valueOf(commentStatus);
 	}
 
 	
