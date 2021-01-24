@@ -1,5 +1,5 @@
 package beans;
 
 public enum ManifestationType {
-	KONCERT, FESTIVAL, POZORISTE
+	CONCERT, FESTIVAL, THEATER
 }
