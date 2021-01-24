@@ -16,6 +16,7 @@ import java.util.TreeMap;
 
 import javax.ws.rs.QueryParam;
 
+import beans.Comment;
 import beans.Location;
 import beans.Manifestation;
 import beans.ManifestationType;
@@ -28,6 +29,10 @@ public class ManifestationDAO {
 	public ManifestationDAO(String contextPath) {
 		this.contextPath = contextPath;
 		loadManifestations();
+	}
+	
+	public ManifestationDAO() {
+		
 	}
 	
 	public List<Manifestation> getAllManifestations() {
@@ -176,7 +181,7 @@ public class ManifestationDAO {
 		boolean bpriceTo = priceTo == 0 ? true : (m.getTicketPrice() <= priceTo);
 		return bname && bplace && bdateFrom && bdateTo && bpriceFrom && bpriceTo;
 	}
-	
+
 	private boolean correspondsFilter(Manifestation m, String type, boolean nijeRasprodato) {
 		//svaki string sadrzi prazan string
 		boolean btip = type.equals("SVE") || type.equals("") ? true : m.getType().equals(ManifestationType.valueOf(type));
@@ -206,6 +211,7 @@ public class ManifestationDAO {
 					String name = st.nextToken().trim();
 					ManifestationType type = ManifestationType.valueOf(st.nextToken().trim());
 					int numberOfSeats = Integer.parseInt(st.nextToken().trim());
+					int remainingNumberOfSeats = Integer.parseInt(st.nextToken().trim());
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");  
 					LocalDateTime maintenance = LocalDateTime.parse(st.nextToken().trim(), formatter);
 					int ticketPrice = Integer.parseInt(st.nextToken().trim());
@@ -214,7 +220,9 @@ public class ManifestationDAO {
 					//location
 					Location location = getManifestationLocation(st.nextToken().trim());
 					String imagePath = st.nextToken().trim();
-					manifestations.put(id, new Manifestation(id, name, type, numberOfSeats, maintenance, ticketPrice,
+					manifestations.put(id, new Manifestation(
+							id, name, type, numberOfSeats,
+							remainingNumberOfSeats, maintenance, ticketPrice,
 							status, location, imagePath));
 				}
 			}
@@ -266,6 +274,10 @@ public class ManifestationDAO {
 			}
 		}
 		return null;
+	}
+
+	public Manifestation getOneManifestation(String id) {
+		return manifestations.get(id);
 	}
 
 	// ??? 

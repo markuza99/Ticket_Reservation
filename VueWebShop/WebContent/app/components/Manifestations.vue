@@ -3,7 +3,7 @@
 
 		<div id="manifestations" class="row" data-masonry='{"percentPosition": true }'>
 			<div class="col-lg-4 col-md-4 col-sm-6" v-for="m in manifestations" :key="m.id">
-					<div class="manifestation">
+					<div class="manifestation" v-bind:id="m.id" v-on:click="goToManifestation(m.id)">
 						<div class="image-holder">
 							<img class="fit-img" v-bind:src="'images/' + m.image">
 						</div>
@@ -17,9 +17,9 @@
 						</div>
 						<div class="date" style="text-align:right;white-space:nowrap;">
 							<div class="bg-warning" style="padding:0 7px;">
-							{{m.date.dayOfMonth}}
+							<!-- {{m.date.dayOfMonth}}
 							{{m.formattedMonth}}
-							{{m.date.year}}
+							{{m.date.year}} -->
 							</div>
 						</div>	
 						
@@ -32,7 +32,6 @@
 </template>
 
 <script>
-
 module.exports = {
 	data() {
 		return {
@@ -41,49 +40,12 @@ module.exports = {
 	},
 	methods: {
 		makeDate : (manifestation) => {
-			
-			switch(manifestation.date.month) {
-				
-				case "JANUARY":
-					console.log("tu");
-					manifestation.formattedMonth = "januar";
-					break;
-				case "FEBRUARY":
-					manifestation.formattedMonth = "februar";
-					break;
-				case "MARCH":
-					manifestation.formattedMonth = "mart";
-					break;
-				case "APRIL":
-					manifestation.formattedMonth = "april";
-					break;
-				case "MAY":
-					manifestation.formattedMonth = "maj";
-					break;
-				case "JUNE":
-					manifestation.formattedMonth = "jun";
-					break;
-				case "JULY":
-					manifestation.formattedMonth = "jul";
-					break;
-				case "AUGUST":
-					manifestation.formattedMonth = "avgust";
-					break;
-				case "SEPTEMBER":
-					manifestation.formattedMonth = "septembar";
-					break;
-				case "OCTOBER":
-					manifestation.formattedMonth = "oktobar";
-					break;
-				case "NOVEMBER":
-					manifestation.formattedMonth = "novembar";
-					break;
-				case "DECEMBER":
-					manifestation.formattedMonth = "decembar";
-					break;
-				default:
-					console.log("nista");
-			}
+
+			makeDate(manifestation);
+		},
+		goToManifestation(id) {
+			location.replace("#/manifestation/" + id);
+			// this.$root.$emit('display-manifestation', manifestation);
 		}
 	},
 	mounted() {
@@ -136,7 +98,7 @@ module.exports = {
     transition:all .4s linear;
 }
 
-.image-holder:hover img {
+.manifestation .image-holder:hover img {
 	-ms-transform:scale(1.2);
 	-webkit-transform:scale(1.2);
 	transform:scale(1.2);
@@ -163,20 +125,20 @@ module.exports = {
 }
 
 @media screen and (max-width: 1200px) {
-  .image-holder {
+  .manifestation .image-holder {
 	min-height: 10em;
 	max-height: 10em;
   }
 }
 
 @media screen and (min-width: 1200px) {
-	.image-holder {
+	.manifestation .image-holder {
 		height: 15em;
 	}
 }
 
 @media screen and (max-width: 575px) {
-	.image-holder {
+	.manifestation .image-holder {
 		min-height: 30em;
 	    max-height: 30em;
 	}

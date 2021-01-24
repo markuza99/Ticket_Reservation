@@ -7,18 +7,20 @@ public class Manifestation implements Comparable<Manifestation>{
 	private String name;
 	private ManifestationType type;
 	private int numberOfSeats;
+	private int remainingNumberOfSeats;
 	private LocalDateTime date;
 	private int ticketPrice;
 	private Status status;
 	private Location location;
 	private String image;
 	
-	public Manifestation(String id, String name, ManifestationType type, int numberOfSeats, LocalDateTime date, int ticketPrice,
+	public Manifestation(String id, String name, ManifestationType type, int numberOfSeats, int remainingNumberOfSeats, LocalDateTime date, int ticketPrice,
 			Status status, Location location, String image) {
 		this.id = id;
 		this.name = name;
 		this.type = type;
 		this.numberOfSeats = numberOfSeats;
+		this.remainingNumberOfSeats = remainingNumberOfSeats;
 		this.date = date;
 		this.ticketPrice = ticketPrice;
 		this.status = status;
@@ -109,6 +111,14 @@ public class Manifestation implements Comparable<Manifestation>{
 	public int compareTo(Manifestation o) {
 		// TODO Auto-generated method stub
 		return getDate().compareTo(o.getDate());
+	}
+
+	public int getRemainingNumberOfSeats() {
+		return remainingNumberOfSeats;
+	}
+
+	public void setRemainingNumberOfSeats(int remainingNumberOfSeats) {
+		this.remainingNumberOfSeats = remainingNumberOfSeats;
 	}
 	
 	
