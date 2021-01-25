@@ -1,13 +1,13 @@
 package beans;
 
 public class Location {
-	private int id;
+	private String id;
 	private double longitude;
 	private double latitude;
 	private String street;
 	private String city;
 	
-	public Location(int id, double longitude, double latitude, String street, String city) {
+	public Location(String id, double longitude, double latitude, String street, String city) {
 		this.id = id;
 		this.longitude = longitude;
 		this.latitude = latitude;
@@ -15,11 +15,11 @@ public class Location {
 		this.city = city;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
