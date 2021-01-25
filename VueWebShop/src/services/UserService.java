@@ -1,8 +1,5 @@
 package services;
 
-
-import java.time.LocalDateTime;
-
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -26,9 +23,9 @@ public class UserService {
 	
 	@PostConstruct
 	public void init() {
-		if(ctx.getAttribute("userDAO") == null) {
+		if(ctx.getAttribute("UserDAO") == null) {
 			String contextPath = ctx.getRealPath("");
-			ctx.setAttribute("userDAO", new UserDAO(contextPath));
+			ctx.setAttribute("UserDAO", new UserDAO(contextPath));
 		}
 	}
 	
@@ -37,7 +34,7 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User login(@Context HttpServletRequest request, User user) {
-		UserDAO userDao = (UserDAO) ctx.getAttribute("userDAO");
+		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		User loggedUser = userDao.find(user.getUsername(), user.getPassword());
 		
 		if(loggedUser != null) {
@@ -48,7 +45,7 @@ public class UserService {
 	}
 	
 	@GET
-	@Path("/testlogin")
+	@Path("/test-login")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User testlogin(@Context HttpServletRequest request) {
@@ -61,7 +58,7 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User registerUser(@Context HttpServletRequest request, User user) {
-		UserDAO userDao = (UserDAO) ctx.getAttribute("userDAO");
+		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		User u = userDao.registration(user);
 		return u;
 	}

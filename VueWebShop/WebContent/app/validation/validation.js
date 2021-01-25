@@ -10,13 +10,14 @@ const validatePrice = (...prices) => {
 	return validation;
 }
 
-const validateDateRange = (from, to) => {
-	let fromDate = Date.parse(from);
-	let toDate = Date.parse(to);
-	if(toDate < fromDate)
-		return false;
-	return true;
+const validateNumberRange = (from, to, number) => {
+    return (number >= from && number <= to);
 }
+
+const validateRange = (from, to) => {
+	return !(to < from);
+}
+
 
 const isEmpty = (elem) => {
     return (elem == null || elem == undefined || elem =="") 

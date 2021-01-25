@@ -1,8 +1,12 @@
 package dao;
 
-import java.io.BufferedReader;
+import java.io.BufferedReader; 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -12,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.TreeMap;
 
 import javax.ws.rs.QueryParam;
 
@@ -21,6 +24,8 @@ import beans.Location;
 import beans.Manifestation;
 import beans.ManifestationType;
 import beans.Status;
+import beans.Ticket;
+import dto.ReservationDTO;
 
 public class ManifestationDAO {
 	private Map<String, Manifestation> manifestations = new HashMap<>();
@@ -37,6 +42,14 @@ public class ManifestationDAO {
 	
 	public List<Manifestation> getAllManifestations() {
 		return new ArrayList<Manifestation>(manifestations.values());
+	}
+	
+	public void reduceNumberOfSeats(ReservationDTO reservationDTO) {
+
+		Manifestation manifestation = getOneManifestation(reservationDTO.manifestation);
+		int remaining = manifestation.getRemainingNumberOfSeats() - reservationDTO.numberOfTickets;
+		manifestation.setRemainingNumberOfSeats(remaining);
+		write();
 	}
 	
 	public List<Manifestation> getFirstNManifestations(int num) {
@@ -194,6 +207,45 @@ public class ManifestationDAO {
 		return btip && bnotrasp;
 	}
 	
+	public String getManifestationLine(Manifestation manifestation) {
+		StringBuilder manifestationString = new StringBuilder();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+		manifestationString.append(manifestation.getId() + ";" + manifestation.getName() + ";"
+				+ manifestation.getType() + ";" + manifestation.getNumberOfSeats() + ";"
+				+ manifestation.getRemainingNumberOfSeats() + ";" + manifestation.getDate().format(formatter) + ";"
+				+ manifestation.getTicketPrice() + ";");
+		if(manifestation.getStatus() == Status.ACTIVE) {
+			manifestationString.append("1;");
+		} else {
+			manifestationString.append("0;");
+		}
+		manifestationString.append(manifestation.getLocation().getId() + ";"
+				+ manifestation.getImage());
+        return manifestationString.toString();
+	}
+	
+	public void write() {
+		File file = new File(contextPath + "/repositories/manifestations.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+            for(Manifestation manifestation : manifestations.values()) {
+            	pw.println(getManifestationLine(manifestation));
+            }
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+	}
+	
 	private void loadManifestations() {
 		BufferedReader reader = null;
 		try {
@@ -260,7 +312,7 @@ public class ManifestationDAO {
 					Double latitude = Double.parseDouble(st.nextToken().trim());
 					String street = st.nextToken().trim();
 					String city = st.nextToken().trim();
-					return new Location(Integer.parseInt(locationId), longitude, latitude, street, city);
+					return new Location(locationId, longitude, latitude, street, city);
 				}
 			}
 		} catch(Exception ex) {
@@ -280,93 +332,7 @@ public class ManifestationDAO {
 		return manifestations.get(id);
 	}
 
-	// ??? 
-	public List<Manifestation> sorting(String selected) {
-		// TODO Auto-generated method stub
-		List<Manifestation> searchedManifestations = (List<Manifestation>) manifestations.values();
-		
-		if(selected.equals("Sortiraj po ceni manifestacije rastuce")) {
-			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-
-				@Override
-				public int compare(Manifestation o1, Manifestation o2) {
-					// TODO Auto-generated method stub
-					return o1.getTicketPrice() - o2.getTicketPrice();
-				}
-			});
-		}
-		else if(selected.equals("Sortiraj po ceni manifestacije opadajuce")) {
-			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-
-				@Override
-				public int compare(Manifestation o1, Manifestation o2) {
-					// TODO sAuto-generated method stub
-					return o2.getTicketPrice() - o1.getTicketPrice();
-				}
-			});
-		}
-		else if(selected.equals("Sortiraj po nazivu manifestacije rastuce")) {
-			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-
-				@Override
-				public int compare(Manifestation o1, Manifestation o2) {
-					// TODO Auto-generated method stub
-					return o1.getName().compareTo(o2.getName());
-				}
-			});
-		}
-		else if(selected.equals("Sortiraj po nazivu manifestacije opadajuce")) {
-			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-
-				@Override
-				public int compare(Manifestation o1, Manifestation o2) {
-					// TODO Auto-generated method stub
-					return o2.getName().compareTo(o1.getName());
-				}
-			});
-		}
-		else if(selected.equals("Sortiraj po lokaciji manifestacije rastuce")) {
-			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-
-				@Override
-				public int compare(Manifestation o1, Manifestation o2) {
-					// TODO Auto-generated method stub
-					return o1.getLocation().getCity().compareTo(o2.getLocation().getCity());
-				}
-			});
-		}
-		else if(selected.equals("Sortiraj po lokaciji manifestacije opadajuce")) {
-			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-
-				@Override
-				public int compare(Manifestation o1, Manifestation o2) {
-					// TODO Auto-generated method stub
-					return o2.getLocation().getCity().compareTo(o1.getLocation().getCity());
-				}
-			});
-		}
-		else if(selected.equals("Sortiraj po datumu manifestacije rastuce")) {
-			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-
-				@Override
-				public int compare(Manifestation o1, Manifestation o2) {
-					// TODO Auto-generated method stub
-					return o1.getDate().compareTo(o2.getDate());
-				}
-			});
-		}
-		else if(selected.equals("Sortiraj po datumu manifestacije opadajuce")) {
-			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-
-				@Override
-				public int compare(Manifestation o1, Manifestation o2) {
-					// TODO Auto-generated method stub
-					return o2.getDate().compareTo(o1.getDate());
-				}
-			});
-		}
-		return searchedManifestations;
-	}
+	
 	
 	public List<Manifestation> filter(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo, String selected,String izborTipa, boolean nijeRasprodato) {
 		// TODO Auto-generated method stub

@@ -43,7 +43,6 @@ public class UserDAO {
 	}
 	
 	public User getOneUser(String id) {
-		System.out.println(users);
 		return users.get(id);
 	}
 	
@@ -97,7 +96,7 @@ public class UserDAO {
                             + user.getFirstName() + ";" + user.getLastName() + ";"
                             + user.getGender() + ";" + birthDate;
 
-        String customerString = user.getUsername() + ";;" + 0;
+        String customerString = user.getUsername() + "; ;" + 0 + ";" + "regularni";
         write(userString, customerString);
         return user;
     }
