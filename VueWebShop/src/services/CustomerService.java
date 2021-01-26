@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import beans.Customer;
 import beans.User;
 import dao.CustomerDAO;
+import dao.LocationDAO;
 import dao.ManifestationDAO;
 import dao.TicketDAO;
 import dto.ReservationDTO;
@@ -29,8 +30,12 @@ public class CustomerService {
 		if(ctx.getAttribute("TicketDAO") == null) {
 			ctx.setAttribute("TicketDAO", new TicketDAO(contextPath));
 		}
+		if(ctx.getAttribute("LocationDAO") == null) {
+			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
+		}
 		if(ctx.getAttribute("ManifestationDAO") == null) {
-			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath));
+			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
+			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath, locationDAO));
 		}
 		if(ctx.getAttribute("CustomerDAO") == null) {
 			TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");

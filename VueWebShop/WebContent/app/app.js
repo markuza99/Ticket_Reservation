@@ -4,7 +4,8 @@ const Registration = httpVueLoader('./app/components/RegistrationForm.vue');
 const loginForm = httpVueLoader('./app/components/LoginForm.vue');
 const Footer = httpVueLoader("./app/components/Footer.vue");
 const Manifestation = httpVueLoader("./app/components/Manifestation.vue");
-const reserveManifestation = httpVueLoader("./app/components/ReserveManifestation.vue");
+const editManifestation = httpVueLoader("./app/components/EditManifestation.vue");
+const Unauthorized = httpVueLoader("./app/components/Unauthorized.vue");
 
 const router = new VueRouter({
     mode: 'hash',
@@ -13,7 +14,8 @@ const router = new VueRouter({
 		{ path: '/login', component: loginForm },
         { path: '/registration', component: Registration },
         { path: '/manifestation/:id', component: Manifestation},
-        { path: '/manifestation/reserve/:id', component: reserveManifestation}
+        { path: '/manifestation/edit/:id', component: editManifestation},
+        { path: '/unauthorized', component: Unauthorized}
     ]
 });
 

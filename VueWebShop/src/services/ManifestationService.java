@@ -1,11 +1,14 @@
 package services;
 
-import java.text.ParseException; 
+import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -15,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 
 import beans.Manifestation;
 import dao.CommentDAO;
+import dao.LocationDAO;
 import dao.ManifestationDAO;
 import dao.UserDAO;
 
@@ -26,10 +30,13 @@ public class ManifestationService {
 	@PostConstruct
 	public void init() {
 		String contextPath = ctx.getRealPath("");
+		if(ctx.getAttribute("LocationDAO") == null) {
+			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
+		}
 		if(ctx.getAttribute("ManifestationDAO") == null) {
-			
+			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
 			System.out.println(contextPath);
-			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath));
+			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath, locationDAO));
 		}
 		if(ctx.getAttribute("UserDAO") == null) {
 			ctx.setAttribute("UserDAO", new UserDAO(contextPath));
@@ -76,4 +83,14 @@ public class ManifestationService {
 		return manifestationDao.filter(name, dateFrom, dateTo, place, priceFrom, priceTo, selected,izborTipa, nijeRasprodato);
 	}
 
+	@PUT
+	@Path("/update-manifestation")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Boolean updateManifestation(Manifestation manifestation) {
+		ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+		if(manifestationDAO.update(manifestation)) {
+			return true;
+		}
+		return false;
+	}
 }

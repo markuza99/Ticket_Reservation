@@ -72,6 +72,7 @@ public class CommentService {
 			manifestationDTO.manifestationRating = commentDAO.getManifestationRating(id);
 			manifestationDTO.userAttended = ticketDAO.userAttended(id, user.getUsername());
 			manifestationDTO.user = user.getUsername();
+			manifestationDTO.role = user.getRole();
 		}
 		return manifestationDTO;
 	}

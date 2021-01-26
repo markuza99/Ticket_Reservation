@@ -3,7 +3,7 @@ const validatePrice = (...prices) => {
 	prices.forEach(elem => {
 		if(elem == "") return;
 		if ((isNaN(elem) || elem > 100000 || elem < 0)) {
-		
+            console.log("urjde");
 			validation = false;
 		}
 	});
@@ -11,10 +11,16 @@ const validatePrice = (...prices) => {
 }
 
 const validateNumberRange = (from, to, number) => {
+    console.log(from, to);
+    console.log()
     return (number >= from && number <= to);
 }
 
 const validateRange = (from, to) => {
+    if(!from || !to) {
+        return true;
+    }
+    console.log(!(to < from));
 	return !(to < from);
 }
 

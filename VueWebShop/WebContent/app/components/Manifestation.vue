@@ -46,6 +46,10 @@
 			Reservisite karte
 			</button>
 
+			<button type="button" v-if="commentParams.role == 'ADMIN'" v-on:click="goToEditManifestation(manifestation.id)" class="btn btn-primary">
+				Izmeni manifestaciju
+			</button>
+
 			<!-- Modal -->
 			<div class="modal fade" id="reservationModal" tabindex="-1" role="dialog" aria-labelledby="reservationModalLabel" aria-hidden="true">
 				<div class="modal-dialog" role="document">
@@ -169,6 +173,9 @@ module.exports = {
 		}
 	},
 	methods: {
+		goToEditManifestation(id) {
+			location.replace("#/manifestation/edit/" + id);
+		},
 		countPrice() {
 			// TO DO : proveri da li je uneo broj < 1
 			$('.reserve-button').attr("disabled", false);
