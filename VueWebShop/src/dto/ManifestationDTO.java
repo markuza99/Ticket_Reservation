@@ -1,18 +1,31 @@
 package dto;
 
+import beans.Role;
+
 public class ManifestationDTO {
 	public Boolean commentSucces;
 	public int manifestationRating;
 	public Boolean userAttended;
 	public String user;
+	public Role role;
 	
 	public ManifestationDTO() {}
 	
-	public ManifestationDTO(Boolean commentSucces, int manifestationRating, Boolean userAttended, String user) {
+	public ManifestationDTO(Boolean commentSucces, int manifestationRating, Boolean userAttended, String user,
+			Role role) {
 		this.commentSucces = commentSucces;
 		this.manifestationRating = manifestationRating;
 		this.userAttended = userAttended;
 		this.user = user;
+		this.role = role;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 	public Boolean getCommentSucces() {

@@ -1,6 +1,7 @@
 package beans;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Manifestation implements Comparable<Manifestation>{
 	private String id;
@@ -11,11 +12,11 @@ public class Manifestation implements Comparable<Manifestation>{
 	private LocalDateTime date;
 	private int ticketPrice;
 	private Status status;
-	private Location location;
+	private String location;
 	private String image;
 	
 	public Manifestation(String id, String name, ManifestationType type, int numberOfSeats, int remainingNumberOfSeats, LocalDateTime date, int ticketPrice,
-			Status status, Location location, String image) {
+			Status status, String location, String image) {
 		this.id = id;
 		this.name = name;
 		this.type = type;
@@ -27,6 +28,8 @@ public class Manifestation implements Comparable<Manifestation>{
 		this.location = location;
 		this.image = image;
 	}
+	
+	public Manifestation() {}
 
 	public String getId() {
 		return id;
@@ -48,8 +51,8 @@ public class Manifestation implements Comparable<Manifestation>{
 		return type;
 	}
 
-	public void setType(ManifestationType type) {
-		this.type = type;
+	public void setType(String type) {
+		this.type = ManifestationType.valueOf(type);
 	}
 
 	public int getNumberOfSeats() {
@@ -64,8 +67,10 @@ public class Manifestation implements Comparable<Manifestation>{
 		return date;
 	}
 
-	public void setDate(LocalDateTime date) {
-		this.date = date;
+	public void setDate(String date) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
+		this.date = LocalDateTime.parse(date, formatter);
 	}
 
 	public int getTicketPrice() {
@@ -80,15 +85,15 @@ public class Manifestation implements Comparable<Manifestation>{
 		return status;
 	}
 
-	public void setStatus(Status status) {
-		this.status = status;
+	public void setStatus(String status) {
+		this.status = Status.valueOf(status);
 	}
 
-	public Location getLocation() {
+	public String getLocation() {
 		return location;
 	}
 
-	public void setLocation(Location location) {
+	public void setLocation(String location) {
 		this.location = location;
 	}
 
