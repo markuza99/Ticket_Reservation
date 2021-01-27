@@ -97,8 +97,8 @@ public class User {
 		return isDeleted;
 	}
 
-	public void setIsDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
+	public void setIsDeleted(String isDeleted) {
+		this.isDeleted = isDeleted.equals("1") ? true : false;
 	}
 
 	@Override

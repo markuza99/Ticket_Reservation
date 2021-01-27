@@ -37,7 +37,7 @@
 							
 							<div class="form-group">
 								<label class="form-label">Birth date</label>
-								<input type="date" class="form-control" id="birthDate" name="trip-start" value="01-01-2021" min="1900-01-01" max="2021-12-31"/>
+								<input type="date" class="form-control" id="birthDate" value="2021-01-01" min="1900-01-01" max="2021-12-31"/>
 							</div>
 							
 									
@@ -69,10 +69,10 @@
 			var firstName = $("#firstName").val();
 			var lastName = $("#lastName").val();
 			var gender = $( "#gender option:selected" ).text();
-			var d = new Date($('#date-input').val());
 			var birthDate = document.getElementById("birthDate").value;
 			var role = "CUSTOMER";
-			user = {username, password, firstName, lastName, gender, birthDate, role};
+			let isDeleted = "0";
+			user = {username, password, firstName, lastName, gender, birthDate, role, isDeleted};
 			
 			if(areInputFieldsEmpty(user)) {
     			document.getElementById("error").innerText = "Morate popuniti sva polja.";
@@ -102,7 +102,7 @@
 	
     mounted () {
 		axios
-			.get("rest/userservice/testlogin")
+			.get("rest/userservice/test-login")
 			.then(response => {
 				if(!isEmpty(response.data)) {
 					this.redirect();

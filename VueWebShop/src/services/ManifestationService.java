@@ -18,8 +18,10 @@ import javax.ws.rs.core.MediaType;
 
 import beans.Manifestation;
 import dao.CommentDAO;
+import dao.CustomerDAO;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
+import dao.TicketDAO;
 import dao.UserDAO;
 
 @Path("/manifestationservice")
@@ -38,8 +40,18 @@ public class ManifestationService {
 			System.out.println(contextPath);
 			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath, locationDAO));
 		}
+		if(ctx.getAttribute("TicketDAO") == null) {
+			ctx.setAttribute("TicketDAO", new TicketDAO(contextPath));
+		}
+		if(ctx.getAttribute("CustomerDAO") == null) {
+			TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			ctx.setAttribute("CustomerDAO", 
+			new CustomerDAO(contextPath, ticketDAO, manifestationDAO));
+		}
 		if(ctx.getAttribute("UserDAO") == null) {
-			ctx.setAttribute("UserDAO", new UserDAO(contextPath));
+			CustomerDAO customerDAO = (CustomerDAO) ctx.getAttribute("CustomerDAO");
+			ctx.setAttribute("UserDAO", new UserDAO(contextPath, customerDAO));
 		}
 		if(ctx.getAttribute("CommentDAO") == null) {
 			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath));

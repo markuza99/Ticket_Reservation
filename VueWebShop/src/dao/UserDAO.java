@@ -1,6 +1,6 @@
 package dao;
 
-import java.io.BufferedReader; 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import beans.Customer;
 import beans.Gender;
 import beans.Role;
 import beans.Ticket;
@@ -23,17 +24,19 @@ import beans.User;
 public class UserDAO {
 	private Map<String, User> users = new HashMap<>();
 	private String contextPath;
+	private CustomerDAO customerDAO;
 	
 	public UserDAO() {}
 	
-	public UserDAO(String contextPath) {
+	public UserDAO(String contextPath, CustomerDAO customerDAO) {
 		this.contextPath = contextPath;
+		this.customerDAO = customerDAO;
 		loadUsers();
 	}
 	
 	public User find(String username, String password) {
 		User user = users.get(username);
-		if (user==null || !user.getPassword().equals(password)) {
+		if (!user.getPassword().equals(password)) {
 			return null;
 		}
 		return user;
@@ -95,15 +98,15 @@ public class UserDAO {
         if(usernameExists(user.getUsername())) {
             return null;
         }
-        users.put(user.getUsername(), user); 
-        LocalDate birthDate = user.getBirthDate();
-        //TO DO : formatter
-        String userString = "CUSTOMER" + ";" + user.getUsername() + ";" + user.getPassword() + ";" 
-                            + user.getFirstName() + ";" + user.getLastName() + ";"
-                            + user.getGender() + ";" + birthDate + ";0";
-
-        String customerString = user.getUsername() + "; ;" + 0 + ";" + "regularni";
-        write(userString, customerString);
+        String customerLine = user.getUsername() + "; ;" + 0 + ";" + "regularni";
+        users.put(user.getUsername(), user);
+        customerDAO.getCustomers().put(user.getUsername(),
+        		new Customer(user.getUsername(), new ArrayList<Ticket>(),
+        		0, customerDAO.getCustomerType("regularni")));
+        append(getUserLine(user));
+        if(user.getRole() == Role.CUSTOMER) {
+        	customerDAO.append(customerLine);
+        }
         return user;
     }
 	
@@ -111,37 +114,14 @@ public class UserDAO {
 	    return users.containsKey(username);
 	}
 	
-//	private void append(String line) {
-//		File file = new File(contextPath + "/repositories/users.txt");
-//
-//        PrintWriter pw = null;
-//        try {
-//            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-//            	pw.println(line);
-//            
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            if(pw != null) {
-//                try {
-//                    pw.close();
-//                }
-//                catch (Exception e) {}
-//            }
-//        }
-//	}
-	
-	private void write(String user, String customer) {
-        File fileUsers = new File(contextPath + "/repositories/users.txt");
-        File fileCustomers = new File(contextPath + "/repositories/customers.txt");
+	private void append(String line) {
+		File file = new File(contextPath + "/repositories/users.txt");
 
         PrintWriter pw = null;
-        PrintWriter pwCustomers = null;
         try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileUsers, true)));
-            pwCustomers = new PrintWriter(new BufferedWriter(new FileWriter(fileCustomers, true)));
-            pw.println(user);
-            pwCustomers.println(customer);
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            pw.println(line);
+            
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -151,23 +131,12 @@ public class UserDAO {
                 }
                 catch (Exception e) {}
             }
-
-            if(pwCustomers != null) {
-                try {
-                    pwCustomers.close();
-                }
-                catch (Exception e) {}
-            }
         }
-    }
+	}
 	
 	public String getUserLine(User user) {
 		StringBuilder userString = new StringBuilder();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//		ticketString.append(ticket.getId() + ";" + ticket.getManifestationId() + ";"
-//				+ ticket.getDateTime().format(formatter) + ";" + ticket.getPrice() + ";"
-//				+ ticket.getUser() + ";" + ticket.getTicketStatus() + ";"
-//				+ ticket.getTicketType());
 		String deleted = user.getIsDeleted() ? "1" : "0";
 		userString.append(user.getRole() + ";" + user.getUsername() + ";" + user.getPassword() + ";" 
              + user.getFirstName() + ";" + user.getLastName() + ";"
@@ -201,7 +170,7 @@ public class UserDAO {
 	public List<User> deleteUser(String username) {
 		// TODO Auto-generated method stub
 		User user = users.get(username);
-		user.setIsDeleted(true);
+		user.setIsDeleted("1");
 		write();
 		return getAllUsers();
 	}
@@ -209,7 +178,7 @@ public class UserDAO {
 	public List<User> retrieveUser(String username) {
 		// TODO Auto-generated method stub
 		User user = users.get(username);
-		user.setIsDeleted(false);
+		user.setIsDeleted("0");
 		write();
 		return getAllUsers();
 	}

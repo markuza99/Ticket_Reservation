@@ -36,10 +36,6 @@ public class ManifestationDAO {
 		loadManifestations();
 	}
 	
-	public ManifestationDAO() {
-		
-	}
-	
 	public List<Manifestation> getAllManifestations() {
 		return new ArrayList<Manifestation>(manifestations.values());
 	}

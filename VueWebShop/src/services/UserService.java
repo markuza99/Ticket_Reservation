@@ -16,6 +16,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import beans.User;
+import dao.CustomerDAO;
+import dao.LocationDAO;
+import dao.ManifestationDAO;
+import dao.TicketDAO;
 import dao.UserDAO;
 
 @Path("/userservice")
@@ -27,9 +31,27 @@ public class UserService {
 	
 	@PostConstruct
 	public void init() {
+		String contextPath = ctx.getRealPath("");
+		if(ctx.getAttribute("TicketDAO") == null) {
+			ctx.setAttribute("TicketDAO", new TicketDAO(contextPath));
+		}
+		if(ctx.getAttribute("LocationDAO") == null) {
+			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
+		}
+		if(ctx.getAttribute("ManifestationDAO") == null) {
+			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
+			ctx.setAttribute("ManifestationDAO",
+			new ManifestationDAO(contextPath, locationDAO));
+		}
+		if(ctx.getAttribute("CustomerDAO") == null) {
+			TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			ctx.setAttribute("CustomerDAO", 
+			new CustomerDAO(contextPath, ticketDAO, manifestationDAO));
+		}
 		if(ctx.getAttribute("UserDAO") == null) {
-			String contextPath = ctx.getRealPath("");
-			ctx.setAttribute("UserDAO", new UserDAO(contextPath));
+			CustomerDAO customerDAO = (CustomerDAO) ctx.getAttribute("CustomerDAO");
+			ctx.setAttribute("UserDAO", new UserDAO(contextPath, customerDAO));
 		}
 	}
 	
@@ -66,6 +88,10 @@ public class UserService {
 		User u = userDao.registration(user);
 		return u;
 	}
+	
+//	@POST
+//	@Path("/register-customer")
+	
 	
 	@GET
 	@Path("/")

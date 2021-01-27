@@ -39,6 +39,14 @@ public class CustomerDAO {
 		loadCustomers();
 	}
 	
+	public Map<String, Customer> getCustomers() {
+		return customers;
+	}
+
+	public void setCustomers(Map<String, Customer> customers) {
+		this.customers = customers;
+	}
+
 	public CustomerType getCustomerType(String id) {
 		for(CustomerType ct : customerTypes) {
 			if(ct.getTypeName().equals(id)) {
@@ -82,7 +90,7 @@ public class CustomerDAO {
 		write();
 	}
 	
-	private String getCustomerLine(Customer customer) {
+	public String getCustomerLine(Customer customer) {
 		StringBuilder customerString = new StringBuilder(); 
 		customerString.append(customer.getUsername() + ";");
 		if(customer.getTickets().size() == 0) {
@@ -91,10 +99,31 @@ public class CustomerDAO {
 			for(Ticket t : customer.getTickets()) {
 				customerString.append(t.getId() + ":");
 			}
+			customerString.append(";");
 		}
 		
-		customerString.append(";" +customer.getPoints() + ";" + "regularni");
+		customerString.append(customer.getPoints() + ";" + "regularni");
         return customerString.toString();
+	}
+	
+	public void append(String line) {
+		File file = new File(contextPath + "/repositories/customers.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            	pw.println(line);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
 	}
 	
 	private void write() {
