@@ -70,6 +70,10 @@ function displayMap() {
   });
  }
 
+ const makeDateString = (user) => {
+   user.dateString = "1998-04-22";
+ }
+
  const makeDate = (manifestation) => {
   switch(manifestation.date.month) {
 				

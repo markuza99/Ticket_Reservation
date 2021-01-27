@@ -1,12 +1,16 @@
 package services;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -63,4 +67,25 @@ public class UserService {
 		return u;
 	}
 	
+	@GET
+	@Path("/")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<User> allUsers() {
+		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
+		return userDao.getAllUsers();
+	}
+	
+	@PUT
+	@Path("/delete-user/{username}")
+	public List<User> deleteUser(@PathParam("username") String username) {
+		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
+		return userDao.deleteUser(username);
+	}
+	
+	@PUT
+	@Path("/retrieve-user/{username}")
+	public List<User> retrieveUser(@PathParam("username") String username) {
+		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
+		return userDao.retrieveUser(username);
+	}
 }

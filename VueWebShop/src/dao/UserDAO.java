@@ -17,6 +17,7 @@ import java.util.StringTokenizer;
 
 import beans.Gender;
 import beans.Role;
+import beans.Ticket;
 import beans.User;
 
 public class UserDAO {
@@ -67,9 +68,13 @@ public class UserDAO {
 					Gender gender = Gender.valueOf(st.nextToken().trim());
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 					LocalDate birthDate = LocalDate.parse(st.nextToken().trim(), formatter);
-					
+					String deleted = st.nextToken().trim();
+					Boolean isDeleted = false;
+					if(deleted.equals("1")) {
+						isDeleted = true;
+					}
 					users.put(username, new User(username, firstName, lastName, 
-							password, gender, birthDate, role));
+							password, gender, birthDate, role, isDeleted));
 				}
 			}
 		} catch(Exception ex) {
@@ -92,9 +97,10 @@ public class UserDAO {
         }
         users.put(user.getUsername(), user); 
         LocalDate birthDate = user.getBirthDate();
+        //TO DO : formatter
         String userString = "CUSTOMER" + ";" + user.getUsername() + ";" + user.getPassword() + ";" 
                             + user.getFirstName() + ";" + user.getLastName() + ";"
-                            + user.getGender() + ";" + birthDate;
+                            + user.getGender() + ";" + birthDate + ";0";
 
         String customerString = user.getUsername() + "; ;" + 0 + ";" + "regularni";
         write(userString, customerString);
@@ -105,34 +111,107 @@ public class UserDAO {
 	    return users.containsKey(username);
 	}
 	
+//	private void append(String line) {
+//		File file = new File(contextPath + "/repositories/users.txt");
+//
+//        PrintWriter pw = null;
+//        try {
+//            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+//            	pw.println(line);
+//            
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if(pw != null) {
+//                try {
+//                    pw.close();
+//                }
+//                catch (Exception e) {}
+//            }
+//        }
+//	}
+	
 	private void write(String user, String customer) {
-	        File fileUsers = new File(contextPath + "/repositories/users.txt");
-	        File fileCustomers = new File(contextPath + "/repositories/customers.txt");
+        File fileUsers = new File(contextPath + "/repositories/users.txt");
+        File fileCustomers = new File(contextPath + "/repositories/customers.txt");
+
+        PrintWriter pw = null;
+        PrintWriter pwCustomers = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileUsers, true)));
+            pwCustomers = new PrintWriter(new BufferedWriter(new FileWriter(fileCustomers, true)));
+            pw.println(user);
+            pwCustomers.println(customer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+
+            if(pwCustomers != null) {
+                try {
+                    pwCustomers.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+    }
 	
-	        PrintWriter pw = null;
-	        PrintWriter pwCustomers = null;
-	        try {
-	            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileUsers, true)));
-	            pwCustomers = new PrintWriter(new BufferedWriter(new FileWriter(fileCustomers, true)));
-	            pw.println(user);
-	            pwCustomers.println(customer);
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        } finally {
-	            if(pw != null) {
-	                try {
-	                    pw.close();
-	                }
-	                catch (Exception e) {}
-	            }
+	public String getUserLine(User user) {
+		StringBuilder userString = new StringBuilder();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//		ticketString.append(ticket.getId() + ";" + ticket.getManifestationId() + ";"
+//				+ ticket.getDateTime().format(formatter) + ";" + ticket.getPrice() + ";"
+//				+ ticket.getUser() + ";" + ticket.getTicketStatus() + ";"
+//				+ ticket.getTicketType());
+		String deleted = user.getIsDeleted() ? "1" : "0";
+		userString.append(user.getRole() + ";" + user.getUsername() + ";" + user.getPassword() + ";" 
+             + user.getFirstName() + ";" + user.getLastName() + ";"
+             + user.getGender() + ";" + user.getBirthDate().format(formatter) + ";" + deleted);
+
+        return userString.toString();
+	}
 	
-	            if(pwCustomers != null) {
-	                try {
-	                    pwCustomers.close();
-	                }
-	                catch (Exception e) {}
-	            }
-	        }
-	    }
+	private void write() {
+		File file = new File(contextPath + "/repositories/users.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+            for(User user : users.values()) {
+            	pw.println(getUserLine(user));
+            }
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+	}
+
+	public List<User> deleteUser(String username) {
+		// TODO Auto-generated method stub
+		User user = users.get(username);
+		user.setIsDeleted(true);
+		write();
+		return getAllUsers();
+	}
+
+	public List<User> retrieveUser(String username) {
+		// TODO Auto-generated method stub
+		User user = users.get(username);
+		user.setIsDeleted(false);
+		write();
+		return getAllUsers();
+	}
 	
 }

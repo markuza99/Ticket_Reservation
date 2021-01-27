@@ -60,7 +60,7 @@ public class TicketDAO {
 	
 	public String getTicketLine(Ticket ticket) {
 		StringBuilder ticketString = new StringBuilder();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		ticketString.append(ticket.getId() + ";" + ticket.getManifestationId() + ";"
 				+ ticket.getDateTime().format(formatter) + ";" + ticket.getPrice() + ";"
 				+ ticket.getUser() + ";" + ticket.getTicketStatus() + ";"
@@ -138,7 +138,7 @@ public class TicketDAO {
 					
 					String id = st.nextToken().trim();
 					String manifestation = st.nextToken().trim();
-					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");  
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");  
 					LocalDateTime maintenance = LocalDateTime.parse(st.nextToken().trim(), formatter);
 					double price = Double.parseDouble(st.nextToken().trim());
 					String user = st.nextToken().trim();
