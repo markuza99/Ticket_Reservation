@@ -1,13 +1,13 @@
 <template>
     <div class="container-fluid" id="users-panel">
-        <form class="form-inline justify-content-between">
+        <form class="form-inline justify-content-between" @submit.prevent="search">
             <div class="form-group">
                 <label class="mr-2 text-uppercase">Datum rodjenja:</label>
-                <input type="date" class="form-control mr-2">
-                <input type="date" class="form-control mr-5">
+                <input type="date" v-model="date_from" class="form-control mr-2"/>
+                <input type="date" v-model="date_to" class="form-control mr-5"/>
             </div>
             <div class="form-group">
-                <input type="text" class="form-control mr-2">
+                <input type="text" v-model="text" class="form-control mr-2"/>
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-search"></i>
                 </button>
@@ -16,18 +16,19 @@
         <div class="row">
             <div class="col-lg-2 col-md-2">
                 <div class="mb-2 font-weight-bold">Tip korisnika</div>
-                <div class="list-group" id="list-tab" role="tablist">
-                    <a class="list-group-item user-type list-group-item-action active" id="list-home-list" data-toggle="list" href="#list-home" role="tab" aria-controls="home">Svi korisnici</a>
-                    <a class="list-group-item user-type list-group-item-action" id="list-profile-list" data-toggle="list" href="#list-profile" role="tab" aria-controls="profile">Kupci</a>
-                    <a class="list-group-item user-type list-group-item-action" id="list-messages-list" data-toggle="list" href="#list-messages" role="tab" aria-controls="messages">Prodavci</a>
+                <div class="list-group user_type" id="list-tab" role="tablist">
+                    <a class="list-group-item list-group-item-action active" data-toggle="list" id="ALL" v-on:click="setUserType('ALL')">Svi</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" id="CUSTOMER" v-on:click="setUserType('CUSTOMER')">Kupci</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" id="SELLER" v-on:click="setUserType('SELLER')">Prodavci</a>
                 </div>
 
                 <div class="mb-2 mt-5 font-weight-bold">Status korisnika</div>
-                <div class="list-group" id="list-tab" role="tablist">
-                    <a class="list-group-item user-status list-group-item-action" id="list-messages-list" data-toggle="list" href="#list-messages" role="tab" aria-controls="messages">Svi</a>
-                    <a class="list-group-item user-status list-group-item-action active" id="list-home-list" data-toggle="list" href="#list-home" role="tab" aria-controls="home">Aktivni</a>
-                    <a class="list-group-item user-status list-group-item-action" id="list-profile-list" data-toggle="list" href="#list-profile" role="tab" aria-controls="profile">Obrisani</a>
+                <div class="list-group user_status" id="list-tab" role="tablist">
+                    <a class="list-group-item user-status list-group-item-action" data-toggle="list" id="ALL" v-on:click="setUserStatus('ALL')">Svi</a>
+                    <a class="list-group-item user-status list-group-item-action active" data-toggle="list" id="ACTIVE" v-on:click="setUserStatus('ACTIVE')">Aktivni</a>
+                    <a class="list-group-item user-status list-group-item-action" data-toggle="list" id="DELETED" v-on:click="setUserStatus('DELETED')">Obrisani</a>
                 </div>
+                <button type="submit" class="btn btn-primary" v-on:click="filter">Filtriraj</button>
             </div>
             <div class="col-lg-10 col-md-10">
                 <div class="table-wrapper-scroll">
@@ -124,7 +125,12 @@ module.exports = {
         return {
             users : [],
             selected_user : "",
-            filtered_users : "SVI"
+            filtered_users : "SVI",
+            text : "",
+            date_from : "",
+            date_to : "",
+            user_type : "",
+            user_status : ""
         }
     },
     mounted() {
@@ -135,13 +141,13 @@ module.exports = {
                 this.users.forEach(user => makeDateString(user));
                 console.log(this.users);
             });
-        // axios
-        //     .get("rest/userservice/test-login")
-        //     .then(response => {
-        //         if(response.data.role != "ADMIN") {
-        //             location.replace("#/unauthorized");
-        //         }
-        //     });
+        axios
+            .get("rest/userservice/test-login")
+            .then(response => {
+                if(response.data.role != "ADMIN") {
+                    location.replace("#/unauthorized");
+                }
+            });
     },
     methods : {
         setSelectedUser(id) {
@@ -160,6 +166,70 @@ module.exports = {
                 .then(response => {
                     this.users = response.data;
                 });
+        },
+        search() {
+            console.log(this.date_from, this.date_to);
+            axios
+                .get("rest/userservice/search", {
+                    params: {
+                        "text": this.text,
+                        "dateFrom" : this.date_from,
+                        "dateTo" : this.date_to
+                    }
+                })
+                .then(response => {
+                    this.users = response.data;
+                })
+        },
+        filter() {
+            let id_type = $(".user_type .active").attr("id");
+            let id_status = $(".user_status .active").attr("id");
+            console.log(id_type, id_status);
+            this.setUserType(id_type);
+            this.setUserStatus(id_status);
+            axios
+                .get("rest/userservice/filter", {
+                    params: {
+                        "text": this.text,
+                        "dateFrom" : this.date_from,
+                        "dateTo" : this.date_to,
+                        "role" : this.user_type,
+                        "userStatus" : this.user_status
+                    }
+                })
+                .then(response => {
+                    this.users = response.data;
+                })
+        },
+        setUserType(type) {
+            switch(type) {
+                case "ALL" : 
+                    this.user_type = "Svi";
+                    break;
+                case "CUSTOMER" :
+                    this.user_type = "CUSTOMER";
+                    break;
+                case "SELLER" :
+                    this.user_type = "SELLER";
+                    break;
+                default :
+                    break;
+            }
+        },
+        setUserStatus(status) {
+            switch(status) {
+                case "ALL" :
+                    this.user_status = "Svi";
+                    break;
+                case "ACTIVE" : 
+                    this.user_status = "0";
+                    break;
+                case "DELETED" :
+                    this.user_status = "1";
+                    break;
+                default :
+                    break;
+            }
         }
     }
 }

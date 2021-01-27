@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -181,6 +182,58 @@ public class UserDAO {
 		user.setIsDeleted("0");
 		write();
 		return getAllUsers();
+	}
+
+	public List<User> search(String text, String dateFrom, String dateTo) {
+		// TODO Auto-generated method stub
+		List<User> searchedUsers = new ArrayList<>();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate LdateFrom = null;
+		LocalDate LdateTo = null;
+		
+		if(!dateFrom.equals("")) {
+			LdateFrom = LocalDate.parse(dateFrom, formatter);;
+		}
+		if(!dateTo.equals("")) {
+			LdateTo = LocalDate.parse(dateTo, formatter);
+		}
+		
+		for(User user : users.values()) {
+			if(correspondsSearch(user, text, LdateFrom, LdateTo)) {
+				searchedUsers.add(user);
+			}
+		}
+		return searchedUsers;
+	}
+
+	private boolean correspondsSearch(User user, String text, LocalDate dateFrom, LocalDate dateTo) {
+		boolean btext = text.trim() == "" ? true : (user.getUsername().contains(text) || user.getFirstName().contains(text)
+				|| user.getLastName().contains(text));
+		boolean bdateFrom = dateFrom == null ? true : user.getBirthDate().isAfter(dateFrom);
+		boolean bdateTo = dateTo == null ? true : user.getBirthDate().isBefore(dateTo);
+		return btext && bdateFrom && bdateTo;
+	}
+
+	public List<User> filter(List<User> searchedUsers, String role, String userStatus) {
+		// TODO Auto-generated method stub
+		List<User> filteredUsers = new ArrayList<>();
+		for(User user : searchedUsers) {
+			if(correspondsFilter(user, role, userStatus)) {
+				filteredUsers.add(user);
+			}
+		}
+		return filteredUsers;
+	}
+
+	private boolean correspondsFilter(User user, String role, String userStatus) {
+		// TODO Auto-generated method stub
+		boolean buserType = role.equals("Svi") ? true : (user.getRole() == Role.valueOf(role));
+		String deleted = "0";
+		if(user.getIsDeleted()) {
+			deleted = "1";
+		}
+		boolean buserStatus = userStatus.equals("Svi") ? true : userStatus.equals(deleted);
+		return buserType && buserStatus;
 	}
 	
 }

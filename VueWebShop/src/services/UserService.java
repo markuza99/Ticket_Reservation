@@ -12,6 +12,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -113,5 +114,23 @@ public class UserService {
 	public List<User> retrieveUser(@PathParam("username") String username) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		return userDao.retrieveUser(username);
+	}
+	
+	@GET
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<User> search(@QueryParam("text") String text, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo) {
+		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
+		return userDao.search(text, dateFrom, dateTo);
+	}
+	
+	@GET
+	@Path("/filter")
+	public List<User> filter(@QueryParam("text") String text, @QueryParam("dateFrom") String dateFrom,
+			@QueryParam("dateTo") String dateTo, @QueryParam("role") String role,
+			@QueryParam("userStatus") String userStatus) {
+		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
+		List<User> searchedUsers = userDao.search(text, dateFrom, dateTo);
+		return userDao.filter(searchedUsers, role, userStatus);
 	}
 }
