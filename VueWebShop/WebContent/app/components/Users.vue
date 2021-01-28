@@ -310,6 +310,7 @@ module.exports = {
             }
         },
         createUser() {
+            console.log(this.new_user);
             if(areInputFieldsEmpty(this.new_user)) {
                 $('#createUserModal input').addClass("error");
                 $('#createUserModal input').removeClass("success");
@@ -317,6 +318,52 @@ module.exports = {
             }
             $('#createUserModal input').removeClass("error");
             $('#createUserModal input').addClass("success");
+            // private String username;
+            // private String firstName;
+            // private String lastName;
+            // private String password;
+            // private Gender gender;
+            // private LocalDate birthDate;
+            // private Role role;
+            // private Boolean isDeleted;
+            var rola = "";
+            switch(this.new_user.role) {
+                case "Kupac":
+                    // code block
+                    rola = "CUSTOMER";
+                    break;
+                case "Prodavac":
+                    // code block
+                    rola = "SELLER";
+                    break;
+                default:
+                    // code block
+                    break;
+            }
+            var userNew = {
+                username : this.new_user.username.trim(),
+                password : this.new_user.password.trim(),
+                firstName : this.new_user.first_name.trim(),
+                lastName : this.new_user.last_name.trim(),
+                gender : this.new_user.gender.trim(),
+                birthDate : this.new_user.date.trim(),
+                role : rola,
+                isDeleted : this.new_user.is_deleted 
+            };
+            var userJSON = JSON.stringify(userNew);
+            console.log(userJSON);
+            axios
+				.post("rest/userservice/addUser", userJSON, {
+					headers: {'content-type':'application/json'}
+				})
+				.then(response => {
+					if(response.data != "") {
+						alert(userNew.username + " Uspesno dodat!");
+                        this.users = response.data;
+					} else {
+						alert("Korisnik sa tim usernameom vec postoji!!!");
+					}
+				});
             console.log(this.new_user);
         }
     }

@@ -1,3 +1,14 @@
-pera;001;Moj komentar;4
-mika;001;Onako;3
-mika;002;Dobro je;5
+pera;001;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.;4;NONACTIVE
+mika;001;Onako;3;ACTIVE
+mika;002;Vrh.....;4;ACTIVE
+pera;003;Cooool;5;ACTIVE
+username;001;volim colu;5;ACTIVE
+seka;001;ne svidja mi se uopste;1;NONACTIVE
+zdora;001;Sve pet;5;NONACTIVE
+zdora;002;smaranje;1;NONACTIVE
+zdora;003;nfgnf;2;NONACTIVE
+seka;002;hskdjhsjd;3;NONACTIVE
+seka;004;dgfgjhf;4;NONACTIVE
+seka;003;dobar;4;NONACTIVE
+zdora;004;dbdfb\;1;NONACTIVE
+bozidar;001;ok;3;NONACTIVE

@@ -1,0 +1,4 @@
+zlatni;0.30;500
+bronzani;0.15;50
+srebrni;0.25;150
+regularni;1;0
