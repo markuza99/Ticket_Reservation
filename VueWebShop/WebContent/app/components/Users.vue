@@ -7,12 +7,80 @@
                 <input type="date" v-model="date_to" class="form-control mr-5"/>
             </div>
             <div class="form-group">
+                <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#createUserModal">Dodaj korisnika</button>
                 <input type="text" v-model="text" class="form-control mr-2"/>
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-search"></i>
                 </button>
             </div>
         </form>
+
+        <div class="modal fade" id="createUserModal" tabindex="-1" role="dialog" aria-labelledby="createUserModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createUserModalLabel">Dodavanje korisnika</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label>Ime</label>
+                            <input type="text" class="form-control" v-model="new_user.first_name" placeholder="Ime">
+                            </div>
+                            <div class="form-group col-md-6">
+                            <label>Prezime</label>
+                            <input type="text" class="form-control" v-model="new_user.last_name" placeholder="Prezime">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label>Korisnicko ime</label>
+                            <input type="text" class="form-control" v-model="new_user.username" placeholder="Korisnicko ime">
+                            </div>
+                            <div class="form-group col-md-6">
+                            <label>Lozinka</label>
+                            <input type="text" class="form-control" v-model="new_user.password" placeholder="Lozinka">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" v-model="new_user.gender" name="inlineRadioOptions" id="inlineRadio1" value="MALE">
+                            <label class="form-check-label" for="inlineRadio1">Musko</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" v-model="new_user.gender" name="inlineRadioOptions" id="inlineRadio2" value="FEMALE">
+                            <label class="form-check-label" for="inlineRadio2">Zensko</label>
+                        </div>    
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                            <label>Datum rodjenja</label>
+                            <input type="date" class="form-control" v-model="new_user.date">
+                            </div>
+                            <div class="form-group col-md-6">
+                            <label>Tip korisnika</label>
+                            <select class="form-control" v-model="new_user.role">
+                                <option selected>Kupac</option>
+                                <option>Prodavac</option>
+                            </select>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazivanje</button>
+                    <button type="button" class="btn btn-primary" v-on:click="createUser">Potvrda</button>
+                    
+                </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-lg-2 col-md-2">
                 <div class="mb-2 font-weight-bold">Tip korisnika</div>
@@ -130,7 +198,17 @@ module.exports = {
             date_from : "",
             date_to : "",
             user_type : "",
-            user_status : ""
+            user_status : "",
+            new_user : {
+                username : "",
+                password : "",
+                date : "",
+                first_name : "",
+                last_name : "",
+                gender : "",
+                role : "Kupac",
+                is_deleted : "0"
+            }
         }
     },
     mounted() {
@@ -141,13 +219,13 @@ module.exports = {
                 this.users.forEach(user => makeDateString(user));
                 console.log(this.users);
             });
-        axios
-            .get("rest/userservice/test-login")
-            .then(response => {
-                if(response.data.role != "ADMIN") {
-                    location.replace("#/unauthorized");
-                }
-            });
+        // axios
+        //     .get("rest/userservice/test-login")
+        //     .then(response => {
+        //         if(response.data.role != "ADMIN") {
+        //             location.replace("#/unauthorized");
+        //         }
+        //     });
     },
     methods : {
         setSelectedUser(id) {
@@ -230,6 +308,63 @@ module.exports = {
                 default :
                     break;
             }
+        },
+        createUser() {
+            console.log(this.new_user);
+            if(areInputFieldsEmpty(this.new_user)) {
+                $('#createUserModal input').addClass("error");
+                $('#createUserModal input').removeClass("success");
+                return;
+            }
+            $('#createUserModal input').removeClass("error");
+            $('#createUserModal input').addClass("success");
+            // private String username;
+            // private String firstName;
+            // private String lastName;
+            // private String password;
+            // private Gender gender;
+            // private LocalDate birthDate;
+            // private Role role;
+            // private Boolean isDeleted;
+            var rola = "";
+            switch(this.new_user.role) {
+                case "Kupac":
+                    // code block
+                    rola = "CUSTOMER";
+                    break;
+                case "Prodavac":
+                    // code block
+                    rola = "SELLER";
+                    break;
+                default:
+                    // code block
+                    break;
+            }
+            var userNew = {
+                username : this.new_user.username.trim(),
+                password : this.new_user.password.trim(),
+                firstName : this.new_user.first_name.trim(),
+                lastName : this.new_user.last_name.trim(),
+                gender : this.new_user.gender.trim(),
+                birthDate : this.new_user.date.trim(),
+                role : rola,
+                isDeleted : this.new_user.is_deleted 
+            };
+            var userJSON = JSON.stringify(userNew);
+            console.log(userJSON);
+            axios
+				.post("rest/userservice/addUser", userJSON, {
+					headers: {'content-type':'application/json'}
+				})
+				.then(response => {
+					if(response.data != "") {
+						alert(userNew.username + " Uspesno dodat!");
+                        this.users = response.data;
+					} else {
+						alert("Korisnik sa tim usernameom vec postoji!!!");
+					}
+				});
+            console.log(this.new_user);
         }
     }
 }

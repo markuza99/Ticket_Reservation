@@ -60,7 +60,7 @@ public class ManifestationService {
 		if(ctx.getAttribute("CommentDAO") == null) {
 			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath));
 		}
-		
+		System.out.println("ASFZDGSDGsdfdsfgdssdfg  " + contextPath);
 	}
 	
 	@GET
