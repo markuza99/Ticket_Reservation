@@ -54,8 +54,9 @@
                     </select>
                     </div>
                     <div class="form-group col-md-4">
-                    <label for="inputImage">Poster manifestacije</label>
-                    <input type="file" @change="onFileChange" class="form-control-file" id="inputImage" disabled>
+                    <label for="file">Poster manifestacije</label>
+                    <input type="file" id="file" ref="file" v-on:change="handleFileUpload" class="form-control-file" disabled>
+                    <button v-on:click="submitFile">Submit file</button>
                     </div>
                      <div id="preview">
                         <img v-if="url" :src="url" />
@@ -84,7 +85,8 @@ module.exports = {
             date_error : false,
             remaining_number_error : false,
             number_of_seats_error : false,
-            price_error : false
+            price_error : false,
+            file : ""
         }
     },
     methods: {
@@ -98,7 +100,7 @@ module.exports = {
             $("#inputState").attr("disabled", true);
             $("#type").attr("disabled", true);
             $("#status").attr("disabled", true);
-            $('#inputImage').attr("disabled", true);
+            $('#file').attr("disabled", true);
             // $('#cancel').attr("disabled", true);
             $('#inputRemainingNumOfSeats').removeClass("error");
             $('#inputNumOfSeats').removeClass("error");
@@ -121,7 +123,7 @@ module.exports = {
             $("#inputState").attr("disabled", true);
             $("#type").attr("disabled", true);
             $("#status").attr("disabled", true);
-            $('#inputImage').attr("disabled", true);
+            $('#file').attr("disabled", true);
             $('#cancel').attr("disabled", true);
 
             let numberOfSeats = $('#inputNumOfSeats').val();
@@ -214,7 +216,7 @@ module.exports = {
             $("#inputState").attr("disabled", false);
             $("#type").attr("disabled", false);
             $("#status").attr("disabled", false);
-            $('#inputImage').attr("disabled", false);
+            $('#file').attr("disabled", false);
             $('#save_changes').attr("disabled", false);
             $('#cancel').attr("disabled", false);
             console.log("edit");
@@ -248,6 +250,25 @@ module.exports = {
             + this.manifestation.monthValueString + "-" + this.manifestation.dayValueString + "T"
             + this.manifestation.hourString + ":" + this.manifestation.minuteString;
             console.log(this.manifestation.dateString);
+        },
+        handleFileUpload() {
+            this.file = this.$refs.file.files[0];
+            console.log("fajl ",this.file);
+        },
+        submitFile() {
+            let formData = new FormData();
+            formData.append("file",this.file);
+            console.log("form data: ", formData);
+            axios
+                .post("rest/manifestationservice/upload", formData, {
+                    headers: {
+                        "Content-Type":"multipart/form-data"
+                    }
+                })
+                .then(response => {
+                    console.log("cooool");
+                })
+
         }
     },
     mounted() {
@@ -264,13 +285,13 @@ module.exports = {
 				this.makeStringDate(this.manifestation.date);
             });
             
-        axios  
-            .get("rest/userservice/test-login")
-            .then(response => {
-                if(response.data.role != "ADMIN") {
-                    location.replace("#/unauthorized");
-                }
-            });
+        // axios  
+        //     .get("rest/userservice/test-login")
+        //     .then(response => {
+        //         if(response.data.role != "ADMIN") {
+        //             location.replace("#/unauthorized");
+        //         }
+        //     });
     }
 }
 </script>

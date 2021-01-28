@@ -1,5 +1,7 @@
 package services;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -7,7 +9,9 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -105,4 +109,15 @@ public class ManifestationService {
 		}
 		return false;
 	}
+	
+//	@POST
+//	@Path("/upload")
+//	@Consumes(MediaType.MULTIPART_FORM_DATA)
+//	@Produces(MediaType.TEXT_PLAIN)
+//	public String upload(@FormParam("file") InputStream file, @FormParam("fileName") String fileName) throws IOException {
+//		String contextPath = ctx.getRealPath("");
+////		System.out.println(file);
+////		System.out.println(fileName);
+//		return null;
+//	}
 }
