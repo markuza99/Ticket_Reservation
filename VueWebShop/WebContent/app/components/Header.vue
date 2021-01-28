@@ -45,7 +45,7 @@ module.exports = {
 	},
 	mounted() {
 		axios
-			.get("rest/userservice/testlogin")
+			.get("rest/userservice/test-login")
 			.then(response => {
 				
 				this.user = response.data;

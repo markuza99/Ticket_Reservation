@@ -236,4 +236,14 @@ public class UserDAO {
 		return buserType && buserStatus;
 	}
 	
+	public User updateUser(User u, String oldUser) {
+		if(usernameExists(u.getUsername())) {
+			return null;
+		}
+		users.remove(oldUser);
+		users.put(u.getUsername(), u);
+		write();
+		return null;
+	}
+	
 }

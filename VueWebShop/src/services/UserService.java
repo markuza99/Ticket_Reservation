@@ -22,6 +22,7 @@ import dao.LocationDAO;
 import dao.ManifestationDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
+import dto.RegistrationDTO;
 
 @Path("/userservice")
 public class UserService {
@@ -159,5 +160,13 @@ public class UserService {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		List<User> searchedUsers = userDao.search(text, dateFrom, dateTo);
 		return userDao.filter(searchedUsers, role, userStatus);
+	}
+	
+	@POST
+	@Path("/updateUser")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public User createItem(RegistrationDTO registrationDTO) {
+		return null;
 	}
 }
