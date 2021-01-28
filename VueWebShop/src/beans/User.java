@@ -12,6 +12,7 @@ public class User {
 	private Gender gender;
 	private LocalDate birthDate;
 	private Role role;
+	private Boolean isDeleted;
 	
 	public User() {
 		
@@ -23,7 +24,7 @@ public class User {
 	}
 
 	public User(String username, String firstName, String lastName, String password, Gender gender,
-			LocalDate birthDate, Role role) {
+			LocalDate birthDate, Role role, Boolean isDeleted) {
 		this.username = username;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -31,6 +32,7 @@ public class User {
 		this.gender = gender;
 		this.birthDate = birthDate;
 		this.role = role;
+		this.isDeleted = isDeleted;
 	}
 
 
@@ -91,7 +93,14 @@ public class User {
 		this.role = Role.valueOf(role);
 	}
 
-	
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(String isDeleted) {
+		this.isDeleted = isDeleted.equals("1") ? true : false;
+	}
+
 	@Override
 	public String toString() {
 		return "User [username=" + username + ", firstName=" + firstName + ", lastName=" + lastName + ", password="

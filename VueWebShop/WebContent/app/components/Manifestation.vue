@@ -42,6 +42,69 @@
 		</div>
 
 		<div class="row">
+			<button type="button" v-if="commentParams.user && !manifestation_passed" class="btn btn-primary reservation-button" data-toggle="modal" data-target="#reservationModal">
+			Reservisite karte
+			</button>
+
+			<button type="button" v-if="commentParams.role == 'ADMIN'" v-on:click="goToEditManifestation(manifestation.id)" class="btn btn-primary">
+				Izmeni manifestaciju
+			</button>
+
+			<!-- Modal -->
+			<div class="modal fade" id="reservationModal" tabindex="-1" role="dialog" aria-labelledby="reservationModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="reservationModalLabel">Rezervacija karte</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label class="form-label">Broj karata</label> 
+							<input type="number" min="1" max="5" v-model="number_of_tickets" class="form-control" id="username"/>
+						</div>
+						<div class="form-group">
+							<button type="button" class="btn btn-primary" v-on:click="countPrice">Izracunaj ukupnu cenu</button>
+						</div>
+						<div class="form-group">
+							<label class="form-label">Ukupna cena</label>
+							<input class="form-control total-price" type="text" placeholder="Readonly input here…" readonly>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazite</button>
+						<button type="button" class="btn btn-primary reserve-button" 
+						 data-dismiss="modal" data-toggle="modal" data-target="#areYouSureModal">Izvrsite rezervaciju</button>
+					</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="areYouSureModal" tabindex="-1" role="dialog" aria-labelledby="areYouSureModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="areYouSureModalLabel">Potvrda rezervacije</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						Da li ste sigurni?
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazite</button>
+						<button type="button" class="btn btn-primary" v-on:click="reserve" data-dismiss="modal">Potvrdite rezervaciju</button>
+					</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="row">
 			<div class="comment-section">
 				<h3 v-if="comments.length > 0">Komentari</h3>
 				<h3 v-if="comments.length == 0">Nema komentara</h3>
@@ -78,7 +141,7 @@
 					
 				</div>
 
-				<div v-if="comment_success">
+				<div v-if="commentParams.commentSuccess">
 					<div class="comment-success">
 						<input type="text" class="form-control comment-holder " placeholder="Vas komentar je uspesno poslat! Ceka se odobrenje."
 				 		aria-label="" aria-describedby="basic-addon1" readonly>
@@ -88,6 +151,7 @@
 					
 			</div>
 		</div>
+
 	</div>
 </template>
 
@@ -100,74 +164,69 @@ module.exports = {
 			mapShowed : false,
 			comments : [],
 			user_rating : 0,
-			manifestation_rating : 0,
-			user : null, //treba mi i user,
-			comment_success : false,
-			user_attended : false
+			number_of_tickets : 0,
+			ticket_price : 0,
+			customer : {},
+			manifestation_date : 0,
+			manifestation_passed : false,
+			commentParams : {}
 		}
 	},
 	methods: {
+		goToEditManifestation(id) {
+			location.replace("#/manifestation/edit/" + id);
+		},
+		countPrice() {
+			// TO DO : proveri da li je uneo broj < 1
+			$('.reserve-button').attr("disabled", false);
+			if(!validateNumberRange(1,5,this.number_of_tickets)) {
+				$('.total-price').attr("placeholder", "Mozete rezervisati od 0 do 5 karata u jednoj rezervaciji.");
+				$('.total-price').addClass("error");
+				$('.reserve-button').attr("disabled", true);
+				return;
+			}
+			axios
+				.get("rest/customerservice/get-customer")
+				.then(response => {
+					this.customer = response.data;
+					if(this.customer.customerType.discount == 1) {
+						this.ticket_price = this.number_of_tickets * this.manifestation.ticketPrice;
+					} else {
+						this.ticket_price = this.number_of_tickets * (this.manifestation.ticketPrice * (1-this.customer.customerType.discount));
+					}
+					$('.total-price').attr("placeholder", this.ticket_price + ",00 RSD");
+					$('.total-price').removeClass("error");
+				});
+		},
+		reserve() {
+			// TO DO : proveri da li ima karata
+			let points = this.ticket_price/1000 * 133;
+			axios
+				.post("rest/customerservice/reserve-ticket", 
+				{
+					"points" : points,
+					"manifestation" : this.manifestation.id,
+					"numberOfTickets" : this.number_of_tickets,
+					"user" : this.commentParams.user,
+					"ticketPrice" : this.ticket_price
+				})
+				.then(response => {
+					alert("Rezervacija uspesno izvrsena!");
+				});
+		},
 		correspondsCommentPermision() {
-			console.log(this.user + " user")
-			console.log(!this.comment_success + " comment");
-			console.log("hey");
-			return (this.user && !this.comment_success 
-							  && validateDateRange(this.manifestation.date, Date.now()));
-							 // 
-			//TO DO -- dodati i && user_attended
+			
+			return (this.commentParams.user && !this.commentParams.commentSuccess 
+							  && validateRange(this.manifestation_date, Date.now())
+							  && this.commentParams.userAttended && !this.manifestation_passed);
+			
 		},
 		clickedStar(whichstar) {
-			$('.one-star').removeClass("checked");
-			$('.two-stars').removeClass("checked");
-			$('.three-stars').removeClass("checked");
-			$('.four-stars').removeClass("checked");
-			$('.five-stars').removeClass("checked");
-
-			switch(whichstar) {
-				case "one-star":
-					console.log("jedna");
-					this.user_rating = 1;
-
-					$('.one-star').addClass("checked");
-					break;
-				case "two-stars":
-					this.user_rating = 2;
-
-					$('.one-star').addClass("checked");
-					$('.two-stars').addClass("checked");
-					break;
-				case "three-stars":
-					this.user_rating = 3;
-
-					$('.one-star').addClass("checked");
-					$('.two-stars').addClass("checked");
-					$('.three-stars').addClass("checked");
-					break;
-				case "four-stars":
-					this.user_rating = 4;
-
-					$('.one-star').addClass("checked");
-					$('.two-stars').addClass("checked");
-					$('.three-stars').addClass("checked");
-					$('.four-stars').addClass("checked");
-					break;
-				case "five-stars":
-					this.user_rating = 5;
-
-					$('.one-star').addClass("checked");
-					$('.two-stars').addClass("checked");
-					$('.three-stars').addClass("checked");
-					$('.four-stars').addClass("checked");
-					$('.five-stars').addClass("checked");
-					break;
-				default:
-					this.user_rating = 0;
-			}
+			this.user_rating = userRating(this.user_rating);
 		},
 		comment() {
 			let description = $('.comment-holder').val();
-			if(this.user_rating == 0) {
-				//ne moze da komentarise ako nije ocenio
+			if(this.user_rating == 0 || description.trim() == "") {
 				$('.logged-user-comment input').addClass("error");
 				return;
 			}
@@ -175,15 +234,16 @@ module.exports = {
 			comment = { user : "",
 						manifestation : this.manifestation.id,
 						description : description,
-						rating : this.user_rating, 
-						};	//user-a izvlacimo iz sesije
+						rating : this.user_rating,
+						commentStatus : "NONACTIVE" 
+						};
 			axios
-				.post("rest/commentservice/postcomment",JSON.stringify(comment),{
+				.post("rest/commentservice/post-comment",JSON.stringify(comment),{
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
 					$('.logged-user-comment input').removeClass("error");
-					this.comment_success = true;
+					this.commentParams.commentSuccess = true;
 				});
 		},
 		sold(manifestation) {
@@ -193,7 +253,7 @@ module.exports = {
 			return !(num > comment.rating);
 		},
 		isCountedInAverageRating(num) {
-			return !(num > this.manifestation_rating);
+			return !(num > this.commentParams.manifestationRating);
 		},
 		displayMap() {
 			if(this.mapShowed)
@@ -211,49 +271,29 @@ module.exports = {
 		axios
 			.get("rest/manifestationservice/getonemanifestation/" + manifestationId)
 			.then(response => {
-				if(response.data == "") {
-					makeErrorPage();
-				}
 				this.manifestation = response.data;
 				makeDate(this.manifestation);
-				console.log(this.manifestation);
+				
+				this.manifestation_date = getManifestationDateInMilliseconds(this.manifestation.date.dayOfMonth,
+										this.manifestation.date.monthValue -1,this.manifestation.date.year); 
+				if(!validateRange(Date.now(), this.manifestation_date)) {
+					this.manifestation_passed = true;
+				}
 			});
 
 		axios
-			.get("rest/userservice/testlogin")
-			.then(response => {
-				this.user = response.data;
-			});
-		
-		axios
-			.get("rest/commentservice/getcomments/" + manifestationId)
+			.get("rest/commentservice/get-comments/" + manifestationId)
 			.then(response => {
 				this.comments = response.data;
 			});
 
 		axios
-			.get("rest/commentservice/usercommented/" + manifestationId)
+			.get("rest/commentservice/get-comment-params/" + manifestationId)
 			.then(response => {
-				if(response.data) {
-					this.comment_success = true;
-				}
+				this.commentParams = response.data;
+				console.log(this.commentParams);
 			});
 
-		axios
-			.get("rest/commentservice/manifestationrating/" + manifestationId)
-			.then(response => {
-				console.log(response.data);
-				this.manifestation_rating = response.data;
-			})
-
-		// TO DO
-		// axios
-		// 	.get("rest/commentservice/userattended/" + manifestationId)
-		// 	.then(response => {
-		// 		if(response.data) {
-		// 			this.user_attended = true;
-		// 		}
-		// 	});
 	}
 
 }
@@ -263,6 +303,7 @@ module.exports = {
 
 #manifestation-page {
 	margin-top: 2em;
+	padding: 2em;
 }
 
 #manifestation-page .image-holder {
@@ -323,7 +364,7 @@ module.exports = {
 
 .comment {
 	border: 1px solid #bebebe;
-	margin: 1em 2em;
+	margin-top: 1em;
 	/* font-family: 'Quicksand', sans-serif; */
 }
 
@@ -382,6 +423,11 @@ module.exports = {
     outline: none !important;
     border:1px solid red;
     box-shadow: 0 0 10px #f40b0b;
+}
+
+.reservation-button {
+	padding: 1em;
+	margin: 1em;
 }
 
 @media screen and (min-width: 1200px) {

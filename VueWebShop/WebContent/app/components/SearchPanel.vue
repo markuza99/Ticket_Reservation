@@ -72,7 +72,7 @@ module.exports = {
 	methods: {
 	
 		search: function() {
-			if(!(validatePrice(this.priceFrom, this.priceTo) && validateDateRange(this.dateFrom, this.dateTo))) {
+			if(!(validatePrice(this.priceFrom, this.priceTo) && validateRange(this.dateFrom, this.dateTo))) {
 				$('.nav').addClass("error");
 				return;
 			}

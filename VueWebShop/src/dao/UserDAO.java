@@ -1,6 +1,6 @@
 package dao;
 
-import java.io.BufferedReader; 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,24 +16,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import beans.Customer;
 import beans.Gender;
 import beans.Role;
+import beans.Ticket;
 import beans.User;
 
 public class UserDAO {
 	private Map<String, User> users = new HashMap<>();
 	private String contextPath;
+	private CustomerDAO customerDAO;
 	
 	public UserDAO() {}
 	
-	public UserDAO(String contextPath) {
+	public UserDAO(String contextPath, CustomerDAO customerDAO) {
 		this.contextPath = contextPath;
+		this.customerDAO = customerDAO;
 		loadUsers();
 	}
 	
 	public User find(String username, String password) {
 		User user = users.get(username);
-		if (user==null || !user.getPassword().equals(password)) {
+		if (!user.getPassword().equals(password)) {
 			return null;
 		}
 		return user;
@@ -43,7 +48,6 @@ public class UserDAO {
 	}
 	
 	public User getOneUser(String id) {
-		System.out.println(users);
 		return users.get(id);
 	}
 	
@@ -68,9 +72,13 @@ public class UserDAO {
 					Gender gender = Gender.valueOf(st.nextToken().trim());
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 					LocalDate birthDate = LocalDate.parse(st.nextToken().trim(), formatter);
-					
+					String deleted = st.nextToken().trim();
+					Boolean isDeleted = false;
+					if(deleted.equals("1")) {
+						isDeleted = true;
+					}
 					users.put(username, new User(username, firstName, lastName, 
-							password, gender, birthDate, role));
+							password, gender, birthDate, role, isDeleted));
 				}
 			}
 		} catch(Exception ex) {
@@ -91,14 +99,15 @@ public class UserDAO {
         if(usernameExists(user.getUsername())) {
             return null;
         }
-        users.put(user.getUsername(), user); 
-        LocalDate birthDate = user.getBirthDate();
-        String userString = "CUSTOMER" + ";" + user.getUsername() + ";" + user.getPassword() + ";" 
-                            + user.getFirstName() + ";" + user.getLastName() + ";"
-                            + user.getGender() + ";" + birthDate;
-
-        String customerString = user.getUsername() + ";;" + 0;
-        write(userString, customerString);
+        String customerLine = user.getUsername() + "; ;" + 0 + ";" + "regularni";
+        users.put(user.getUsername(), user);
+        customerDAO.getCustomers().put(user.getUsername(),
+        		new Customer(user.getUsername(), new ArrayList<Ticket>(),
+        		0, customerDAO.getCustomerType("regularni")));
+        append(getUserLine(user));
+        if(user.getRole() == Role.CUSTOMER) {
+        	customerDAO.append(customerLine);
+        }
         return user;
     }
 	
@@ -106,34 +115,125 @@ public class UserDAO {
 	    return users.containsKey(username);
 	}
 	
-	private void write(String user, String customer) {
-	        File fileUsers = new File(contextPath + "/repositories/users.txt");
-	        File fileCustomers = new File(contextPath + "/repositories/customers.txt");
+	private void append(String line) {
+		File file = new File(contextPath + "/repositories/users.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            pw.println(line);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+	}
 	
-	        PrintWriter pw = null;
-	        PrintWriter pwCustomers = null;
-	        try {
-	            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileUsers, true)));
-	            pwCustomers = new PrintWriter(new BufferedWriter(new FileWriter(fileCustomers, true)));
-	            pw.println(user);
-	            pwCustomers.println(customer);
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        } finally {
-	            if(pw != null) {
-	                try {
-	                    pw.close();
-	                }
-	                catch (Exception e) {}
-	            }
+	public String getUserLine(User user) {
+		StringBuilder userString = new StringBuilder();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String deleted = user.getIsDeleted() ? "1" : "0";
+		userString.append(user.getRole() + ";" + user.getUsername() + ";" + user.getPassword() + ";" 
+             + user.getFirstName() + ";" + user.getLastName() + ";"
+             + user.getGender() + ";" + user.getBirthDate().format(formatter) + ";" + deleted);
+
+        return userString.toString();
+	}
 	
-	            if(pwCustomers != null) {
-	                try {
-	                    pwCustomers.close();
-	                }
-	                catch (Exception e) {}
-	            }
-	        }
-	    }
+	private void write() {
+		File file = new File(contextPath + "/repositories/users.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+            for(User user : users.values()) {
+            	pw.println(getUserLine(user));
+            }
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+	}
+
+	public List<User> deleteUser(String username) {
+		// TODO Auto-generated method stub
+		User user = users.get(username);
+		user.setIsDeleted("1");
+		write();
+		return getAllUsers();
+	}
+
+	public List<User> retrieveUser(String username) {
+		// TODO Auto-generated method stub
+		User user = users.get(username);
+		user.setIsDeleted("0");
+		write();
+		return getAllUsers();
+	}
+
+	public List<User> search(String text, String dateFrom, String dateTo) {
+		// TODO Auto-generated method stub
+		List<User> searchedUsers = new ArrayList<>();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate LdateFrom = null;
+		LocalDate LdateTo = null;
+		
+		if(!dateFrom.equals("")) {
+			LdateFrom = LocalDate.parse(dateFrom, formatter);;
+		}
+		if(!dateTo.equals("")) {
+			LdateTo = LocalDate.parse(dateTo, formatter);
+		}
+		
+		for(User user : users.values()) {
+			if(correspondsSearch(user, text, LdateFrom, LdateTo)) {
+				searchedUsers.add(user);
+			}
+		}
+		return searchedUsers;
+	}
+
+	private boolean correspondsSearch(User user, String text, LocalDate dateFrom, LocalDate dateTo) {
+		boolean btext = text.trim() == "" ? true : (user.getUsername().contains(text) || user.getFirstName().contains(text)
+				|| user.getLastName().contains(text));
+		boolean bdateFrom = dateFrom == null ? true : user.getBirthDate().isAfter(dateFrom);
+		boolean bdateTo = dateTo == null ? true : user.getBirthDate().isBefore(dateTo);
+		return btext && bdateFrom && bdateTo;
+	}
+
+	public List<User> filter(List<User> searchedUsers, String role, String userStatus) {
+		// TODO Auto-generated method stub
+		List<User> filteredUsers = new ArrayList<>();
+		for(User user : searchedUsers) {
+			if(correspondsFilter(user, role, userStatus)) {
+				filteredUsers.add(user);
+			}
+		}
+		return filteredUsers;
+	}
+
+	private boolean correspondsFilter(User user, String role, String userStatus) {
+		// TODO Auto-generated method stub
+		boolean buserType = role.equals("Svi") ? true : (user.getRole() == Role.valueOf(role));
+		String deleted = "0";
+		if(user.getIsDeleted()) {
+			deleted = "1";
+		}
+		boolean buserStatus = userStatus.equals("Svi") ? true : userStatus.equals(deleted);
+		return buserType && buserStatus;
+	}
 	
 }

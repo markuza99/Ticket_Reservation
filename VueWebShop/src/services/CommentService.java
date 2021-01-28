@@ -18,6 +18,8 @@ import beans.Comment;
 import beans.Status;
 import beans.User;
 import dao.CommentDAO;
+import dao.TicketDAO;
+import dto.ManifestationDTO;
 
 @Path("/commentservice")
 public class CommentService {
@@ -30,18 +32,24 @@ public class CommentService {
 		if(ctx.getAttribute("CommentDAO") == null) {
 			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath));
 		}
+		if(ctx.getAttribute("TicketDAO") == null) {
+			ctx.setAttribute("TicketDAO", new TicketDAO(contextPath));
+		}
 	}
 	
+	
+	
 	@GET
-	@Path("/getcomments/{id}")
+	@Path("/get-comments/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Comment> getCommentsForManifestation(@PathParam("id") String id) {
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
 		return commentDAO.getCommentsForManifestation(id, Status.ACTIVE);
 	}
 	
+	
 	@POST
-	@Path("/postcomment")
+	@Path("/post-comment")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Comment> postComment(@Context HttpServletRequest request, Comment comment) {
@@ -50,38 +58,23 @@ public class CommentService {
 		comment.setUser(u.getUsername());
 		return commentDAO.postComment(comment);
 	}
-	
+
 	@GET
-	@Path("/usercommented/{id}")
+	@Path("/get-comment-params/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Comment userCommented(@Context HttpServletRequest request, @PathParam("id") String manifestationId) {
+	public ManifestationDTO getCommentParams(@Context HttpServletRequest request, @PathParam("id") String id) {
+		ManifestationDTO manifestationDTO = new ManifestationDTO();
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
-		User u = (User) request.getSession().getAttribute("user");
-		if(u != null) {
-			return commentDAO.getUserCommentForManifestation(manifestationId, u.getUsername());
+		TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");
+		User user = (User) request.getSession().getAttribute("user");
+		if(user != null) {
+			manifestationDTO.commentSucces = commentDAO.userCommentedManifestation(id, user.getUsername());
+			manifestationDTO.manifestationRating = commentDAO.getManifestationRating(id);
+			manifestationDTO.userAttended = ticketDAO.userAttended(id, user.getUsername());
+			manifestationDTO.user = user.getUsername();
+			manifestationDTO.role = user.getRole();
 		}
-		return null;
+		return manifestationDTO;
 	}
-	
-	@GET
-	@Path("/userattended/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Comment userAttended(@Context HttpServletRequest request, @PathParam("id") String manifestationId) {
-		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
-		User u = (User) request.getSession().getAttribute("user");
-		if(u != null) {
-			return commentDAO.userAttended(manifestationId, u.getUsername());
-		}
-		return null;
-	}
-	
-	@GET
-	@Path("/manifestationrating/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public int manifestationRating(@PathParam("id") String manifestationId) {
-		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
-		return commentDAO.getManifestationRating(manifestationId);
-	}
+
 }

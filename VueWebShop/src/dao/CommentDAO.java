@@ -73,7 +73,6 @@ public class CommentDAO {
 	}
 
 	public List<Comment> postComment(Comment comment) {
-		// TODO Auto-generated method stub
 		String id = comment.getUser() + comment.getManifestation();
 		comments.put(id, comment);
 		String commentLine = comment.getUser() + ";"
@@ -103,31 +102,32 @@ public class CommentDAO {
         }
     }
 
-	public Comment getUserCommentForManifestation(String manifestationId, String username) {
+	public Boolean userCommentedManifestation(String manifestationId, String username) {
 		for(Comment c : comments.values()) {
 			if(c.getManifestation().equals(manifestationId)
 					&& c.getUser().equals(username)
 					&& c.getCommentStatus() == Status.NONACTIVE) {
-				return c;
+				return true;
 			}
 		}
-		return null;
+		return false;
 	}
 
-	public Comment userAttended(String manifestationId, String username) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	public int getManifestationRating(String manifestationId) {
 		// TODO Auto-generated method stub
 		int sumOfRatings = 0;
 		int n = 0;
 		for(Comment comment : comments.values()) {
-			if(comment.getManifestation().equals(manifestationId)) {
+			if(comment.getManifestation().equals(manifestationId)
+					&& comment.getCommentStatus() == Status.ACTIVE) {
 				sumOfRatings += comment.getRating();
 				n++;
 			}
+		}
+		if(n == 0) {
+			return 0;
 		}
 		// TO DO -- srediti average rating
 		return sumOfRatings / n;

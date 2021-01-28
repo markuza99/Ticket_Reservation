@@ -3,20 +3,27 @@ const validatePrice = (...prices) => {
 	prices.forEach(elem => {
 		if(elem == "") return;
 		if ((isNaN(elem) || elem > 100000 || elem < 0)) {
-		
+            console.log("urjde");
 			validation = false;
 		}
 	});
 	return validation;
 }
 
-const validateDateRange = (from, to) => {
-	let fromDate = Date.parse(from);
-	let toDate = Date.parse(to);
-	if(toDate < fromDate)
-		return false;
-	return true;
+const validateNumberRange = (from, to, number) => {
+    console.log(from, to);
+    console.log()
+    return (number >= from && number <= to);
 }
+
+const validateRange = (from, to) => {
+    if(!from || !to) {
+        return true;
+    }
+    console.log(!(to < from));
+	return !(to < from);
+}
+
 
 const isEmpty = (elem) => {
     return (elem == null || elem == undefined || elem =="") 
