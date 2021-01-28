@@ -90,6 +90,20 @@ public class UserService {
 		return u;
 	}
 	
+	@POST
+	@Path("/addUser")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public List<User> addUser(@Context HttpServletRequest request, User user) {
+		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
+		User u = userDao.registration(user);
+		if(u != null) {
+			return userDao.getAllUsers();
+		} else {
+			return null;
+		}
+	}
+	
 //	@POST
 //	@Path("/register-customer")
 	
