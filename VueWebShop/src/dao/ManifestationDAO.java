@@ -307,6 +307,48 @@ public class ManifestationDAO {
 		}
 		return filteredMan;
 	}
+	
+	public List<Manifestation> add(Manifestation manifestation) {
+		if(!checkIdExistance(manifestation.getId())) {
+			return null;
+		}
+		if(!checkManifestationMaintainance(manifestation.getDate(), manifestation.getLocation(), manifestation.getId())) {
+			return null;
+		}
+		manifestations.put(manifestation.getId(), manifestation);
+		append(getManifestationLine(manifestation));
+		return getAllManifestations();
+	}
+	
+	private boolean checkIdExistance(String id) {
+		// TODO Auto-generated method stub
+		for(Manifestation m : manifestations.values()) {
+			if(m.getId().equals(id)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public void append(String line) {
+		File file = new File(contextPath + "/repositories/manifestations.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            	pw.println(line);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+	}
 
 	public Boolean update(Manifestation manifestation) {
 		//provera da li vec ima manifestacija u isto vreme na istoj adresi

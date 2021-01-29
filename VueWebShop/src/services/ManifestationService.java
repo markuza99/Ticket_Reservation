@@ -110,6 +110,14 @@ public class ManifestationService {
 		return false;
 	}
 	
+	@POST
+	@Path("/add-manifestation")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public List<Manifestation> addManifestation(Manifestation manifestation) {
+		ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+		return manifestationDAO.add(manifestation);
+	}
+	
 //	@POST
 //	@Path("/upload")
 //	@Consumes(MediaType.MULTIPART_FORM_DATA)
