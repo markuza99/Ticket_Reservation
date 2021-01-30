@@ -166,7 +166,18 @@ public class UserService {
 	@Path("/updateUser")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public User createItem(RegistrationDTO registrationDTO) {
-		return null;
+	public User createItem(@Context HttpServletRequest request, User user) {
+		User u = (User) request.getSession().getAttribute("user");
+		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
+		User updatedUser = userDao.updateUser(user, u.getUsername());
+		if(updatedUser==null) {
+			return null;
+		}
+		TicketDAO TicketDao = (TicketDAO) ctx.getAttribute("TicketDAO");
+		TicketDao.updateTicket(u.getUsername(), updatedUser.getUsername());
+		CustomerDAO CustomerDao = (CustomerDAO) ctx.getAttribute("CustomerDAO");
+		CustomerDao.updateCustomer(u.getUsername(), updatedUser.getUsername());
+		request.getSession().setAttribute("user", updatedUser);
+		return updatedUser;
 	}
 }

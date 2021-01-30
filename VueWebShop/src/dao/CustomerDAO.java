@@ -227,4 +227,14 @@ public class CustomerDAO {
 		}
 		
 	}
+	public void updateCustomer(String oldUser, String newUser) {
+		Customer cust = customers.get(oldUser);
+		if(cust != null) {
+			customers.remove(oldUser);
+			cust.setUsername(newUser);
+			customers.put(newUser, cust);
+			write();
+		}
+		
+	}
 }

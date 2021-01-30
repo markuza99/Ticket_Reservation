@@ -31,7 +31,7 @@
 	</div>
 	<div class="form-row">
 		<label for="inputDate">Birth date</label>
-		<input type="date" class="form-control" id="inputDate" v-model="user.birthDate"/>
+		<input type="date" class="form-control" id="inputDate"/>
 	</div>
 	<button type="submit" class="btn btn-primary" @click="updateProfile()">Sign in</button>
 	</form>
@@ -46,6 +46,7 @@ module.exports = {
 		return {
 			isLoggedIn: false,
 			oldUsername: "",
+			datebirth: "",
 			user : {
             },
 			options: [
@@ -62,7 +63,6 @@ module.exports = {
 				
 				this.user = response.data;
 				this.isLoggedIn = false;
-				alert(this.user);
 				window.location.reload();
 
 			});
@@ -71,13 +71,13 @@ module.exports = {
 			window.location.replace("/registration");
 		},
 		updateProfile: function() {
-			console.log(this.user);
+			console.log(this.user.birthDate.toString() + " OVO MU JE RODJENDAN");
 			axios
-				.post("rest/userservice/updateUser", JSON.stringify({user:this.user, oldUsername:this.oldUsername}), {
+				.post("rest/userservice/updateUser", JSON.stringify(this.user), {
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
-					alert("BRAVO");
+					alert("USPESNO IZMENJEN KORISNIK iz " + this.oldUsername + " U " + this.user.username);
 				});
 		}
 	},
@@ -92,7 +92,12 @@ module.exports = {
 						// this.$root.$emit('logged-in-user',response.data);
 						this.isLoggedIn = true;
 					}
-				alert(this.user.username);
+				alert(this.user.birthDate.toString());
+				console.log(this.user.birthDate.toString());
+				// 2017-08-04
+				this.datebirth = this.user.birthDate.year() +"-"+this.user.birthDate.monthValue();
+				console.log(this.user.birthDate);
+				alert(this.datebirth);
 
 
 			});

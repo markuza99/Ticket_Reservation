@@ -9,10 +9,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import beans.Customer;
 import beans.Ticket;
 import beans.TicketStatus;
 import beans.TicketType;
@@ -158,5 +161,22 @@ public class TicketDAO {
 				catch (Exception e) {}
 			}
 		}
+	}
+	public void updateTicket(String oldUser, String newUser) {
+		ArrayList<Ticket> ticketsUser = new ArrayList<Ticket>();
+		for(Iterator<Map.Entry<String, Ticket>> it = tickets.entrySet().iterator(); it.hasNext(); ) {
+		    Map.Entry<String, Ticket> entry = it.next();
+		    if(entry.getValue().getUser().equals(oldUser)) {
+		    	Ticket t = entry.getValue();
+		        it.remove();
+		        ticketsUser.add(t);
+		    }
+		}
+		for (Ticket ticket : ticketsUser) {
+			ticket.setUser(newUser);
+			tickets.put(ticket.getId(), ticket);
+		}
+		write();
+		
 	}
 }

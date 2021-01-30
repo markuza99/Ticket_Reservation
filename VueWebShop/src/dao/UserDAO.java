@@ -243,7 +243,7 @@ public class UserDAO {
 		users.remove(oldUser);
 		users.put(u.getUsername(), u);
 		write();
-		return null;
+		return u;
 	}
 	
 }
