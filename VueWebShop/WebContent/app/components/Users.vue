@@ -316,6 +316,10 @@ module.exports = {
                 $('#createUserModal input').removeClass("success");
                 return;
             }
+            if(forbiddenSignInFields(this.new_user)) {
+                alert("Ne mozete koristiti ; znak");
+                return;
+            }
             $('#createUserModal input').removeClass("error");
             $('#createUserModal input').addClass("success");
             

@@ -1,6 +1,6 @@
 <template>
 	<div class="container">
-		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createManifestationModal">Dodaj manifestaciju</button>
+		<button type="button" class="btn btn-primary" v-if="user.role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">Dodaj manifestaciju</button>
 
 		<div class="modal fade" id="createManifestationModal" tabindex="-1" role="dialog" aria-labelledby="createManifestationModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -13,9 +13,18 @@
                 </div>
                 <div class="modal-body">
                     <form>
-						<div class="form-group">
-							<label>Id manifestacije</label>
-							<input type="text" class="form-control" v-model="new_manifestation.id"/>
+						<div class="form-row">
+							<div class="form-group col-md-6">
+								<label>Id manifestacije</label>
+								<input type="text" id="inputId" class="form-control" v-model="new_manifestation.id"/>
+							</div>
+							<div class="form-group col-md-6">
+							<label for="type">Tip manifestacije</label>
+							<select v-model="new_manifestation.type" class="form-control" id="type">
+							
+							<option v-for="type in types" :key="type.id" >{{ type }}</option>
+							</select>
+						</div>
 						</div>
 						<div class="form-row">
 							<div class="form-group col-md-6">
@@ -25,7 +34,7 @@
 							</div>
 							<div class="form-group col-md-6">
 								<label for="maintainanceDate">Datum odrzavanja</label>
-								<input type="datetime-local" class="form-control" id="maintainanceDate" v-model="new_manifestation.date" min="1900-01-01" max="2021-12-31"/>
+								<input type="datetime-local" class="form-control" id="maintainanceDate" v-model="new_manifestation.date"/>
 								<!-- <small id="data-error" v-if="date_error" class="form-text">Postoji vec manifestacija na istoj lokaciji u isto vreme</small> -->
 							</div>
 						</div>
@@ -33,32 +42,16 @@
 							<div class="form-group col-md-6">
 							<label for="inputNumOfSeats">Broj mesta</label>
 							<input type="number" class="form-control" id="inputNumOfSeats" v-model="new_manifestation.numberOfSeats">
-							<!-- <small id="number-of-seats-error" v-if="number_of_seats_error" class="form-text data-error">Nevalidan unos preostalih mesta!</small> -->
+							<small id="number-of-seats-error" v-if="number_of_seats_error" class="form-text data-error">Nevalidan unos preostalih mesta!</small>
 							</div>
 							<div class="form-group col-md-6">
 								<label for="inputPrice">Cena karte</label>
 								<input type="number" class="form-control" id="inputPrice" v-model="new_manifestation.ticketPrice">
-								<!-- <small id="data-error" v-if="price_error" class="form-text">Nevalidan unos!</small> -->
+								<small id="data-error" v-if="price_error" class="form-text">Nevalidan unos!</small>
 						
 							</div>
 						</div>
-						<div class="form-row">
-							<div class="form-group col-md-6">
-								<label for="type">Tip manifestacije</label>
-								<select v-model="new_manifestation.type" class="form-control" id="type">
-								
-								<option v-for="type in types" :key="type.id" >{{ type }}</option>
-								</select>
-							</div>
-							<div class="form-group col-md-6">
-							<label for="status">Status manifestacije</label>
-							<select v-model="new_manifestation.status" class="form-control" id="status">
-								
-								<option v-for="option in options" :key="option.id" >{{ option }}</option>
-
-							</select>
-							</div>
-						</div>
+						
 						<div class="form-row">
 							<div class="form-group col-md-6">
 								<label for="inputState">Lokacija</label>
@@ -73,6 +66,7 @@
 							</div>
 						</div>
 					</form>
+					<p id="error"></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazivanje</button>
@@ -98,13 +92,13 @@
 						</div>
 						<div class="date" style="text-align:right;white-space:nowrap;">
 							<div class="bg-warning" style="padding:0 7px;">
-							<!-- {{m.date.dayOfMonth}}
+							{{m.date.dayOfMonth}}
 							{{m.formattedMonth}}
-							{{m.date.year}} -->
+							{{m.date.year}}
 							</div>
 						</div>	
 						
-						<div class="text-center w-100 pt-1 pb-1 manifestation-type">{{m.type}}</div>
+						<div class="text-center w-100 pt-1 pb-1 manifestation-type">{{m.formattedType}}</div>
 					</div>
 				
 			</div>
@@ -116,6 +110,7 @@
 module.exports = {
 	data() {
 		return {
+			user:{},
 			manifestations: [],
 			new_manifestation : {
 				id: "",
@@ -124,18 +119,19 @@ module.exports = {
 				numberOfSeats: 0,
 				remainingNumberOfSeats : 0,
 				type: "Koncert",
-				status: "Aktivna",
+				status: "NONACTIVE",
 				ticketPrice : 0,
 				location: "",
 				image: "bla"
 			},
-			options : ["Aktivna", "Neaktivna"],
 			types : ["Koncert","Festival","Pozoriste"],
-			locations : []
+			locations : [],
+			number_of_seats_error: false,
+			price_error: false
 		}
 	},
 	methods: {
-		getManifestationType() {
+		setManifestationType() {
 			switch(this.new_manifestation.type) {
 				case "Koncert":
 					this.new_manifestation.type = "CONCERT";
@@ -149,103 +145,110 @@ module.exports = {
 					break;
 			}
 		},
-		getManifestationStatus() {
-			switch(this.new_manifestation.status) {
-				case "Aktivna":
-					this.new_manifestation.status = "ACTIVE";
-					break;
-				case "Neaktivna":
-					this.new_manifestation.status = "NONACTIVE";
-					break;
-				default:
-					break;
-			}
-		},
 		makeDate : (manifestation) => {
-
 			makeDate(manifestation);
 		},
 		goToManifestation(id) {
 			location.replace("#/manifestation/" + id);
-			// this.$root.$emit('display-manifestation', manifestation);
+		},
+		removeClass() {
+			$('#inputNumOfSeats').removeClass("error");
+			$('#inputPrice').removeClass("error");
+			$('#inputId').removeClass("error");
+			$('#error').css("color","red");
+			$('#error').html("");
+		},
+		addClass(id, className) {
+			$(id).addClass(className);
+		},
+		setErrorsToFalse() {
+			this.number_of_seats_error = false;
+			
 		},
 		createManifestation() {
 			this.new_manifestation.remainingNumberOfSeats = parseInt(this.new_manifestation.numberOfSeats);
 			this.new_manifestation.numberOfSeats = parseInt(this.new_manifestation.numberOfSeats);
 			this.new_manifestation.ticketPrice = parseInt(this.new_manifestation.ticketPrice);
-			$('#createManifestationModal input').removeClass("success");
+			this.setErrorsToFalse();
+			this.removeClass();
+
 			if(areInputFieldsEmpty(this.new_manifestation)) {
-				// $('#createManifestationModal input').addClass("error");
-				// $('#createManifestationModal input').removeClass("success");
-				alert("prazna polja");
-				console.log(this.new_manifestation);
+				$('#error').html("Sva polja su obavezna!");
 				return;
 			}
-			// $('#createUserModal input').removeClass("error");
-			// $('#createUserModal input').addClass("success");
-			$('#inputNumOfSeats').removeClass("error");
-			$('#inputPrice').removeClass("error");
+
+			if(forbiddenSignInFields(this.new_manifestation)) {
+                alert("Ne mozete koristiti ; znak");
+                return;
+            }
+			
 			if(!validateNumberRange(10, 100000, parseInt(this.new_manifestation.numberOfSeats))) {
-                // this.number_of_seats_error = true;
-				$('#inputNumOfSeats').addClass("error");
-				alert("greska u broju mesta");
+				this.number_of_seats_error = true;
+				this.addClass("#inputNumOfSeats", "error");
                 return;
             }
 
             if(!validateNumberRange(100, 100000, parseInt(this.new_manifestation.ticketPrice))) {
-                // this.price_error = true;
-				$('#inputPrice').addClass("error");
-				alert("greska u ceni");
+				this.price_error = true;
+				this.addClass("#inputPrice", "error");
                 return;
 			}
 
 			let date =  new Date();
 			if(!validateRange(date.toISOString(), this.new_manifestation.date)) {
 				alert("datum ne valja");
+				return;
 			}
 			
-			this.getManifestationType();
-			this.getManifestationStatus();
+			this.setManifestationType();
 			dateparams = this.new_manifestation.date.split("T");
             dateparams[1] = dateparams[1] + ":00";
             this.new_manifestation.date = dateparams.join(" ");
 			console.log(this.new_manifestation);
-			$('#createManifestationModal input').addClass("success");
+			
 			
 			axios
-				.post("rest/manifestationservice/add-manifestation", JSON.stringify(this.new_manifestation), {
+				.post("rest/sellerservice/add-manifestation", JSON.stringify(this.new_manifestation), {
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
 					if(response.data != "") {
 						this.manifestations = response.data;
+						$('#error').html("Manifestacija uspesno dodata!");
+						$('#error').css("color","green");
+						this.new_manifestation.date = "";
+						this.new_manifestation.type = "Koncert";
+						this.format();
 					} else {
-						alert("id postoji");
+						$('#error').html("Manifestacija pod tim ID-jem vec postoji!");
+						this.addClass("#inputId", "error");
 					}
 				})
 
+		},
+		formatType(manifestation) {
+			formatType(manifestation);
+		},
+		format() {
+			this.manifestations.forEach(manifestation => this.formatType(manifestation));
+			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
 		}
 	},
 	mounted() {
-		//pretplata na metode
-		// search panel prosledjuje manifestacije u Manifestations
 		this.$root.$on('searched-manifestations',(manifestations) => {
 			this.manifestations = manifestations;
-			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
+			this.format();
 		});
 		this.$root.$on('filtered-manifestations',(manifestations) => {
 			this.manifestations = manifestations;
-			this.manifestations.forEach(manifestation => this.makeDate(manifestation));
+			this.format();
 		});
 		
 		axios
-			.get("rest/manifestationservice/getall")
+			.get("rest/manifestationservice/")
 			.then(response => {
-				
 				this.manifestations = response.data;
-				console.log(this.manifestations);
-				
-				this.manifestations.forEach(manifestation => this.makeDate(manifestation));
+				this.format();
 			});
 
 		axios
@@ -253,13 +256,22 @@ module.exports = {
 			.then(response => {
 				this.locations = response.data;
 				this.new_manifestation.location = this.locations[0];
-				console.log(this.locations);
 			})
+
+		axios
+			.get("rest/userservice/test-login")
+			.then(response => {
+				this.user = response.data;
+			});
 	}
 }
 </script>
 
 <style>
+
+#error {
+	color: red;
+}
 
 #manifestations {
 	margin-top:2em;

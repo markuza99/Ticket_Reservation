@@ -8,42 +8,47 @@
 					<div class="login-form mt-5">
 						<form @submit.prevent="register">
 							<div class="form-group">
-								<label class="form-label">Username</label> 
-								<input type="text" class="form-control" id="username"/>
+								<label class="form-label">Korisnicko ime</label> 
+								<input type="text" v-model="user.username" class="form-control" id="username"/>
+								<small id="data-error" v-if="username_error" class="form-text">
+									Korisnicko ime vec postoji!
+								</small>
 							</div>
 							
 							<div class="form-group">
-								<label class="form-label">First name</label> 
-								<input type="text" class="form-control" id="firstName"/>
+								<label class="form-label">Ime</label> 
+								<input type="text" v-model="user.firstName" class="form-control" id="firstName"/>
 							</div>
 							
 							<div class="form-group">
-								<label class="form-label">Last name</label> 
-								<input type="text" class="form-control" id="lastName"/>
+								<label class="form-label">Prezime</label> 
+								<input type="text" v-model="user.lastName" class="form-control" id="lastName"/>
 							</div>
 							
 							<div class="form-group">
-								<label class="form-label">Password</label>
-								<input type="text" class="form-control" id="password"/>
+								<label class="form-label">Lozinka</label>
+								<input type="text" v-model="user.password" class="form-control" id="password"/>
 							</div>
 							
 							<div class="form-group">
-								<label class="form-label">Gender</label> 
-								<select class="form-control" id="gender">
-									<option value="male">MALE</option>
-									<option value="female">FEMALE</option>
-								</select>
-							</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" v-model="user.gender" name="inlineRadioOptions" id="inlineRadio1" value="MALE">
+									<label class="form-check-label" for="inlineRadio1">Musko</label>
+								</div>
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" v-model="user.gender" name="inlineRadioOptions" id="inlineRadio2" value="FEMALE">
+									<label class="form-check-label" for="inlineRadio2">Zensko</label>
+								</div>    
+                        	</div>
 							
 							<div class="form-group">
-								<label class="form-label">Birth date</label>
-								<input type="date" class="form-control" id="birthDate" value="2021-01-01" min="1900-01-01" max="2021-12-31"/>
+								<label class="form-label">Datum rodjenja</label>
+								<input type="date" v-model="user.birthDate" class="form-control" id="birthDate" value="2021-01-01" min="1900-01-01" max="2021-12-31"/>
 							</div>
 							
 									
-							<button type="submit" class="btn btn-primary mt-2">Register</button>
-							<a class="btn btn-primary mt-2 float-right" href="#/" role="button">Back to Login</a>
-							<!-- <button type="submit" class="btn btn-primary mt-2 float-right" v-on:click="redirect">Register</button> -->
+							<button type="submit" class="btn btn-primary mt-2">Registracija</button>
+							<a class="btn btn-primary mt-2 float-right" href="#/" role="button">Nazad na login</a>
 							<p id="error"></p>
 						</form>
 					</div>
@@ -57,41 +62,49 @@
   module.exports = {
     data() {
       return {
-		user:{},
-		msg : "poruka"
+		user:{
+			username: "",
+			firstName: "",
+			lastName: "",
+			password: "",
+			birthDate: "",
+			gender: "",
+			isDeleted: "0",
+			role: "CUSTOMER"
+		},
+		username_error: false
       }
 	},
     methods: {
-      	register : () => {
-			
-			var username = $("#username").val();
-			var password = $("#password").val();
-			var firstName = $("#firstName").val();
-			var lastName = $("#lastName").val();
-			var gender = $( "#gender option:selected" ).text();
-			var birthDate = document.getElementById("birthDate").value;
-			var role = "CUSTOMER";
-			let isDeleted = "0";
-			user = {username, password, firstName, lastName, gender, birthDate, role, isDeleted};
-			
-			if(areInputFieldsEmpty(user)) {
+      	register() {
+			if(areInputFieldsEmpty(this.user)) {
     			document.getElementById("error").innerText = "Morate popuniti sva polja.";
         		return;
-    		}
-			var userJSON = JSON.stringify(user);
+			}
+			if(forbiddenSignInFields(this.user)) {
+                alert("Ne mozete koristiti ; znak");
+                return;
+            }
+
+			if(this.user.gender == "Musko") {
+				this.user.gender = "MALE";
+			} else {
+				this.user.gender = "FEMALE";
+			}
+			
+			var userJSON = JSON.stringify(this.user);
+			console.log(userJSON);
 			axios
 				.post("rest/userservice/register", userJSON, {
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
-					this.user = response.data;
-					console.log(this.user);
-					if(!isEmpty(this.user)) {
-						alert(this.user.firstName);
-						location.replace("#/");
+					if(isEmpty(response.data)) {
+						$('#username').addClass("error");
+						this.username_error = true;
+						
 					} else {
-						alert("Korisnik sa tim usernameom vec postoji!!!");
-						location.replace("#/registration");
+						location.replace("#/login");
 					}
 				});
 		},
@@ -114,6 +127,9 @@
 
 <style scoped>
 
+#data-error {
+	color: red;
+}
 .login-form-section {
 	height: 100vh;
 }

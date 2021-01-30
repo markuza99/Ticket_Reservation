@@ -67,9 +67,9 @@ public class CommentService {
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
 		TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");
 		User user = (User) request.getSession().getAttribute("user");
+		manifestationDTO.manifestationRating = commentDAO.getManifestationRating(id);
 		if(user != null) {
 			manifestationDTO.commentSucces = commentDAO.userCommentedManifestation(id, user.getUsername());
-			manifestationDTO.manifestationRating = commentDAO.getManifestationRating(id);
 			manifestationDTO.userAttended = ticketDAO.userAttended(id, user.getUsername());
 			manifestationDTO.user = user.getUsername();
 			manifestationDTO.role = user.getRole();
