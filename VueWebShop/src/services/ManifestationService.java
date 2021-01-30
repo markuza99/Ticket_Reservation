@@ -1,15 +1,11 @@
 package services;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -25,6 +21,7 @@ import dao.CommentDAO;
 import dao.CustomerDAO;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
+import dao.SellerDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
 
@@ -53,9 +50,14 @@ public class ManifestationService {
 			ctx.setAttribute("CustomerDAO", 
 			new CustomerDAO(contextPath, ticketDAO, manifestationDAO));
 		}
+		if(ctx.getAttribute("SellerDAO") == null) {
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
+		}
 		if(ctx.getAttribute("UserDAO") == null) {
 			CustomerDAO customerDAO = (CustomerDAO) ctx.getAttribute("CustomerDAO");
-			ctx.setAttribute("UserDAO", new UserDAO(contextPath, customerDAO));
+			SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
+			ctx.setAttribute("UserDAO", new UserDAO(contextPath, customerDAO, sellerDAO));
 		}
 		if(ctx.getAttribute("CommentDAO") == null) {
 			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath));
@@ -94,7 +96,7 @@ public class ManifestationService {
 	@GET
 	@Path("/filter")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getFilterManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("selected") String selected, @QueryParam("izborTipa") String izborTipa, @QueryParam("nijeRasprodato") boolean nijeRasprodato) throws ParseException {
+	public List<Manifestation> getFilterManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("selected") String selected, @QueryParam("type") String izborTipa, @QueryParam("not_sold_out") boolean nijeRasprodato) throws ParseException {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		return manifestationDao.filter(name, dateFrom, dateTo, place, priceFrom, priceTo, selected,izborTipa, nijeRasprodato);
 	}

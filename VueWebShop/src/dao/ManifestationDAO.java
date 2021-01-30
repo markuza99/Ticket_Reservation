@@ -23,6 +23,7 @@ import beans.Location;
 import beans.Manifestation;
 import beans.ManifestationType;
 import beans.Status;
+import beans.value_objects.SortManifestations;
 import dto.ReservationDTO;
 
 public class ManifestationDAO {
@@ -87,100 +88,54 @@ public class ManifestationDAO {
 			LdateTo = LocalDateTime.parse(dateTo, formatter);
 		}
 		
-		//ako datum je prazan string, prosledi se null
-		//ako je mesto prazan string, to je svakako true jer contains radi za prazan string
-		//isto i za naziv
 		for (Manifestation m : manifestations.values()) {
 			if(correspondsSearch(m, name.toLowerCase(), LdateFrom, LdateTo, place.toLowerCase(), priceFrom, priceTo)) {
 				searchedManifestations.add(m);
 			}
 		}
 		
-		// TO DO : srediti sorting (napraviti klasu)
-//		if(selected.equals("Sortiraj po ceni manifestacije rastuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o1.getTicketPrice() - o2.getTicketPrice();
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po ceni manifestacije opadajuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO sAuto-generated mssethod stub
-//					return o2.getTicketPrice() - o1.getTicketPrice();
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po nazivu manifestacije rastuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o1.getName().compareTo(o2.getName());
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po nazivu manifestacije opadajuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o2.getName().compareTo(o1.getName());
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po lokaciji manifestacije rastuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o1.getLocation().getCity().compareTo(o2.getLocation().getCity());
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po lokaciji manifestacije opadajuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o2.getLocation().getCity().compareTo(o1.getLocation().getCity());
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po datumu manifestacije rastuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o1.getDate().compareTo(o2.getDate());
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po datumu manifestacije opadajuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o2.getDate().compareTo(o1.getDate());
-//				}
-//			});
-//		}
+		searchedManifestations = sortManifestations(selected, searchedManifestations);
+		
 		return searchedManifestations;		
 
 	}
 	
+	private List<Manifestation> sortManifestations(String selected, List<Manifestation> searchedManifestations) {
+		List<Location> locations = locationDAO.getAllLocations();
+		SortManifestations sort = new SortManifestations(searchedManifestations, locations);
+		
+		switch(selected) {
+		case "priceAsc":
+			sort.sortByPrice("ascending");
+			break;
+		case "priceDesc":
+			sort.sortByPrice("descending");
+			break;
+		case "nameAsc":
+			sort.sortByName("ascending");
+			break;
+		case "nameDesc":
+			sort.sortByName("descending");
+			break;
+		case "locationAsc":
+			sort.sortLocations("ascending");
+			searchedManifestations = sort.sortByLocation();
+			break;
+		case "locationDesc":
+			sort.sortLocations("descending");
+			searchedManifestations = sort.sortByLocation();
+			break;
+		case "dateAsc":
+			sort.sortByDate("ascending");
+			break;
+		case "dateDesc":
+			sort.sortByDate("descending");
+			break;
+		}
+		return searchedManifestations;
+		
+	}
+
 	private boolean correspondsSearch(Manifestation m,String name,  LocalDateTime dateFrom, LocalDateTime dateTo, String place, int priceFrom, int priceTo) {
 		boolean bname = m.getName().toLowerCase().contains(name);
 		String locationId = m.getLocation();

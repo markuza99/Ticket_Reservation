@@ -20,6 +20,7 @@ import beans.User;
 import dao.CustomerDAO;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
+import dao.SellerDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
 
@@ -50,9 +51,14 @@ public class UserService {
 			ctx.setAttribute("CustomerDAO", 
 			new CustomerDAO(contextPath, ticketDAO, manifestationDAO));
 		}
+		if(ctx.getAttribute("SellerDAO") == null) {
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
+		}
 		if(ctx.getAttribute("UserDAO") == null) {
 			CustomerDAO customerDAO = (CustomerDAO) ctx.getAttribute("CustomerDAO");
-			ctx.setAttribute("UserDAO", new UserDAO(contextPath, customerDAO));
+			SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
+			ctx.setAttribute("UserDAO", new UserDAO(contextPath, customerDAO, sellerDAO));
 		}
 	}
 	

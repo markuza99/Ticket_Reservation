@@ -45,7 +45,7 @@ const isFieldEmpty = (field) => {
     return field == "" ? true : false;
 }
 
-const areInputFieldsEmpty = (fields) => {
+function areInputFieldsEmpty(fields){
 
     for (const [key, value] of Object.entries(fields)) {
         if(isFieldEmpty(value)) 

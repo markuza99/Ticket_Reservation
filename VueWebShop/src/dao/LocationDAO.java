@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import beans.Location;
+import beans.User;
 
 public class LocationDAO {
 	private Map<String, Location> locations = new HashMap<>();
@@ -18,6 +19,10 @@ public class LocationDAO {
 	public LocationDAO(String contextPath) {
 		this.contextPath = contextPath;
 		loadLocations();
+	}
+	
+	public List<Location> getAllLocations() {
+		return new ArrayList<Location>(locations.values());
 	}
 	
 	public Location getLocationForManifestation(String id) {

@@ -74,6 +74,17 @@ function displayMap() {
    user.dateString = "1998-04-22";
  }
 
+ function formatType(manifestation) {
+    if(manifestation.type == "CONCERT") {
+      manifestation.formattedType = "Koncert"
+    } else if(manifestation.type == "FESTIVAL") {
+      manifestation.formattedType = "Festival"
+    } else {
+      manifestation.formattedType = "Pozoriste"
+    }
+ }
+ 
+
  const makeDate = (manifestation) => {
   switch(manifestation.date.month) {
 				

@@ -40,17 +40,17 @@
 		</nav>
 		
 		<div>
-				<select name="order" id="order" v-model="selected">
-					<option>Default</option>
-					<option>Sortiraj po nazivu manifestacije rastuce</option>
-					<option>Sortiraj po nazivu manifestacije opadajuce</option>
-					<option>Sortiraj po datumu manifestacije rastuce</option>
-					<option>Sortiraj po datumu manifestacije opadajuce</option>
-					<option>Sortiraj po ceni manifestacije rastuce</option>
-					<option>Sortiraj po ceni manifestacije opadajuce</option>
-					<option>Sortiraj po lokaciji manifestacije rastuce</option>
-					<option>Sortiraj po lokaciji manifestacije opadajuce</option>
-				</select>
+			Sortiraj:
+			<select name="order" id="order" v-model="selected">
+				<option>po nazivu manifestacije rastuce</option>
+				<option>po nazivu manifestacije opadajuce</option>
+				<option>po datumu manifestacije rastuce</option>
+				<option>po datumu manifestacije opadajuce</option>
+				<option>po ceni manifestacije rastuce</option>
+				<option>po ceni manifestacije opadajuce</option>
+				<option>po lokaciji manifestacije rastuce</option>
+				<option>po lokaciji manifestacije opadajuce</option>
+			</select>
 		</div>
 	</div>
 </template>
@@ -66,16 +66,45 @@ module.exports = {
 			priceFrom:"",
 			priceTo:"",
 			selected: "",
-			izborTipa: ""
+			new_selected: ""
 		}
 	},
 	methods: {
-	
+		setSelected() {
+			switch(this.selected) {
+			case "po ceni manifestacije rastuce":
+				this.new_selected = "priceAsc";
+				break;
+			case "po ceni manifestacije opadajuce":
+				this.new_selected = "priceDesc";
+				break;
+			case "po nazivu manifestacije rastuce":
+				this.new_selected = "nameAsc";
+				break;
+			case "po nazivu manifestacije opadajuce":
+				this.new_selected = "nameDesc";
+				break;
+			case "po lokaciji manifestacije rastuce":
+				this.new_selected = "locationAsc";
+				break;
+			case "po lokaciji manifestacije opadajuce":
+				this.new_selected = "locationDesc";
+				break;
+			case "po datumu manifestacije rastuce":
+				this.new_selected = "dateAsc";
+				break;
+			case "po datumu manifestacije opadajuce":
+				this.new_selected = "dateDesc";
+				break;
+			}
+		},
 		search: function() {
 			if(!(validatePrice(this.priceFrom, this.priceTo) && validateRange(this.dateFrom, this.dateTo))) {
 				$('.nav').addClass("error");
 				return;
 			}
+
+			this.setSelected();
 			
 			axios
 			.get("rest/manifestationservice/search", {
@@ -86,14 +115,13 @@ module.exports = {
 					"place":this.place,
 					"priceFrom":this.priceFrom,
 					"priceTo":this.priceTo,
-					"selected":this.selected,
-					// "izborTipa":this.izborTipa
+					"selected":this.new_selected
 				}
 			})
 			.then(response => {
 				$('.nav').removeClass("error");
 				this.$root.$emit('searched-manifestations',response.data);
-				this.$root.$emit('from-search-to-filter', response.data,this.name,this.dateFrom,this.dateTo,this.place,this.priceFrom,this.priceTo,this.selected);			
+				this.$root.$emit('from-search-to-filter', response.data,this.name,this.dateFrom,this.dateTo,this.place,this.priceFrom,this.priceTo,this.new_selected);			
 			});
 
 		}
