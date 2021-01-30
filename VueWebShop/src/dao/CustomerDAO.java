@@ -61,7 +61,7 @@ public class CustomerDAO {
 	}
 	
 	private void changeCustomersPoints(ReservationDTO reservationDTO, Customer customer) {
-		int currentPoints = customer.getCustomerType().getPoints();
+		int currentPoints = customer.getPoints();
 		int newPoints = currentPoints+reservationDTO.points;
 		customer.setPoints(newPoints);
 		
@@ -71,9 +71,18 @@ public class CustomerDAO {
 			//onda je poslednji
 		} else {
 			//naredni elem
-			CustomerType newType = customerTypes.get(typePosition + 1);
-			if(newPoints > newType.getPoints())
-				customer.setCustomerType(newType);
+			while(true) {
+				CustomerType newType = customerTypes.get(typePosition + 1);
+				if(newPoints > newType.getPoints())
+					customer.setCustomerType(newType);
+				else {
+					break;
+				}
+				typePosition++;
+				if(typesSize - typePosition == 1)
+					break;
+			}
+			
 		}
 	}
 	
@@ -102,7 +111,8 @@ public class CustomerDAO {
 			customerString.append(";");
 		}
 		
-		customerString.append(customer.getPoints() + ";" + "regularni");
+		String type = customer.getCustomerType().getTypeName();
+		customerString.append(customer.getPoints() + ";" + type);
         return customerString.toString();
 	}
 	

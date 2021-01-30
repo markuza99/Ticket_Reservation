@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import beans.Manifestation;
+import beans.User;
 import dao.CommentDAO;
 import dao.CustomerDAO;
 import dao.LocationDAO;
@@ -41,6 +43,10 @@ public class ManifestationService {
 			System.out.println(contextPath);
 			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath, locationDAO));
 		}
+		if(ctx.getAttribute("SellerDAO") == null) {
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
+		}
 		if(ctx.getAttribute("TicketDAO") == null) {
 			ctx.setAttribute("TicketDAO", new TicketDAO(contextPath));
 		}
@@ -50,10 +56,7 @@ public class ManifestationService {
 			ctx.setAttribute("CustomerDAO", 
 			new CustomerDAO(contextPath, ticketDAO, manifestationDAO));
 		}
-		if(ctx.getAttribute("SellerDAO") == null) {
-			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
-		}
+		
 		if(ctx.getAttribute("UserDAO") == null) {
 			CustomerDAO customerDAO = (CustomerDAO) ctx.getAttribute("CustomerDAO");
 			SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
@@ -66,11 +69,11 @@ public class ManifestationService {
 	}
 	
 	@GET
-	@Path("/getall")
+	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getManifestations() {
+	public List<Manifestation> getActiveManifestations() {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-		return  manifestationDao.getFirstNManifestations(10);
+		return  manifestationDao.getAllSortedManifestations();
 	}
 	
 	@GET
@@ -112,13 +115,7 @@ public class ManifestationService {
 		return false;
 	}
 	
-	@POST
-	@Path("/add-manifestation")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public List<Manifestation> addManifestation(Manifestation manifestation) {
-		ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-		return manifestationDAO.add(manifestation);
-	}
+	
 	
 //	@POST
 //	@Path("/upload")

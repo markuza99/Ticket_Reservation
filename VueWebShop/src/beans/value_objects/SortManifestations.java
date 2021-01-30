@@ -12,6 +12,10 @@ public class SortManifestations {
 	public List<Manifestation> manifestations;
 	public List<Location> locations;
 	
+	public SortManifestations(List<Manifestation> manifestations) {
+		this.manifestations = manifestations;
+	}
+	
 	public SortManifestations(List<Manifestation> manifestations, List<Location> locations) {
 		this.manifestations = manifestations;
 		this.locations = locations;

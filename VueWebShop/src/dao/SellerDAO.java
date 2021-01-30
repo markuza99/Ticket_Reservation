@@ -9,11 +9,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import beans.Customer;
 import beans.Manifestation;
 import beans.Seller;
+import beans.Ticket;
 
 public class SellerDAO {
 	private Map<String, Seller> sellers = new HashMap<>();
@@ -24,6 +27,26 @@ public class SellerDAO {
 		this.contextPath = contextPath;
 		this.manifestationDAO = manifestationDAO;
 		loadSellers();
+	}
+	
+	public Seller getSeller(String id) {
+		return sellers.get(id);
+	}
+	
+	public List<Manifestation> add(Manifestation manifestation, String user) {
+		if(!manifestationDAO.checkIdExistance(manifestation.getId())) {
+			return null;
+		}
+		if(!manifestationDAO.checkManifestationMaintainance(manifestation.getDate(), manifestation.getLocation(), manifestation.getId())) {
+			return null;
+		}
+		manifestationDAO.getManifestations().put(manifestation.getId(), manifestation);
+		Seller seller = getSeller(user);
+		seller.getManifestations().add(manifestation);
+		write();
+
+		manifestationDAO.append(manifestationDAO.getManifestationLine(manifestation));
+		return manifestationDAO.getAllActiveManifestations(manifestationDAO.getAllSortedManifestations());
 	}
 	
 	private void loadSellers() {
@@ -85,6 +108,43 @@ public class SellerDAO {
                 catch (Exception e) {}
             }
         }
+	}
+	
+	public void write() {
+		File file = new File(contextPath + "/repositories/sellers.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+            for(Seller seller : sellers.values()) {
+            	pw.println(getSellerLine(seller));
+            }
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+	}
+
+	private String getSellerLine(Seller seller) {
+		// TODO Auto-generated method stub
+		StringBuilder sellerString = new StringBuilder(); 
+		sellerString.append(seller.getUsername() + ";");
+		if(seller.getManifestations().size() == 0) {
+			sellerString.append(" ;");
+		} else {
+			for(Manifestation m : seller.getManifestations()) {
+				sellerString.append(m.getId() + ":");
+			}
+			sellerString.append(";");
+		}
+        return sellerString.toString();
 	}
 
 	public Map<String, Seller> getSellers() {

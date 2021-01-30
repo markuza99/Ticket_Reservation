@@ -197,8 +197,10 @@ module.exports = {
 					headers: {'content-type':'application/json'}
 				})
                 .then(response => {
-                    
-                    if(!response.data) {
+                    if(response.data) {
+                        console.log("bla");
+                        window.location.replace("#/");
+                    } else {
                         $('#maintainanceDate').addClass("error");
                         console.log("red");
                         this.date_error = true;

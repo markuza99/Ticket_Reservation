@@ -81,7 +81,11 @@
     			document.getElementById("error").innerText = "Morate popuniti sva polja.";
         		return;
 			}
-			
+			if(forbiddenSignInFields(this.user)) {
+                alert("Ne mozete koristiti ; znak");
+                return;
+            }
+
 			if(this.user.gender == "Musko") {
 				this.user.gender = "MALE";
 			} else {

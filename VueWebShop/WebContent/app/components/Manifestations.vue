@@ -1,6 +1,6 @@
 <template>
 	<div class="container">
-		<button type="button" class="btn btn-primary" v-if="user.role == 'ADMIN'" data-toggle="modal" data-target="#createManifestationModal">Dodaj manifestaciju</button>
+		<button type="button" class="btn btn-primary" v-if="user.role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">Dodaj manifestaciju</button>
 
 		<div class="modal fade" id="createManifestationModal" tabindex="-1" role="dialog" aria-labelledby="createManifestationModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -176,6 +176,11 @@ module.exports = {
 				$('#error').html("Sva polja su obavezna!");
 				return;
 			}
+
+			if(forbiddenSignInFields(this.new_manifestation)) {
+                alert("Ne mozete koristiti ; znak");
+                return;
+            }
 			
 			if(!validateNumberRange(10, 100000, parseInt(this.new_manifestation.numberOfSeats))) {
 				this.number_of_seats_error = true;
@@ -203,7 +208,7 @@ module.exports = {
 			
 			
 			axios
-				.post("rest/manifestationservice/add-manifestation", JSON.stringify(this.new_manifestation), {
+				.post("rest/sellerservice/add-manifestation", JSON.stringify(this.new_manifestation), {
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
@@ -240,7 +245,7 @@ module.exports = {
 		});
 		
 		axios
-			.get("rest/manifestationservice/getall")
+			.get("rest/manifestationservice/")
 			.then(response => {
 				this.manifestations = response.data;
 				this.format();

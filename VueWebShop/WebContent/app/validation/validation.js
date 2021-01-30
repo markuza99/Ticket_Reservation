@@ -45,6 +45,15 @@ const isFieldEmpty = (field) => {
     return field == "" ? true : false;
 }
 
+function forbiddenSignInFields(fields) {
+    for (const [key, value] of Object.entries(fields)) {
+        if(value.includes(";")) 
+            return true;
+    }
+
+    return false;
+}
+
 function areInputFieldsEmpty(fields){
 
     for (const [key, value] of Object.entries(fields)) {

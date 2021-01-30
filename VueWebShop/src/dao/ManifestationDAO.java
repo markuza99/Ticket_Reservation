@@ -7,13 +7,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +19,7 @@ import java.util.StringTokenizer;
 import beans.Location;
 import beans.Manifestation;
 import beans.ManifestationType;
+import beans.Seller;
 import beans.Status;
 import beans.value_objects.SortManifestations;
 import dto.ReservationDTO;
@@ -41,6 +39,7 @@ public class ManifestationDAO {
 		return new ArrayList<Manifestation>(manifestations.values());
 	}
 	
+	
 	public void reduceNumberOfSeats(ReservationDTO reservationDTO) {
 
 		Manifestation manifestation = getOneManifestation(reservationDTO.manifestation);
@@ -49,16 +48,19 @@ public class ManifestationDAO {
 		write();
 	}
 	
-	public List<Manifestation> getFirstNManifestations(int num) {
-		ArrayList<Manifestation> sortedManifestations = (ArrayList<Manifestation>) sortManifestations(true);
-		ArrayList<Manifestation> firstNManifestations = new ArrayList<Manifestation>();
-		for(Manifestation m : sortedManifestations) {
-			if(firstNManifestations.size() == num) {
-				break;
+	public List<Manifestation> getAllActiveManifestations(List<Manifestation> sorted) {
+		List<Manifestation> activeManifestations = new ArrayList<>();
+		for(Manifestation m : sorted) {
+			if(m.getStatus() == Status.ACTIVE) {
+				activeManifestations.add(m);
 			}
-			firstNManifestations.add(m);
 		}
-		return firstNManifestations;
+		return activeManifestations;
+	}
+
+	public List<Manifestation> getAllSortedManifestations() {
+		List<Manifestation> sortedManifestations = sortManifestations(false);
+		return getAllActiveManifestations(sortedManifestations);
 	}
 	
 	private List<Manifestation> sortManifestations(Boolean ascending) {
@@ -263,19 +265,9 @@ public class ManifestationDAO {
 		return filteredMan;
 	}
 	
-	public List<Manifestation> add(Manifestation manifestation) {
-		if(!checkIdExistance(manifestation.getId())) {
-			return null;
-		}
-		if(!checkManifestationMaintainance(manifestation.getDate(), manifestation.getLocation(), manifestation.getId())) {
-			return null;
-		}
-		manifestations.put(manifestation.getId(), manifestation);
-		append(getManifestationLine(manifestation));
-		return getAllManifestations();
-	}
 	
-	private boolean checkIdExistance(String id) {
+	
+	public boolean checkIdExistance(String id) {
 		// TODO Auto-generated method stub
 		for(Manifestation m : manifestations.values()) {
 			if(m.getId().equals(id)) {
@@ -311,10 +303,11 @@ public class ManifestationDAO {
 			return false;
 		}
 		manifestations.put(manifestation.getId(), manifestation);
+		write();
 		return true;
 	}
 
-	private Boolean checkManifestationMaintainance(LocalDateTime date, String location, String id) {
+	public Boolean checkManifestationMaintainance(LocalDateTime date, String location, String id) {
 		// TODO Auto-generated method stub
 		for(Manifestation manifestation : manifestations.values()) {
 			System.out.println(manifestation.getDate());
@@ -328,6 +321,14 @@ public class ManifestationDAO {
 			}
 		}
 		return true;
+	}
+
+	public Map<String, Manifestation> getManifestations() {
+		return manifestations;
+	}
+
+	public void setManifestations(Map<String, Manifestation> manifestations) {
+		this.manifestations = manifestations;
 	}
 	
 	
