@@ -7,6 +7,7 @@ const Manifestation = httpVueLoader("./app/components/Manifestation.vue");
 const editManifestation = httpVueLoader("./app/components/EditManifestation.vue");
 const Unauthorized = httpVueLoader("./app/components/Unauthorized.vue");
 const Users = httpVueLoader("./app/components/Users.vue");
+const Comments = httpVueLoader("./app/components/Comments.vue");
 
 const router = new VueRouter({
     mode: 'hash',
@@ -17,7 +18,8 @@ const router = new VueRouter({
         { path: '/manifestation/:id', component: Manifestation},
         { path: '/manifestation/edit/:id', component: editManifestation},
         { path: '/unauthorized', component: Unauthorized},
-        { path: '/users', component: Users}
+        { path: '/users', component: Users},
+        { path: '/comments', component: Comments}
     ]
 });
 
