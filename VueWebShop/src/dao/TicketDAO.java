@@ -12,13 +12,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import beans.Customer;
+import beans.Location;
+import beans.Manifestation;
+import beans.Role;
 import beans.Ticket;
 import beans.TicketStatus;
 import beans.TicketType;
+import beans.User;
 import dto.ReservationDTO;
 
 public class TicketDAO {
@@ -177,6 +182,116 @@ public class TicketDAO {
 			tickets.put(ticket.getId(), ticket);
 		}
 		write();
+	}
+	
+	public List<Ticket> getAllTickets() {
+		return new ArrayList<Ticket>(tickets.values());
+	}
+	
+	public List<Ticket> getAllReservedTickets() {
+		ArrayList<Ticket> allTickets = new ArrayList<Ticket>(tickets.values());
+		ArrayList<Ticket> reservedTickets = new ArrayList<Ticket>();
+		for (Ticket t : allTickets) {
+			if(t.getTicketStatus().toString().equals("RESERVED")) {
+				reservedTickets.add(t);
+			}
+		}
+		return reservedTickets;
+	}
+	
+	public List<Ticket> getAllUserTickets(String username) {
+		ArrayList<Ticket> usersTickets = new ArrayList<Ticket>();
+		for (Ticket ticket : tickets.values()) {
+			if(ticket.getUser().equals(username)) {
+				usersTickets.add(ticket);
+			}
+		}
+		return usersTickets;
+	}
+	
+	public List<Ticket> filter(List<Ticket> searchedTickets, String ticketType, String ticketStatus) {
+		// TODO Auto-generated method stub
+		List<Ticket> filteredTickets = new ArrayList<>();
+		for(Ticket t : searchedTickets) {
+			if(correspondsFilter(t, ticketType, ticketStatus)) {
+				filteredTickets.add(t);
+			}
+		}
+		return filteredTickets;
+	}
+
+	private boolean correspondsFilter(Ticket t, String type, String ticketStatus) {
+		// TODO Auto-generated method stub
+		boolean tType = true; 
+		if(type.equals("Svi")) {
+			tType = true;
+		} else {
+			if(t.getTicketType() == TicketType.valueOf(type)) {
+				tType = true;
+			} else {
+				tType = false;
+			}
+		}
+
+		boolean tStatus = true;
+		if(ticketStatus.equals("Svi")) {
+			tStatus = true;
+		} else {
+			if(t.getTicketStatus() == TicketStatus.valueOf(ticketStatus)) {
+				tStatus = true;
+			} else {
+				tStatus = false;
+			}
+		}
+		if(tType && tStatus) {
+			System.out.println("PROSLO JE JER " + type + "JE ISTO STO I " + t.getTicketType().toString() + " I "+ ticketStatus + " JE ISTO STO I " + t.getTicketStatus().toString());
+		}
+		return tType && tStatus;
+	}
+	public List<Ticket> search(String user, int priceFrom, int priceTo, String dateFrom, String dateTo, List<Manifestation> manifs, String text) {
+		// TODO Auto-generated method stub
+		List<Ticket> searchedTickets = new ArrayList<Ticket>();
+		user = user.trim();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		LocalDateTime LdateFrom = null;
+		LocalDateTime LdateTo = null;
 		
+		if(!dateFrom.equals("")) {
+			dateFrom = dateFrom.trim() + " 00:00:00";
+			LdateFrom = LocalDateTime.parse(dateFrom, formatter);;
+		}
+		if(!dateTo.equals("")) {
+			dateTo = dateTo.trim() + " 00:00:00";
+			LdateTo = LocalDateTime.parse(dateTo, formatter);
+		}
+		
+		//ako datum je prazan string, prosledi se null
+		//ako je mesto prazan string, to je svakako true jer contains radi za prazan string
+		//isto i za naziv
+		for (Ticket t : tickets.values()) {
+			if(correspondsSearch(t, user, LdateFrom, LdateTo, priceFrom, priceTo)) {
+				searchedTickets.add(t);
+			}
+		}
+		List<Ticket> nameTicket = new ArrayList<Ticket>();
+		for (Ticket ticket : searchedTickets) {
+			for (Manifestation m : manifs) {
+				if(m.getId().equals(ticket.getManifestationId())) {
+					if(m.getName().toLowerCase().contains(text.toLowerCase().trim())) {
+						nameTicket.add(ticket);
+					}
+				}
+			}
+		}
+		return nameTicket;
+	}
+	
+	private boolean correspondsSearch(Ticket t,String user,  LocalDateTime dateFrom, LocalDateTime dateTo, int priceFrom, int priceTo) {
+		boolean bname = t.getUser().equals(user);
+		boolean bdateFrom = dateFrom == null ? true : t.getDateTime().isAfter(dateFrom);
+		boolean bdateTo = dateTo == null ? true : t.getDateTime().isBefore(dateTo);
+		boolean bpriceFrom = priceFrom == 0 ? true : (t.getPrice() >= priceFrom);
+		boolean bpriceTo = priceTo == 0 ? true : (t.getPrice() <= priceTo);
+		return bname && bdateFrom && bdateTo && bpriceFrom && bpriceTo;
 	}
 }

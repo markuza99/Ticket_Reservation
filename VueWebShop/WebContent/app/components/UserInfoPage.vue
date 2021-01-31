@@ -92,7 +92,7 @@ module.exports = {
 						// this.$root.$emit('logged-in-user',response.data);
 						this.isLoggedIn = true;
 					}
-				alert(this.user.birthDate.toString());
+				alert(this.user.birthDate.dayOfYear);
 				console.log(this.user.birthDate.toString());
 				// 2017-08-04
 				this.datebirth = this.user.birthDate.year() +"-"+this.user.birthDate.monthValue();
