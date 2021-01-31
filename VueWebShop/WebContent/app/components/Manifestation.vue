@@ -268,7 +268,8 @@ module.exports = {
 						manifestation : this.manifestation.id,
 						description : description,
 						rating : this.user_rating,
-						commentStatus : "NONACTIVE" 
+						commentStatus : "NONACTIVE",
+						approval: "NOT_CHECKED" 
 						};
 			axios
 				.post("rest/commentservice/post-comment",JSON.stringify(comment),{

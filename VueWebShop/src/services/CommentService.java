@@ -105,11 +105,20 @@ public class CommentService {
 	}
 
 	@PUT
-	@Path("approve-comment")
+	@Path("/approve-comment")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public List<Comment> approveComment(@Context HttpServletRequest request, CommentDTO commentDTO) {
+	public List<Comment> approveComment(@Context HttpServletRequest request, Comment comment) {
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
 		User user = (User) request.getSession().getAttribute("user");
-		return commentDAO.approveComment(commentDTO, user.getUsername());
+		return commentDAO.approveComment(comment, user.getUsername());
+	}
+	
+	@PUT
+	@Path("/decline-comment")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public List<Comment> declineComment(@Context HttpServletRequest request, Comment comment) {
+		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
+		User user = (User) request.getSession().getAttribute("user");
+		return commentDAO.declineComment(comment, user.getUsername());
 	}
 }

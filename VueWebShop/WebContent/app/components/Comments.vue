@@ -4,9 +4,11 @@
             <div class="comment" v-for="comment in comments" :key="comment.id">
                 <div class="row">
                     <div class="col-lg-10 col-md-10">
-                        <ul class="comment-info bg-light d-flex justify-content-between">
+                        <ul class="comment-info d-flex justify-content-between" v-bind:class="{denied: comment.approval == 'DENIED',
+                                                                        accepted: comment.approval == 'ACCEPTED',
+                                                                        not_checked: comment.approval == 'NOT_CHECKED' }">
                             <li class="text-secondary comment-username">{{comment.user}}</li>
-                            <li>{{comment.manifestation}}</li>
+                            <li>Manifestacija: {{comment.manifestation}}</li>
                             <li>
                                 <span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
                                 <span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
@@ -20,14 +22,24 @@
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-2">
-                        <button class="btn btn-success mt-5" v-on:click="approve(comment)">
-                            Odobri:   <i class="fa fa-check"></i>
-                        </button>
-                        <button class="btn btn-danger mt-5" v-on:click="dismiss(comment)">
-                            <i class="fa fa-times"></i>
-                        </button>
+                        <div class="mt-5" v-if="comment.approval =='NOT_CHECKED'">
+                            <button class="btn btn-success" v-on:click="approve(comment)">
+                                Odobri:   <i class="fa fa-check"></i>
+                            </button>
+                            <button class="btn btn-danger" v-on:click="decline(comment)">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="mt-5">
+                            <div class="btn btn-outline-danger" v-if="comment.approval == 'DENIED'" disabled>NEODOBREN</div>
+                            <div class="btn btn-outline-success" v-if="comment.approval == 'ACCEPTED'" disabled>ODOBREN</div>
+                        </div>
                     </div>
 				</div>
+
+
+
+                
             </div>
         <!-- </div> -->
     </div>
@@ -46,6 +58,7 @@ module.exports = {
             .get("rest/commentservice/get-all-comments-for-seller")
             .then(response => {
                 this.comments = response.data;
+                console.log(this.comments);
             })
     },
     methods: {
@@ -53,9 +66,10 @@ module.exports = {
 			return !(num > comment.rating);
         },
         approve(comment) {
-            commentDTO = {commentUser: comment.user, commentManifestation: comment.manifestation};
+            //mogu samo poslati ceo komentar
+            console.log(comment);
             axios
-                .put("rest/commentservice/approve-comment",JSON.stringify(commentDTO), {
+                .put("rest/commentservice/approve-comment",JSON.stringify(comment), {
                     headers: {"content-type":"application/json"}
                 })
                 .then(response => {
@@ -63,6 +77,16 @@ module.exports = {
                     alert("Komentar odobren!");
                 });
 
+        },
+        decline(comment) {
+            axios
+                .put("rest/commentservice/decline-comment",JSON.stringify(comment), {
+                    headers: {"content-type":"application/json"}
+                })
+                .then(response => {
+                    this.comments = response.data;
+                    alert("Komentar neodobren.");
+                });
         }
     }
 }
@@ -72,5 +96,17 @@ module.exports = {
 .wrapper-scroll {
     height: 30em !important;
     overflow: scroll;
+}
+
+.denied {
+    background-color: #f5c6cb;
+}
+
+.accepted {
+    background-color: #c3e6cb;
+}
+
+.not_checked {
+    background-color: #bee5eb;
 }
 </style>

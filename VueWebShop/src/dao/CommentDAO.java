@@ -14,11 +14,10 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import beans.Comment;
-import beans.Customer;
+import beans.CommentApproval;
 import beans.Manifestation;
 import beans.Seller;
 import beans.Status;
-import beans.Ticket;
 import dto.CommentDTO;
 
 
@@ -39,7 +38,7 @@ public class CommentDAO {
 		List<Comment> manifestationComments = new ArrayList<Comment>();
 		
 		for(Comment c : comments.values()) {
-			if(c.getManifestation().equals(id) && c.getCommentStatus() == status) {
+			if(c.getManifestation().equals(id) && c.getCommentStatus() == status && c.getApproval() == CommentApproval.ACCEPTED) {
 				manifestationComments.add(c);
 			}
 		}
@@ -65,7 +64,8 @@ public class CommentDAO {
 					int review = Integer.parseInt(st.nextToken().trim());
 					Status status = Status.valueOf(st.nextToken().trim());
 					String id = user + manifestation;
-					comments.put(id, new Comment(user, manifestation, description, review, status));
+					CommentApproval approval = CommentApproval.valueOf(st.nextToken().trim());
+					comments.put(id, new Comment(user, manifestation, description, review, status, approval));
 				}
 			}
 		} catch(Exception ex) {
@@ -97,7 +97,8 @@ public class CommentDAO {
 				+ comment.getManifestation() + ";"
 				+ comment.getDescription() + ";"
 				+ comment.getRating() + ";"
-				+ comment.getCommentStatus());
+				+ comment.getCommentStatus() + ";"
+				+ comment.getApproval());
 
         return commentString.toString();
 	}
@@ -182,7 +183,7 @@ public class CommentDAO {
 		for(Comment comment : comments.values()) {
 			Seller seller = sellerDAO.getSeller(username);
 			for(Manifestation m : seller.getManifestations()) {
-				if(comment.getManifestation().equals(m.getId()) && comment.getCommentStatus() == Status.NONACTIVE) {
+				if(comment.getManifestation().equals(m.getId())) {
 					manifestationComments.add(comment);
 				}
 			}
@@ -191,10 +192,23 @@ public class CommentDAO {
 		return manifestationComments;
 	}
 
-	public List<Comment> approveComment(CommentDTO commentDTO, String username) {
+	public List<Comment> approveComment(Comment comment, String username) {
 		for(Comment c : comments.values()) {
-			if(c.getUser().equals(commentDTO.commentUser) && c.getManifestation().equals(commentDTO.commentManifestation)) {
+			if(c.getUser().equals(comment.getUser()) && c.getManifestation().equals(comment.getManifestation())) {
 				c.setCommentStatus("ACTIVE");
+				c.setApproval("ACCEPTED");
+			}
+		}
+		write();
+		return getCommentsForSeller(username);
+	}
+
+	public List<Comment> declineComment(Comment comment, String username) {
+		// TODO Auto-generated method stub
+		for(Comment c : comments.values()) {
+			if(c.getUser().equals(comment.getUser()) && c.getManifestation().equals(comment.getManifestation())) {
+				c.setCommentStatus("ACTIVE");
+				c.setApproval("DENIED");
 			}
 		}
 		write();
