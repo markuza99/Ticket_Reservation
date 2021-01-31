@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -18,7 +19,11 @@ import beans.Comment;
 import beans.Status;
 import beans.User;
 import dao.CommentDAO;
+import dao.LocationDAO;
+import dao.ManifestationDAO;
+import dao.SellerDAO;
 import dao.TicketDAO;
+import dto.CommentDTO;
 import dto.ManifestationDTO;
 
 @Path("/commentservice")
@@ -29,8 +34,21 @@ public class CommentService {
 	@PostConstruct
 	public void init() {
 		String contextPath = ctx.getRealPath("");
+		if(ctx.getAttribute("LocationDAO") == null) {
+			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
+		}
+		if(ctx.getAttribute("ManifestationDAO") == null) {
+			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
+			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath, locationDAO));
+		}
+		if(ctx.getAttribute("SellerDAO") == null) {
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
+		}
 		if(ctx.getAttribute("CommentDAO") == null) {
-			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath));
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
+			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath, manifestationDAO, sellerDAO));
 		}
 		if(ctx.getAttribute("TicketDAO") == null) {
 			ctx.setAttribute("TicketDAO", new TicketDAO(contextPath));
@@ -76,5 +94,22 @@ public class CommentService {
 		}
 		return manifestationDTO;
 	}
+	
+	@GET
+	@Path("/get-all-comments-for-seller")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Comment> getAllCommentsForSeller(@Context HttpServletRequest request) {
+		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
+		User user = (User) request.getSession().getAttribute("user");
+		return commentDAO.getCommentsForSeller(user.getUsername());
+	}
 
+	@PUT
+	@Path("approve-comment")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public List<Comment> approveComment(@Context HttpServletRequest request, CommentDTO commentDTO) {
+		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
+		User user = (User) request.getSession().getAttribute("user");
+		return commentDAO.approveComment(commentDTO, user.getUsername());
+	}
 }

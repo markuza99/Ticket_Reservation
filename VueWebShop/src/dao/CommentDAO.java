@@ -14,16 +14,24 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import beans.Comment;
+import beans.Customer;
 import beans.Manifestation;
+import beans.Seller;
 import beans.Status;
+import beans.Ticket;
+import dto.CommentDTO;
 
 
 public class CommentDAO {
 	private Map<String, Comment> comments = new HashMap<>();
 	private String contextPath;
+	private ManifestationDAO manifestationDAO;
+	private SellerDAO sellerDAO;
 	
-	public CommentDAO(String contextPath) {
+	public CommentDAO(String contextPath, ManifestationDAO manifestationDAO, SellerDAO sellerDAO) {
 		this.contextPath = contextPath;
+		this.manifestationDAO = manifestationDAO;
+		this.sellerDAO = sellerDAO;
 		loadComments();
 	}
 	
@@ -75,21 +83,55 @@ public class CommentDAO {
 	public List<Comment> postComment(Comment comment) {
 		String id = comment.getUser() + comment.getManifestation();
 		comments.put(id, comment);
-		String commentLine = comment.getUser() + ";"
-				+ comment.getManifestation() + ";"
-				+ comment.getDescription() + ";" + comment.getRating()
-				+ ";" + Status.NONACTIVE;
-		write(commentLine);
+//		String commentLine = comment.getUser() + ";"
+//				+ comment.getManifestation() + ";"
+//				+ comment.getDescription() + ";" + comment.getRating()
+//				+ ";" + Status.NONACTIVE;
+		append(getCommentLine(comment));
 		return new ArrayList<Comment> (comments.values());
 	}
 	
-	private void write(String comment) {
-        File fileUsers = new File(contextPath + "/repositories/comments.txt");
+	public String getCommentLine(Comment comment) {
+		StringBuilder commentString = new StringBuilder(); 
+		commentString.append(comment.getUser() + ";"
+				+ comment.getManifestation() + ";"
+				+ comment.getDescription() + ";"
+				+ comment.getRating() + ";"
+				+ comment.getCommentStatus());
+
+        return commentString.toString();
+	}
+	
+	public void append(String line) {
+		File file = new File(contextPath + "/repositories/comments.txt");
 
         PrintWriter pw = null;
         try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(fileUsers, true)));
-            pw.println(comment);
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            	pw.println(line);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+	}
+	
+	private void write() {
+		File file = new File(contextPath + "/repositories/comments.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+            for(Comment comment : comments.values()) {
+            	pw.println(getCommentLine(comment));
+            }
+            
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -131,5 +173,31 @@ public class CommentDAO {
 		}
 		// TO DO -- srediti average rating
 		return sumOfRatings / n;
+	}
+
+	public List<Comment> getCommentsForSeller(String username) {
+		// TODO Auto-generated method stub
+		List<Comment> manifestationComments = new ArrayList<Comment>();
+		
+		for(Comment comment : comments.values()) {
+			Seller seller = sellerDAO.getSeller(username);
+			for(Manifestation m : seller.getManifestations()) {
+				if(comment.getManifestation().equals(m.getId()) && comment.getCommentStatus() == Status.NONACTIVE) {
+					manifestationComments.add(comment);
+				}
+			}
+		}
+
+		return manifestationComments;
+	}
+
+	public List<Comment> approveComment(CommentDTO commentDTO, String username) {
+		for(Comment c : comments.values()) {
+			if(c.getUser().equals(commentDTO.commentUser) && c.getManifestation().equals(commentDTO.commentManifestation)) {
+				c.setCommentStatus("ACTIVE");
+			}
+		}
+		write();
+		return getCommentsForSeller(username);
 	}
 }
