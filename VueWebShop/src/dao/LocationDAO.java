@@ -3,11 +3,14 @@ package dao;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
 import beans.Location;
+import beans.User;
 
 public class LocationDAO {
 	private Map<String, Location> locations = new HashMap<>();
@@ -18,8 +21,20 @@ public class LocationDAO {
 		loadLocations();
 	}
 	
+	public List<Location> getAllLocations() {
+		return new ArrayList<Location>(locations.values());
+	}
+	
 	public Location getLocationForManifestation(String id) {
 		return locations.get(id);
+	}
+	
+	public List<String> getLocationsId() {
+		List<String> locationsId = new ArrayList<>();
+		for(String key : locations.keySet()) {
+			locationsId.add(key);
+		}
+		return locationsId;
 	}
 	
 	private Location loadLocations() {

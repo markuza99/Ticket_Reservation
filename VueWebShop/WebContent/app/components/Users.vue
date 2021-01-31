@@ -316,16 +316,13 @@ module.exports = {
                 $('#createUserModal input').removeClass("success");
                 return;
             }
+            if(forbiddenSignInFields(this.new_user)) {
+                alert("Ne mozete koristiti ; znak");
+                return;
+            }
             $('#createUserModal input').removeClass("error");
             $('#createUserModal input').addClass("success");
-            // private String username;
-            // private String firstName;
-            // private String lastName;
-            // private String password;
-            // private Gender gender;
-            // private LocalDate birthDate;
-            // private Role role;
-            // private Boolean isDeleted;
+            
             var rola = "";
             switch(this.new_user.role) {
                 case "Kupac":

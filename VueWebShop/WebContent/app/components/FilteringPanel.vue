@@ -4,23 +4,23 @@
 	<hr>
 	<ul class="filtering-panel d-flex justify-content-between">
 		<li>
-			<select class="form-select pl-3 pr-3 pt-2 pb-2 mr-3" v-model="izborTipa">
+			<select class="form-select pl-3 pr-3 pt-2 pb-2 mr-3" v-model="type">
 					<option selected>SVE</option>
-					<option>CONCERT</option>
-					<option>THEATER</option>
-					<option>FESTIVAL</option>
+					<option>Koncert</option>
+					<option>Pozoriste</option>
+					<option>Festival</option>
 			</select>
 			<span class="mr-1">Nerasprodato: </span>
-			<input type="checkbox" v-model="nijeRasprodato">
+			<input type="checkbox" v-model="not_sold_out">
 		</li>
 		<li>
-			<button type="button" class="btn btn-primary" v-on:click="filtriraj">Filtriraj</button>
+			<button type="button" class="btn btn-primary" v-on:click="filter">Filtriraj</button>
 		</li>
 	</ul>
 	</div>
 </template>
 
- <script>
+<script>
 module.exports = {
 	data() {
 		return {
@@ -31,12 +31,33 @@ module.exports = {
 			priceFrom:"",
 			priceTo:"",
 			selected: "",
-			izborTipa: "",
-			nijeRasprodato: true
+			type: "SVE",
+			not_sold_out: true
 		}
 	},
 	methods: {
-		filtriraj : function() {
+		setType() {
+			if(this.type == "Koncert") {
+				this.type = "CONCERT";
+			} else if(this.type == "Festival") {
+				this.type = "FESTIVAL";
+			} else if(this.type == "Pozoriste") {
+				this.type = "THEATER";
+			}
+		},
+		returnType() {
+			if(this.type == "CONCERT") {
+				this.type = "Koncert";
+			} else if(this.type == "FESTIVAL") {
+				this.type = "Festival";
+			} else if(this.type == "THEATER") {
+				this.type = "Pozoriste";
+			} else {
+				this.type = "SVE";
+			}
+		},
+		filter() {
+			this.setType();
 			axios
 			.get("rest/manifestationservice/filter", {
 				params: {
@@ -47,21 +68,19 @@ module.exports = {
 					"priceFrom":this.priceFrom,
 					"priceTo":this.priceTo,
 					"selected":this.selected,
-					"izborTipa": this.izborTipa,
-					"nijeRasprodato": this.nijeRasprodato
+					"type": this.type,
+					"not_sold_out": this.not_sold_out
 				}
 			})
 			.then(response => {
 				$('.nav').removeClass("error");
+				this.returnType();
 				this.$root.$emit('filtered-manifestations',response.data);			
 			});
 		}
 	},
 	mounted() {
-		//pretplata na metode
-		// search panel prosledjuje manifestacije u Manifestations
 		this.$root.$on('from-search-to-filter',(manifestations,name,dateFrom,dateTo,place,priceFrom,priceTo,selected) => {
-			// console.log("pretplata na search panel");
 			this.manifestations = manifestations;
 			this.name = name;
 			this.dateFrom = dateFrom;
@@ -81,7 +100,6 @@ module.exports = {
 .latest-manifestations {
 	font-family: 'Open Sans Condensed', sans-serif;
 	font-family: 'Quicksand', sans-serif;
-	/* margin-top: 20px; */
 	font-size: 25px;
 }
 

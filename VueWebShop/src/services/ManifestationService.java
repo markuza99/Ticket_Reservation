@@ -1,13 +1,14 @@
 package services;
 
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -17,10 +18,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import beans.Manifestation;
+import beans.User;
 import dao.CommentDAO;
 import dao.CustomerDAO;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
+import dao.SellerDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
 
@@ -40,6 +43,10 @@ public class ManifestationService {
 			System.out.println(contextPath);
 			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath, locationDAO));
 		}
+		if(ctx.getAttribute("SellerDAO") == null) {
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
+		}
 		if(ctx.getAttribute("TicketDAO") == null) {
 			ctx.setAttribute("TicketDAO", new TicketDAO(contextPath));
 		}
@@ -49,22 +56,25 @@ public class ManifestationService {
 			ctx.setAttribute("CustomerDAO", 
 			new CustomerDAO(contextPath, ticketDAO, manifestationDAO));
 		}
+		
 		if(ctx.getAttribute("UserDAO") == null) {
 			CustomerDAO customerDAO = (CustomerDAO) ctx.getAttribute("CustomerDAO");
-			ctx.setAttribute("UserDAO", new UserDAO(contextPath, customerDAO));
+			SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
+			ctx.setAttribute("UserDAO", new UserDAO(contextPath, customerDAO, sellerDAO));
 		}
 		if(ctx.getAttribute("CommentDAO") == null) {
-			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath));
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
+			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath, manifestationDAO, sellerDAO));
 		}
-		System.out.println("ASFZDGSDGsdfdsfgdssdfg  " + contextPath);
 	}
 	
 	@GET
-	@Path("/getall")
+	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getManifestations() {
+	public List<Manifestation> getActiveManifestations() {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-		return  manifestationDao.getFirstNManifestations(10);
+		return  manifestationDao.getAllSortedManifestations();
 	}
 	
 	@GET
@@ -90,7 +100,7 @@ public class ManifestationService {
 	@GET
 	@Path("/filter")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getFilterManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("selected") String selected, @QueryParam("izborTipa") String izborTipa, @QueryParam("nijeRasprodato") boolean nijeRasprodato) throws ParseException {
+	public List<Manifestation> getFilterManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("selected") String selected, @QueryParam("type") String izborTipa, @QueryParam("not_sold_out") boolean nijeRasprodato) throws ParseException {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		return manifestationDao.filter(name, dateFrom, dateTo, place, priceFrom, priceTo, selected,izborTipa, nijeRasprodato);
 	}
@@ -105,4 +115,17 @@ public class ManifestationService {
 		}
 		return false;
 	}
+	
+	
+	
+//	@POST
+//	@Path("/upload")
+//	@Consumes(MediaType.MULTIPART_FORM_DATA)
+//	@Produces(MediaType.TEXT_PLAIN)
+//	public String upload(@FormParam("file") InputStream file, @FormParam("fileName") String fileName) throws IOException {
+//		String contextPath = ctx.getRealPath("");
+////		System.out.println(file);
+////		System.out.println(fileName);
+//		return null;
+//	}
 }

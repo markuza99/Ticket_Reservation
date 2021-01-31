@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +17,9 @@ import java.util.StringTokenizer;
 
 import beans.Customer;
 import beans.Gender;
+import beans.Manifestation;
 import beans.Role;
+import beans.Seller;
 import beans.Ticket;
 import beans.User;
 
@@ -26,12 +27,14 @@ public class UserDAO {
 	private Map<String, User> users = new HashMap<>();
 	private String contextPath;
 	private CustomerDAO customerDAO;
+	private SellerDAO sellerDAO;
 	
 	public UserDAO() {}
 	
-	public UserDAO(String contextPath, CustomerDAO customerDAO) {
+	public UserDAO(String contextPath, CustomerDAO customerDAO, SellerDAO sellerDAO) {
 		this.contextPath = contextPath;
 		this.customerDAO = customerDAO;
+		this.sellerDAO = sellerDAO;
 		loadUsers();
 	}
 	
@@ -96,17 +99,24 @@ public class UserDAO {
 
 	
 	public User registration(User user) {
+		
         if(usernameExists(user.getUsername())) {
             return null;
         }
-        String customerLine = user.getUsername() + "; ;" + 0 + ";" + "regularni";
+        
         users.put(user.getUsername(), user);
-        customerDAO.getCustomers().put(user.getUsername(),
-        		new Customer(user.getUsername(), new ArrayList<Ticket>(),
-        		0, customerDAO.getCustomerType("regularni")));
         append(getUserLine(user));
+        
         if(user.getRole() == Role.CUSTOMER) {
+        	String customerLine = user.getUsername() + "; ;" + 0 + ";" + "regularni";
         	customerDAO.append(customerLine);
+        	customerDAO.getCustomers().put(user.getUsername(),
+            		new Customer(user.getUsername(), new ArrayList<Ticket>(),
+            		0, customerDAO.getCustomerType("regularni")));
+        } else if(user.getRole() == Role.SELLER) {
+        	String sellerLine = user.getUsername() + "; ;";
+        	sellerDAO.append(sellerLine);
+        	sellerDAO.getSellers().put(user.getUsername(), new Seller(user.getUsername(), new ArrayList<Manifestation>()));
         }
         return user;
     }

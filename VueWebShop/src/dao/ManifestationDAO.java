@@ -7,13 +7,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +19,9 @@ import java.util.StringTokenizer;
 import beans.Location;
 import beans.Manifestation;
 import beans.ManifestationType;
+import beans.Seller;
 import beans.Status;
+import beans.value_objects.SortManifestations;
 import dto.ReservationDTO;
 
 public class ManifestationDAO {
@@ -40,6 +39,7 @@ public class ManifestationDAO {
 		return new ArrayList<Manifestation>(manifestations.values());
 	}
 	
+	
 	public void reduceNumberOfSeats(ReservationDTO reservationDTO) {
 
 		Manifestation manifestation = getOneManifestation(reservationDTO.manifestation);
@@ -48,16 +48,19 @@ public class ManifestationDAO {
 		write();
 	}
 	
-	public List<Manifestation> getFirstNManifestations(int num) {
-		ArrayList<Manifestation> sortedManifestations = (ArrayList<Manifestation>) sortManifestations(true);
-		ArrayList<Manifestation> firstNManifestations = new ArrayList<Manifestation>();
-		for(Manifestation m : sortedManifestations) {
-			if(firstNManifestations.size() == num) {
-				break;
+	public List<Manifestation> getAllActiveManifestations(List<Manifestation> sorted) {
+		List<Manifestation> activeManifestations = new ArrayList<>();
+		for(Manifestation m : sorted) {
+			if(m.getStatus() == Status.ACTIVE) {
+				activeManifestations.add(m);
 			}
-			firstNManifestations.add(m);
 		}
-		return firstNManifestations;
+		return activeManifestations;
+	}
+
+	public List<Manifestation> getAllSortedManifestations() {
+		List<Manifestation> sortedManifestations = sortManifestations(false);
+		return getAllActiveManifestations(sortedManifestations);
 	}
 	
 	private List<Manifestation> sortManifestations(Boolean ascending) {
@@ -87,100 +90,54 @@ public class ManifestationDAO {
 			LdateTo = LocalDateTime.parse(dateTo, formatter);
 		}
 		
-		//ako datum je prazan string, prosledi se null
-		//ako je mesto prazan string, to je svakako true jer contains radi za prazan string
-		//isto i za naziv
 		for (Manifestation m : manifestations.values()) {
 			if(correspondsSearch(m, name.toLowerCase(), LdateFrom, LdateTo, place.toLowerCase(), priceFrom, priceTo)) {
 				searchedManifestations.add(m);
 			}
 		}
 		
-		// TO DO : srediti sorting (napraviti klasu)
-//		if(selected.equals("Sortiraj po ceni manifestacije rastuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o1.getTicketPrice() - o2.getTicketPrice();
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po ceni manifestacije opadajuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO sAuto-generated mssethod stub
-//					return o2.getTicketPrice() - o1.getTicketPrice();
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po nazivu manifestacije rastuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o1.getName().compareTo(o2.getName());
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po nazivu manifestacije opadajuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o2.getName().compareTo(o1.getName());
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po lokaciji manifestacije rastuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o1.getLocation().getCity().compareTo(o2.getLocation().getCity());
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po lokaciji manifestacije opadajuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o2.getLocation().getCity().compareTo(o1.getLocation().getCity());
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po datumu manifestacije rastuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o1.getDate().compareTo(o2.getDate());
-//				}
-//			});
-//		}
-//		else if(selected.equals("Sortiraj po datumu manifestacije opadajuce")) {
-//			Collections.sort(searchedManifestations, new Comparator<Manifestation>() {
-//
-//				@Override
-//				public int compare(Manifestation o1, Manifestation o2) {
-//					// TODO Auto-generated method stub
-//					return o2.getDate().compareTo(o1.getDate());
-//				}
-//			});
-//		}
+		searchedManifestations = sortManifestations(selected, searchedManifestations);
+		
 		return searchedManifestations;		
 
 	}
 	
+	private List<Manifestation> sortManifestations(String selected, List<Manifestation> searchedManifestations) {
+		List<Location> locations = locationDAO.getAllLocations();
+		SortManifestations sort = new SortManifestations(searchedManifestations, locations);
+		
+		switch(selected) {
+		case "priceAsc":
+			sort.sortByPrice("ascending");
+			break;
+		case "priceDesc":
+			sort.sortByPrice("descending");
+			break;
+		case "nameAsc":
+			sort.sortByName("ascending");
+			break;
+		case "nameDesc":
+			sort.sortByName("descending");
+			break;
+		case "locationAsc":
+			sort.sortLocations("ascending");
+			searchedManifestations = sort.sortByLocation();
+			break;
+		case "locationDesc":
+			sort.sortLocations("descending");
+			searchedManifestations = sort.sortByLocation();
+			break;
+		case "dateAsc":
+			sort.sortByDate("ascending");
+			break;
+		case "dateDesc":
+			sort.sortByDate("descending");
+			break;
+		}
+		return searchedManifestations;
+		
+	}
+
 	private boolean correspondsSearch(Manifestation m,String name,  LocalDateTime dateFrom, LocalDateTime dateTo, String place, int priceFrom, int priceTo) {
 		boolean bname = m.getName().toLowerCase().contains(name);
 		String locationId = m.getLocation();
@@ -307,6 +264,38 @@ public class ManifestationDAO {
 		}
 		return filteredMan;
 	}
+	
+	
+	
+	public boolean checkIdExistance(String id) {
+		// TODO Auto-generated method stub
+		for(Manifestation m : manifestations.values()) {
+			if(m.getId().equals(id)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public void append(String line) {
+		File file = new File(contextPath + "/repositories/manifestations.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            	pw.println(line);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+	}
 
 	public Boolean update(Manifestation manifestation) {
 		//provera da li vec ima manifestacija u isto vreme na istoj adresi
@@ -314,10 +303,11 @@ public class ManifestationDAO {
 			return false;
 		}
 		manifestations.put(manifestation.getId(), manifestation);
+		write();
 		return true;
 	}
 
-	private Boolean checkManifestationMaintainance(LocalDateTime date, String location, String id) {
+	public Boolean checkManifestationMaintainance(LocalDateTime date, String location, String id) {
 		// TODO Auto-generated method stub
 		for(Manifestation manifestation : manifestations.values()) {
 			System.out.println(manifestation.getDate());
@@ -331,6 +321,14 @@ public class ManifestationDAO {
 			}
 		}
 		return true;
+	}
+
+	public Map<String, Manifestation> getManifestations() {
+		return manifestations;
+	}
+
+	public void setManifestations(Map<String, Manifestation> manifestations) {
+		this.manifestations = manifestations;
 	}
 	
 	
