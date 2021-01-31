@@ -18,7 +18,6 @@ import beans.CommentApproval;
 import beans.Manifestation;
 import beans.Seller;
 import beans.Status;
-import dto.CommentDTO;
 
 
 public class CommentDAO {
@@ -34,6 +33,10 @@ public class CommentDAO {
 		loadComments();
 	}
 	
+	public List<Comment> getAllComments() {
+		return new ArrayList<Comment>(comments.values());
+	}
+	 
 	public List<Comment> getCommentsForManifestation(String id, Status status) {
 		List<Comment> manifestationComments = new ArrayList<Comment>();
 		

@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-2">
-                        <div class="mt-5" v-if="comment.approval =='NOT_CHECKED'">
+                        <div class="mt-5" v-if="comment.approval =='NOT_CHECKED' && user.role == 'SELLER'">
                             <button class="btn btn-success" v-on:click="approve(comment)">
                                 Odobri:   <i class="fa fa-check"></i>
                             </button>
@@ -49,17 +49,24 @@
 module.exports = {
     data() {
         return {
-            comments:[]
+            comments:[],
+            user:{}
         }
     },
     mounted() {
 
         axios
-            .get("rest/commentservice/get-all-comments-for-seller")
+            .get("rest/commentservice/get-all-comments")
             .then(response => {
                 this.comments = response.data;
                 console.log(this.comments);
-            })
+            });
+
+        axios
+            .get("rest/userservice/test-login")
+            .then(response => {
+                this.user = response.data;
+            });
     },
     methods: {
         isCounted(num, comment) {

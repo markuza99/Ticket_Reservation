@@ -16,6 +16,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import beans.Comment;
+import beans.Role;
 import beans.Status;
 import beans.User;
 import dao.CommentDAO;
@@ -96,12 +97,16 @@ public class CommentService {
 	}
 	
 	@GET
-	@Path("/get-all-comments-for-seller")
+	@Path("/get-all-comments")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Comment> getAllCommentsForSeller(@Context HttpServletRequest request) {
+	public List<Comment> getAllComments(@Context HttpServletRequest request) {
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
 		User user = (User) request.getSession().getAttribute("user");
-		return commentDAO.getCommentsForSeller(user.getUsername());
+		if(user != null && user.getRole() == Role.SELLER) {
+			return commentDAO.getCommentsForSeller(user.getUsername());
+		} else {
+			return commentDAO.getAllComments();
+		}
 	}
 
 	@PUT
