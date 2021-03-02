@@ -29,7 +29,7 @@ module.exports = {
 	methods: {
 		logOut: function() {
 			axios
-			.get("rest/userservice/logout")
+			.post("rest/users/logout")
 			.then(response => {
 				
 				this.user = response.data;
@@ -45,7 +45,7 @@ module.exports = {
 	},
 	mounted() {
 		axios
-			.get("rest/userservice/test-login")
+			.get("rest/users/test-login")
 			.then(response => {
 				
 				this.user = response.data;

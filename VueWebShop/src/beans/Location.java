@@ -5,14 +5,45 @@ public class Location {
 	private double longitude;
 	private double latitude;
 	private String street;
+	private int number;
+	private int postNumber;
 	private String city;
+	private String state;
 	
-	public Location(String id, double longitude, double latitude, String street, String city) {
+	public Location(String id, double longitude, double latitude, String street, int number,
+			int postNumber, String city, String state) {
 		this.id = id;
 		this.longitude = longitude;
 		this.latitude = latitude;
 		this.street = street;
 		this.city = city;
+		this.number = number;
+		this.postNumber = postNumber;
+		this.state = state;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
+	public int getPostNumber() {
+		return postNumber;
+	}
+
+	public void setPostNumber(int postNumber) {
+		this.postNumber = postNumber;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
 	}
 
 	public String getId() {

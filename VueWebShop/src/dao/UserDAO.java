@@ -216,16 +216,15 @@ public class UserDAO {
 		return searchedUsers;
 	}
 
-	private boolean correspondsSearch(User user, String text, LocalDate dateFrom, LocalDate dateTo) {
-		boolean btext = text.trim() == "" ? true : (user.getUsername().contains(text) || user.getFirstName().contains(text)
-				|| user.getLastName().contains(text));
+	private boolean correspondsSearch(User user, String searchQuery, LocalDate dateFrom, LocalDate dateTo) {
+		boolean btext = searchQuery.trim() == "" ? true : (user.getUsername().contains(searchQuery) || user.getFirstName().contains(searchQuery)
+				|| user.getLastName().contains(searchQuery));
 		boolean bdateFrom = dateFrom == null ? true : user.getBirthDate().isAfter(dateFrom);
 		boolean bdateTo = dateTo == null ? true : user.getBirthDate().isBefore(dateTo);
 		return btext && bdateFrom && bdateTo;
 	}
 
 	public List<User> filter(List<User> searchedUsers, String role, String userStatus) {
-		// TODO Auto-generated method stub
 		List<User> filteredUsers = new ArrayList<>();
 		for(User user : searchedUsers) {
 			if(correspondsFilter(user, role, userStatus)) {
@@ -247,7 +246,7 @@ public class UserDAO {
 	}
 	
 	public User updateUser(User u, String oldUser) {
-		if(usernameExists(u.getUsername())) {
+		if(!u.getUsername().equals(oldUser) && usernameExists(u.getUsername())) {
 			return null;
 		}
 		users.remove(oldUser);

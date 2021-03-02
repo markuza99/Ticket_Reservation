@@ -246,21 +246,21 @@ module.exports = {
 		
 		
 		axios
-			.get("rest/manifestationservice/")
+			.get("rest/manifestations/active")
 			.then(response => {
 				this.manifestations = response.data;
 				this.format();
 			});
 
 		axios
-			.get("rest/locationservice/")
+			.get("rest/locations/")
 			.then(response => {
 				this.locations = response.data;
 				this.new_manifestation.location = this.locations[0];
 			})
 
 		axios
-			.get("rest/userservice/test-login")
+			.get("rest/users/test-login")
 			.then(response => {
 				this.user = response.data;
 			});

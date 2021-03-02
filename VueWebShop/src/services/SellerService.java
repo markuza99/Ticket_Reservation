@@ -17,7 +17,7 @@ import dao.LocationDAO;
 import dao.ManifestationDAO;
 import dao.SellerDAO;
 
-@Path("/sellerservice")
+@Path("/sellers")
 public class SellerService {
 	@Context
 	ServletContext ctx;

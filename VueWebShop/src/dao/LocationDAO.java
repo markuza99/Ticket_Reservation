@@ -55,9 +55,13 @@ public class LocationDAO {
 					Double longitude = Double.parseDouble(st.nextToken().trim());
 					Double latitude = Double.parseDouble(st.nextToken().trim());
 					String street = st.nextToken().trim();
+					int number = Integer.parseInt(st.nextToken().trim());
+					int postNumber = Integer.parseInt(st.nextToken().trim());
 					String city = st.nextToken().trim();
+					String state = st.nextToken().trim();
 					
-					locations.put(locationId, new Location(locationId, longitude, latitude, street, city));
+					locations.put(locationId, new Location(locationId, longitude, latitude, street, number,
+							postNumber, city, state));
 				}
 			}
 		} catch(Exception ex) {

@@ -193,7 +193,7 @@ module.exports = {
             console.log(updatedManifestation);
             
             axios
-                .put("rest/manifestationservice/update-manifestation", JSON.stringify(updatedManifestation), {
+                .put("rest/manifestations/", JSON.stringify(updatedManifestation), {
 					headers: {'content-type':'application/json'}
 				})
                 .then(response => {
@@ -262,7 +262,7 @@ module.exports = {
             formData.append("file",this.file);
             console.log("form data: ", formData);
             axios
-                .post("rest/manifestationservice/upload", formData, {
+                .post("rest/manifestations/upload", formData, {
                     headers: {
                         "Content-Type":"multipart/form-data"
                     }
@@ -279,21 +279,14 @@ module.exports = {
 		let manifestationId = pathparams.split("/")[5];
         console.log(manifestationId);
 		axios
-			.get("rest/manifestationservice/getonemanifestation/" + manifestationId)
+			.get("rest/manifestations/" + manifestationId)
 			.then(response => {
                 this.manifestation = response.data;
                 console.log(this.manifestation);
                 // this.makeMonthValue(this.manifestation.date.monthValue);
 				this.makeStringDate(this.manifestation.date);
             });
-            
-        // axios  
-        //     .get("rest/userservice/test-login")
-        //     .then(response => {
-        //         if(response.data.role != "ADMIN") {
-        //             location.replace("#/unauthorized");
-        //         }
-        //     });
+        
     }
 }
 </script>
