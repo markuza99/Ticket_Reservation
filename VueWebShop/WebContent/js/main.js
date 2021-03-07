@@ -128,3 +128,7 @@ function displayMap() {
       console.log("nista");
   }
  }
+
+ function redirect(url) {
+  window.location.replace(url);
+ }

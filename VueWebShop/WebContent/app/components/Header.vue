@@ -60,6 +60,9 @@ module.exports = {
 form.form-inline {
 	padding: 0;
 	margin:0;
+}
 
+nav {
+	height: 56px;
 }
 </style>

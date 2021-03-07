@@ -1,24 +1,20 @@
 <template>
 	<div class="login-form-section">
-		
 		<div class="container h-100">
 			<div class="row justify-content-md-center align-items-center h-100">
-				
 				<div class="col-lg-4 col-md-6 col-sm-12">
 					<div class="login-form mt-5">
 						<form @submit.prevent="login">
 							<div class="form-group">
 								<label class="form-label">Username</label> 
-								<input type="text" class="form-control" id="username"/>
+								<input type="text" class="form-control" v-model="user.username"/>
 							</div>
-							
 							<div class="form-group">
 								<label class="form-label">Password</label>
-								<input type="text" class="form-control" id="password"/>
+								<input type="text" class="form-control" v-model="user.password"/>
 							</div>	
 							<button type="submit" class="btn btn-primary mt-2">Sign in</button>
 							<a class="btn btn-primary mt-2 float-right" href="#/registration" role="button">Register</a>
-							<!-- <button type="submit" class="btn btn-primary mt-2 float-right" v-on:click="redirect">Register</button> -->
 							<p id="error"></p>
 						</form>
 					</div>
@@ -32,32 +28,32 @@
   module.exports = {
     data() {
       return {
-		msg : "poruka"
+		user: {
+			username: "",
+			password: ""
+		}
       }
 	},
     methods: {
-      	login : () => {
-			var username = $("#username").val();
-			var password = $("#password").val();
-			user = {username, password};
-			if(areInputFieldsEmpty(user)) {
-    			document.getElementById("error").innerText = "Morate popuniti sva polja.";
+      	login : function() {
+			console.log("uslo");
+			$("#error").html("");
+			if(areInputFieldsEmpty(this.user)) {
+    			$("#error").html("Morate popuniti sva polja.");
         		return;
     		}
-			var userJSON = JSON.stringify(user);
+			var userJSON = JSON.stringify(this.user);
 			axios
 				.post("rest/users/login", userJSON, {
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
 					if(!isEmpty(response.data)) {
-						window.location.replace("#/");
+						redirect("#/");
 						window.location.reload();
 					}
+					$("#error").html("Pogresno korisnicko ime/lozinka");
 				});
-		},
-		redirect : () => {
-			location.replace("#/");
 		}
     },
 	
@@ -66,7 +62,7 @@
 			.get("rest/users/role")
 			.then(response => {
 				if(!isEmpty(response.data)) {
-					this.redirect();
+					redirect("#/");
 				}
 			});
 	}
@@ -76,7 +72,9 @@
 <style scoped>
 
 .login-form-section {
-	height: 100vh;
+	height: calc(100vh - (56px + 56px));
+	width: 100vw;
+	overflow: auto;
 }
 
 </style>
