@@ -1,9 +1,7 @@
 <template>
-	<div class="login-form-section">
-		
+	<div class="registration-form-section">
 		<div class="container h-100">
 			<div class="row justify-content-md-center align-items-center h-100">
-				
 				<div class="col-lg-4 col-md-6 col-sm-12">
 					<div class="login-form mt-5">
 						<form @submit.prevent="register">
@@ -46,9 +44,8 @@
 								<input type="date" v-model="user.birthDate" class="form-control" id="birthDate" value="2021-01-01" min="1900-01-01" max="2021-12-31"/>
 							</div>
 							
-									
-							<button type="submit" class="btn btn-primary mt-2">Registracija</button>
-							<a class="btn btn-primary mt-2 float-right" href="#/" role="button">Nazad na login</a>
+							<a class="btn btn-primary mt-2" href="#/login" role="button">Prijava</a>
+							<button type="submit" class="btn btn-primary mt-2 float-right">Registracija</button>
 							<p id="error"></p>
 						</form>
 					</div>
@@ -107,9 +104,6 @@
 						location.replace("#/login");
 					}
 				});
-		},
-		redirect : () => {
-			location.replace("#/home");
 		}
     },
 	
@@ -118,7 +112,7 @@
 			.get("rest/users/role")
 			.then(response => {
 				if(!isEmpty(response.data)) {
-					this.redirect();
+					redirect("#/home");
 				}
 			});
 	}
@@ -130,8 +124,10 @@
 #data-error {
 	color: red;
 }
-.login-form-section {
-	height: 100vh;
+.registration-form-section {
+	height: calc(100vh - (56px + 56px));
+	width: 100vw;
+	overflow: auto;
 }
 
 </style>

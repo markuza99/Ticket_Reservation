@@ -8,10 +8,10 @@
 			<a class="text-white p-2">Karte</a>
 			<a class="text-white p-2" v-if="role != 'CUSTOMER'">Manifestacije</a>
 			<a class="text-white p-2" v-if="role != 'CUSTOMER'">Komentari</a>
-			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" v-on:click="signOut()">Sign Out</button>
+			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" v-on:click="signOut()">Odjava</button>
 		</form>
 		<form class="form-inline"  v-if="!isLoggedIn">
-			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" type="submit" v-on:click="signIn">Sign In</button>
+			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" type="submit" v-on:click="signIn">Prijava</button>
 		</form>
 	</nav>
  </div>

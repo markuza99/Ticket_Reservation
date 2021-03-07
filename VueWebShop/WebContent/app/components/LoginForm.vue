@@ -6,15 +6,16 @@
 					<div class="login-form mt-5">
 						<form @submit.prevent="login">
 							<div class="form-group">
-								<label class="form-label">Username</label> 
+								<label class="form-label">Korisnicko ime</label> 
 								<input type="text" class="form-control" v-model="user.username"/>
 							</div>
 							<div class="form-group">
-								<label class="form-label">Password</label>
+								<label class="form-label">Lozinka</label>
 								<input type="text" class="form-control" v-model="user.password"/>
 							</div>	
-							<button type="submit" class="btn btn-primary mt-2">Sign in</button>
-							<a class="btn btn-primary mt-2 float-right" href="#/registration" role="button">Register</a>
+							
+							<a class="btn btn-primary mt-2" href="#/registration" role="button">Registracija</a>
+							<button type="submit" class="btn btn-primary mt-2 float-right">Prijava</button>
 							<p id="error"></p>
 						</form>
 					</div>
