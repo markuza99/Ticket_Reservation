@@ -248,10 +248,10 @@ module.exports = {
 				});
 		},
 		correspondsCommentPermision() {
-			
+			console.log(this.commentParams);
 			return (this.commentParams.user && !this.commentParams.commentSuccess 
 							  && validateRange(this.manifestation_date, Date.now())
-							  && this.commentParams.userAttended && !this.manifestation_passed);
+							  && this.commentParams.userAttended && this.manifestation_passed);
 			
 		},
 		clickedStar(whichstar) {
@@ -303,7 +303,7 @@ module.exports = {
 		let manifestationId = pathparams.split("/")[4];
 
 		axios
-			.get("rest/manifestationservice/getonemanifestation/" + manifestationId)
+			.get("rest/manifestations/" + manifestationId)
 			.then(response => {
 				this.manifestation = response.data;
 				makeDate(this.manifestation);
@@ -316,13 +316,13 @@ module.exports = {
 			});
 
 		axios
-			.get("rest/commentservice/get-comments/" + manifestationId)
+			.get("rest/comments/manifestation/" + manifestationId)
 			.then(response => {
 				this.comments = response.data;
 			});
 
 		axios
-			.get("rest/commentservice/get-comment-params/" + manifestationId)
+			.get("rest/comments/comment-params/" + manifestationId)
 			.then(response => {
 				this.commentParams = response.data;
 				console.log(this.commentParams);

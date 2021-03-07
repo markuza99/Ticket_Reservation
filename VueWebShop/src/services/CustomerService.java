@@ -19,7 +19,7 @@ import dao.ManifestationDAO;
 import dao.TicketDAO;
 import dto.ReservationDTO;
 
-@Path("/customerservice")
+@Path("/customers")
 public class CustomerService {
 	@Context
 	ServletContext ctx;
@@ -44,6 +44,7 @@ public class CustomerService {
 		}
 	}
 	
+	//????
 	@GET
 	@Path("/get-customer")
 	@Produces(MediaType.APPLICATION_JSON)

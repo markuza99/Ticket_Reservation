@@ -48,24 +48,26 @@
     		}
 			var userJSON = JSON.stringify(user);
 			axios
-				.post("rest/userservice/login", userJSON, {
+				.post("rest/users/login", userJSON, {
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
 					this.user = response.data;
 					if(!isEmpty(this.user)) {
-						location.replace("#/");
+						// this.$root.$emit('logged-in-user',response.data);
+						window.location.replace("#/");
+						window.location.reload();
 					}
 				});
 		},
 		redirect : () => {
-			location.replace("#/home");
+			location.replace("#/");
 		}
     },
 	
     mounted () {
 		axios
-			.get("rest/userservice/test-login")
+			.get("rest/users/test-login")
 			.then(response => {
 				if(!isEmpty(response.data)) {
 					this.redirect();

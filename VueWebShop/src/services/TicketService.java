@@ -15,7 +15,7 @@ import beans.Ticket;
 import beans.User;
 import dao.TicketDAO;
 
-@Path("/ticketservice")
+@Path("/tickets")
 public class TicketService {
 	@Context
 	ServletContext ctx;

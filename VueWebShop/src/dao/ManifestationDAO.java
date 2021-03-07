@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,6 @@ import java.util.StringTokenizer;
 import beans.Location;
 import beans.Manifestation;
 import beans.ManifestationType;
-import beans.Seller;
 import beans.Status;
 import beans.value_objects.SortManifestations;
 import dto.ReservationDTO;
@@ -39,18 +39,18 @@ public class ManifestationDAO {
 		return new ArrayList<Manifestation>(manifestations.values());
 	}
 	
-	
 	public void reduceNumberOfSeats(ReservationDTO reservationDTO) {
 
-		Manifestation manifestation = getOneManifestation(reservationDTO.manifestation);
+		Manifestation manifestation = getManifestation(reservationDTO.manifestation);
 		int remaining = manifestation.getRemainingNumberOfSeats() - reservationDTO.numberOfTickets;
 		manifestation.setRemainingNumberOfSeats(remaining);
 		write();
 	}
 	
-	public List<Manifestation> getAllActiveManifestations(List<Manifestation> sorted) {
+	public List<Manifestation> getActiveManifestations() {
+		List<Manifestation> sortedManifestations = sortManifestations(false, manifestations.values());
 		List<Manifestation> activeManifestations = new ArrayList<>();
-		for(Manifestation m : sorted) {
+		for(Manifestation m : sortedManifestations) {
 			if(m.getStatus() == Status.ACTIVE) {
 				activeManifestations.add(m);
 			}
@@ -58,13 +58,9 @@ public class ManifestationDAO {
 		return activeManifestations;
 	}
 
-	public List<Manifestation> getAllSortedManifestations() {
-		List<Manifestation> sortedManifestations = sortManifestations(false);
-		return getAllActiveManifestations(sortedManifestations);
-	}
 	
-	private List<Manifestation> sortManifestations(Boolean ascending) {
-		List<Manifestation> sortedManifestations = new ArrayList<>(manifestations.values());
+	private List<Manifestation> sortManifestations(Boolean ascending, Collection<Manifestation> manifestations) {
+		List<Manifestation> sortedManifestations = new ArrayList<>(manifestations);
 		if(ascending) {
 			Collections.sort(sortedManifestations);
 		} else {
@@ -151,7 +147,6 @@ public class ManifestationDAO {
 	}
 
 	private boolean correspondsFilter(Manifestation m, String type, boolean nijeRasprodato) {
-		//svaki string sadrzi prazan string
 		boolean btip = type.equals("SVE") || type.equals("") ? true : m.getType().equals(ManifestationType.valueOf(type));
 		boolean bnotrasp;
 		if(nijeRasprodato) {
@@ -245,16 +240,12 @@ public class ManifestationDAO {
 		
 	}
 	
-	
-
-	public Manifestation getOneManifestation(String id) {
+	public Manifestation getManifestation(String id) {
 		return manifestations.get(id);
 	}
 
 	
-	
 	public List<Manifestation> filter(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo, String selected,String izborTipa, boolean nijeRasprodato) {
-		// TODO Auto-generated method stub
 		List<Manifestation> searchedManifestations = search(name, dateFrom, dateTo, place, priceFrom, priceTo, selected);
 		List<Manifestation> filteredMan = new ArrayList<Manifestation>();
 		for (Manifestation m : searchedManifestations) {
@@ -265,16 +256,14 @@ public class ManifestationDAO {
 		return filteredMan;
 	}
 	
-	
-	
-	public boolean checkIdExistance(String id) {
-		// TODO Auto-generated method stub
-		for(Manifestation m : manifestations.values()) {
-			if(m.getId().equals(id)) {
-				return false;
-			}
-		}
-		return true;
+	public boolean idExists(String id) {
+		return manifestations.get(id) != null ? true : false;
+//		for(Manifestation m : manifestations.values()) {
+//			if(m.getId().equals(id)) {
+//				return false;
+//			}
+//		}
+//		return true;
 	}
 
 	public void append(String line) {
@@ -308,11 +297,8 @@ public class ManifestationDAO {
 	}
 
 	public Boolean checkManifestationMaintainance(LocalDateTime date, String location, String id) {
-		// TODO Auto-generated method stub
 		for(Manifestation manifestation : manifestations.values()) {
-			System.out.println(manifestation.getDate());
-			System.out.println(date);
-			System.out.println(manifestation.getDate().isEqual(date));
+			
 			if(manifestation.getId().equals(id))
 				continue;
 			if(manifestation.getLocation().equals(location) &&

@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -23,8 +24,9 @@ import dao.ManifestationDAO;
 import dao.SellerDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
+import dto.RegistrationDTO;
 
-@Path("/userservice")
+@Path("/users")
 public class UserService {
 	@Context
 	ServletContext ctx;
@@ -77,12 +79,26 @@ public class UserService {
 		return loggedUser;
 	}
 	
+	// proslediti iz login-a
 	@GET
 	@Path("/test-login")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public User testlogin(@Context HttpServletRequest request) {
 		return (User) request.getSession().getAttribute("user");
+	}
+	
+	@POST
+	@Path("/logout")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public boolean doLogOut(@Context HttpServletRequest request) {
+		User u = null;
+		u = (User) request.getSession().getAttribute("user");
+		if(u != null) {
+			request.getSession().invalidate();
+		}
+		return true;
 	}
 	
 	
@@ -96,23 +112,6 @@ public class UserService {
 		return u;
 	}
 	
-	@POST
-	@Path("/addUser")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public List<User> addUser(@Context HttpServletRequest request, User user) {
-		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
-		User u = userDao.registration(user);
-		if(u != null) {
-			return userDao.getAllUsers();
-		} else {
-			return null;
-		}
-	}
-	
-//	@POST
-//	@Path("/register-customer")
-	
 	
 	@GET
 	@Path("/")
@@ -122,15 +121,15 @@ public class UserService {
 		return userDao.getAllUsers();
 	}
 	
-	@PUT
-	@Path("/delete-user/{username}")
+	@DELETE
+	@Path("/{username}")
 	public List<User> deleteUser(@PathParam("username") String username) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		return userDao.deleteUser(username);
 	}
 	
 	@PUT
-	@Path("/retrieve-user/{username}")
+	@Path("/retrieve/{username}")
 	public List<User> retrieveUser(@PathParam("username") String username) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		return userDao.retrieveUser(username);
@@ -139,18 +138,37 @@ public class UserService {
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<User> search(@QueryParam("text") String text, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo) {
+	public List<User> search(@QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
-		return userDao.search(text, dateFrom, dateTo);
+		return userDao.search(searchQuery, dateFrom, dateTo);
 	}
 	
 	@GET
 	@Path("/filter")
-	public List<User> filter(@QueryParam("text") String text, @QueryParam("dateFrom") String dateFrom,
+	public List<User> filter(@QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom,
 			@QueryParam("dateTo") String dateTo, @QueryParam("role") String role,
 			@QueryParam("userStatus") String userStatus) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
-		List<User> searchedUsers = userDao.search(text, dateFrom, dateTo);
+		List<User> searchedUsers = userDao.search(searchQuery, dateFrom, dateTo);
 		return userDao.filter(searchedUsers, role, userStatus);
 	}
+	
+//	@PUT
+//	@Path("/")
+//	@Consumes(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public User createItem(@Context HttpServletRequest request, User user) {
+//		User u = (User) request.getSession().getAttribute("user");
+//		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
+//		User updatedUser = userDao.updateUser(user, u.getUsername());
+//		if(updatedUser==null) {
+//			return null;
+//		}
+//		TicketDAO TicketDao = (TicketDAO) ctx.getAttribute("TicketDAO");
+//		TicketDao.updateTicket(u.getUsername(), updatedUser.getUsername());
+//		CustomerDAO CustomerDao = (CustomerDAO) ctx.getAttribute("CustomerDAO");
+//		CustomerDao.updateCustomer(u.getUsername(), updatedUser.getUsername());
+//		request.getSession().setAttribute("user", updatedUser);
+//		return updatedUser;
+//	}
 }

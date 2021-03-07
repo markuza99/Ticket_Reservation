@@ -56,14 +56,14 @@ module.exports = {
     mounted() {
 
         axios
-            .get("rest/commentservice/get-all-comments")
+            .get("rest/comments/")
             .then(response => {
                 this.comments = response.data;
                 console.log(this.comments);
             });
 
         axios
-            .get("rest/userservice/test-login")
+            .get("rest/users/test-login")
             .then(response => {
                 this.user = response.data;
             });
@@ -76,7 +76,7 @@ module.exports = {
             //mogu samo poslati ceo komentar
             console.log(comment);
             axios
-                .put("rest/commentservice/approve-comment",JSON.stringify(comment), {
+                .put("rest/comments/approve-comment",JSON.stringify(comment), {
                     headers: {"content-type":"application/json"}
                 })
                 .then(response => {
@@ -87,7 +87,7 @@ module.exports = {
         },
         decline(comment) {
             axios
-                .put("rest/commentservice/decline-comment",JSON.stringify(comment), {
+                .put("rest/comments/decline-comment",JSON.stringify(comment), {
                     headers: {"content-type":"application/json"}
                 })
                 .then(response => {

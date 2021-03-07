@@ -107,7 +107,7 @@ module.exports = {
 			this.setSelected();
 			
 			axios
-			.get("rest/manifestationservice/search", {
+			.get("rest/manifestations/search", {
 				params: {
 					"name" : this.name,
 					"dateFrom":this.dateFrom,

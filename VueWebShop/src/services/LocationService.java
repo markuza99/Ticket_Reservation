@@ -12,7 +12,7 @@ import javax.ws.rs.core.MediaType;
 
 import dao.LocationDAO;
 
-@Path("/locationservice")
+@Path("/locations")
 public class LocationService {
 	@Context
 	ServletContext ctx;

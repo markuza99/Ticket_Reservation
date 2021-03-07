@@ -59,7 +59,7 @@ module.exports = {
 		filter() {
 			this.setType();
 			axios
-			.get("rest/manifestationservice/filter", {
+			.get("rest/manifestations/filter", {
 				params: {
 					"name" : this.name,
 					"dateFrom":this.dateFrom,

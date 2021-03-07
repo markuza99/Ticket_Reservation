@@ -95,7 +95,7 @@
 			var userJSON = JSON.stringify(this.user);
 			console.log(userJSON);
 			axios
-				.post("rest/userservice/register", userJSON, {
+				.post("rest/users/register", userJSON, {
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
@@ -115,7 +115,7 @@
 	
     mounted () {
 		axios
-			.get("rest/userservice/test-login")
+			.get("rest/users/test-login")
 			.then(response => {
 				if(!isEmpty(response.data)) {
 					this.redirect();

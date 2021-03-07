@@ -8,7 +8,7 @@
             </div>
             <div class="form-group">
                 <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#createUserModal">Dodaj korisnika</button>
-                <input type="text" v-model="text" class="form-control mr-2"/>
+                <input type="text" v-model="searchQuery" class="form-control mr-2"/>
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-search"></i>
                 </button>
@@ -194,7 +194,7 @@ module.exports = {
             users : [],
             selected_user : "",
             filtered_users : "SVI",
-            text : "",
+            searchQuery : "",
             date_from : "",
             date_to : "",
             user_type : "",
@@ -213,19 +213,12 @@ module.exports = {
     },
     mounted() {
         axios
-            .get("rest/userservice/")
+            .get("rest/users/")
             .then(response => {
                 this.users = response.data;
                 this.users.forEach(user => makeDateString(user));
                 console.log(this.users);
             });
-        // axios
-        //     .get("rest/userservice/test-login")
-        //     .then(response => {
-        //         if(response.data.role != "ADMIN") {
-        //             location.replace("#/unauthorized");
-        //         }
-        //     });
     },
     methods : {
         setSelectedUser(id) {
@@ -233,24 +226,23 @@ module.exports = {
         },
         deleteUser() {
             axios
-                .put("rest/userservice/delete-user/" + this.selected_user)
+                .put("rest/users/" + this.selected_user)
                 .then(response => {
                     this.users = response.data;
                 });
         },
         retrieveUser() {
             axios
-                .put("rest/userservice/retrieve-user/" + this.selected_user)
+                .put("rest/users/retrieve/" + this.selected_user)
                 .then(response => {
                     this.users = response.data;
                 });
         },
         search() {
-            console.log(this.date_from, this.date_to);
             axios
-                .get("rest/userservice/search", {
+                .get("rest/users/search", {
                     params: {
-                        "text": this.text,
+                        "searchQuery": this.searchQuery,
                         "dateFrom" : this.date_from,
                         "dateTo" : this.date_to
                     }
@@ -262,13 +254,12 @@ module.exports = {
         filter() {
             let id_type = $(".user_type .active").attr("id");
             let id_status = $(".user_status .active").attr("id");
-            console.log(id_type, id_status);
             this.setUserType(id_type);
             this.setUserStatus(id_status);
             axios
-                .get("rest/userservice/filter", {
+                .get("rest/users/filter", {
                     params: {
-                        "text": this.text,
+                        "searchQuery": this.searchQuery,
                         "dateFrom" : this.date_from,
                         "dateTo" : this.date_to,
                         "role" : this.user_type,
@@ -310,7 +301,6 @@ module.exports = {
             }
         },
         createUser() {
-            console.log(this.new_user);
             if(areInputFieldsEmpty(this.new_user)) {
                 $('#createUserModal input').addClass("error");
                 $('#createUserModal input').removeClass("success");
@@ -323,18 +313,15 @@ module.exports = {
             $('#createUserModal input').removeClass("error");
             $('#createUserModal input').addClass("success");
             
-            var rola = "";
+            var role = "";
             switch(this.new_user.role) {
                 case "Kupac":
-                    // code block
-                    rola = "CUSTOMER";
+                    role = "CUSTOMER";
                     break;
                 case "Prodavac":
-                    // code block
-                    rola = "SELLER";
+                    role = "SELLER";
                     break;
                 default:
-                    // code block
                     break;
             }
             var userNew = {
@@ -344,19 +331,19 @@ module.exports = {
                 lastName : this.new_user.last_name.trim(),
                 gender : this.new_user.gender.trim(),
                 birthDate : this.new_user.date.trim(),
-                role : rola,
+                role : role,
                 isDeleted : this.new_user.is_deleted 
             };
             var userJSON = JSON.stringify(userNew);
             console.log(userJSON);
             axios
-				.post("rest/userservice/addUser", userJSON, {
+				.post("rest/users/register", userJSON, {
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
 					if(response.data != "") {
 						alert(userNew.username + " Uspesno dodat!");
-                        this.users = response.data;
+                        this.users.push(response.data);
 					} else {
 						alert("Korisnik sa tim usernameom vec postoji!!!");
 					}

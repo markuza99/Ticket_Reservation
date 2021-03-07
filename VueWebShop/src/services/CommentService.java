@@ -27,7 +27,7 @@ import dao.TicketDAO;
 import dto.CommentDTO;
 import dto.ManifestationDTO;
 
-@Path("/commentservice")
+@Path("/comments")
 public class CommentService {
 	@Context
 	ServletContext ctx;
@@ -56,19 +56,16 @@ public class CommentService {
 		}
 	}
 	
-	
-	
 	@GET
-	@Path("/get-comments/{id}")
+	@Path("manifestation/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Comment> getCommentsForManifestation(@PathParam("id") String id) {
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
 		return commentDAO.getCommentsForManifestation(id, Status.ACTIVE);
 	}
 	
-	
 	@POST
-	@Path("/post-comment")
+	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Comment> postComment(@Context HttpServletRequest request, Comment comment) {
@@ -79,7 +76,7 @@ public class CommentService {
 	}
 
 	@GET
-	@Path("/get-comment-params/{id}")
+	@Path("/comment-params/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public ManifestationDTO getCommentParams(@Context HttpServletRequest request, @PathParam("id") String id) {
 		ManifestationDTO manifestationDTO = new ManifestationDTO();
@@ -97,7 +94,7 @@ public class CommentService {
 	}
 	
 	@GET
-	@Path("/get-all-comments")
+	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Comment> getAllComments(@Context HttpServletRequest request) {
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");

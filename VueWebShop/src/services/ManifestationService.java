@@ -27,7 +27,7 @@ import dao.SellerDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
 
-@Path("/manifestationservice")
+@Path("/manifestations")
 public class ManifestationService {
 	@Context
 	ServletContext ctx;
@@ -70,29 +70,26 @@ public class ManifestationService {
 	}
 	
 	@GET
-	@Path("/")
+	@Path("/active")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Manifestation> getActiveManifestations() {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-		return  manifestationDao.getAllSortedManifestations();
+		return  manifestationDao.getActiveManifestations();
 	}
 	
 	@GET
-	@Path("/getonemanifestation/{id}")
+	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Manifestation getOneManifestation(@PathParam("id") String id) {
+	public Manifestation getManifestation(@PathParam("id") String id) {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-		return manifestationDao.getOneManifestation(id);
+		return manifestationDao.getManifestation(id);
 	}
 	
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-
 	public List<Manifestation> getSearchedManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("selected") String selected) throws ParseException {
-
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-		
 		return manifestationDao.search(name, dateFrom, dateTo, place, priceFrom, priceTo, selected);
 	}
 	
@@ -106,7 +103,7 @@ public class ManifestationService {
 	}
 
 	@PUT
-	@Path("/update-manifestation")
+	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Boolean updateManifestation(Manifestation manifestation) {
 		ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");

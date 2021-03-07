@@ -34,7 +34,7 @@ public class SellerDAO {
 	}
 	
 	public List<Manifestation> add(Manifestation manifestation, String user) {
-		if(!manifestationDAO.checkIdExistance(manifestation.getId())) {
+		if(manifestationDAO.idExists(manifestation.getId())) {
 			return null;
 		}
 		if(!manifestationDAO.checkManifestationMaintainance(manifestation.getDate(), manifestation.getLocation(), manifestation.getId())) {
@@ -46,7 +46,7 @@ public class SellerDAO {
 		write();
 
 		manifestationDAO.append(manifestationDAO.getManifestationLine(manifestation));
-		return manifestationDAO.getAllActiveManifestations(manifestationDAO.getAllSortedManifestations());
+		return manifestationDAO.getActiveManifestations();
 	}
 	
 	private void loadSellers() {
@@ -70,7 +70,7 @@ public class SellerDAO {
 						StringTokenizer st2 = new StringTokenizer(manifestations, ":");
 						while(st2.hasMoreTokens()) {
 							String manifestationId = st2.nextToken().trim();
-							Manifestation manifestation = manifestationDAO.getOneManifestation(manifestationId);
+							Manifestation manifestation = manifestationDAO.getManifestation(manifestationId);
 							manifestationArray.add(manifestation);
 						}
 					}
