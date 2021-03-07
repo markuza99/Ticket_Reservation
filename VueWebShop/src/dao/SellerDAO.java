@@ -33,7 +33,7 @@ public class SellerDAO {
 		return sellers.get(id);
 	}
 	
-	public List<Manifestation> add(Manifestation manifestation, String user) {
+	public Manifestation add(Manifestation manifestation, String user) {
 		if(manifestationDAO.idExists(manifestation.getId())) {
 			return null;
 		}
@@ -46,7 +46,7 @@ public class SellerDAO {
 		write();
 
 		manifestationDAO.append(manifestationDAO.getManifestationLine(manifestation));
-		return manifestationDAO.getActiveManifestations();
+		return manifestation;
 	}
 	
 	private void loadSellers() {

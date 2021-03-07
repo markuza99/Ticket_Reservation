@@ -42,7 +42,7 @@ public class SellerService {
 	@POST
 	@Path("/add-manifestation")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public List<Manifestation> addManifestation(@Context HttpServletRequest request, Manifestation manifestation) {
+	public Manifestation addManifestation(@Context HttpServletRequest request, Manifestation manifestation) {
 		SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
 		User user = (User) request.getSession().getAttribute("user");
 		return sellerDAO.add(manifestation, user.getUsername());

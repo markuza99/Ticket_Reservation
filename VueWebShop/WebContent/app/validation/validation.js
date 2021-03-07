@@ -42,12 +42,12 @@ const checkInputFields = (fields) => {
 }
 
 const isFieldEmpty = (field) => {
-    return field == "" ? true : false;
+    return field == "" || field.toString() == "NaN" ? true : false;
 }
 
 function forbiddenSignInFields(fields) {
     for (const [key, value] of Object.entries(fields)) {
-        if(value.includes(";")) 
+        if(value.toString().includes(";")) 
             return true;
     }
 
