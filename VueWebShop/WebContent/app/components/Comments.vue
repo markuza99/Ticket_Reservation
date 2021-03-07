@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <div class="col-lg-2 col-md-2">
-                        <div class="mt-5" v-if="comment.approval =='NOT_CHECKED' && user.role == 'SELLER'">
+                        <div class="mt-5" v-if="comment.approval =='NOT_CHECKED' && role == 'SELLER'">
                             <button class="btn btn-success" v-on:click="approve(comment)">
                                 Odobri:   <i class="fa fa-check"></i>
                             </button>
@@ -50,7 +50,7 @@ module.exports = {
     data() {
         return {
             comments:[],
-            user:{}
+            role:null
         }
     },
     mounted() {
@@ -63,9 +63,9 @@ module.exports = {
             });
 
         axios
-            .get("rest/users/test-login")
+            .get("rest/users/role")
             .then(response => {
-                this.user = response.data;
+                this.role = response.data;
             });
     },
     methods: {

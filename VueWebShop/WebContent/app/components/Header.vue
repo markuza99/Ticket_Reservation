@@ -1,18 +1,18 @@
 <template>
  <div class="header-section">
-   	<nav v-if="!isLoggedIn" class="navbar navbar-light bg-primary justify-content-between navbar-fixed-top">
-	<a class="navbar-brand text-white">Ulaznice.rs</a>
-	<form class="form-inline">
-		<button class="btn btn-primary btn-outline-light my-2 my-sm-0" type="submit">Sign In</button>
-	</form>
-	</nav>
-	<nav v-if="isLoggedIn" class="navbar navbar-light bg-primary justify-content-between navbar-fixed-top">
-	<a class="navbar-brand text-white">Ulaznice.rs</a>
-	<a class="navbar-brand text-white" v-on:click="profileSettings()">Moj Profil</a>
-	<a class="navbar-brand text-white">Moje ulaznice</a>
-	<form class="form-inline">
-		<button class="btn btn-primary btn-outline-light my-2 my-sm-0" type="submit" v-on:click="logOut()">Sign Out</button>
-	</form>
+	<nav class="navbar navbar-light bg-primary justify-content-between navbar-fixed-top">
+		<a class="navbar-brand text-white">Ulaznice.rs</a>
+		
+		<form class="form-inline" v-if="isLoggedIn">
+			<a class="text-white p-2" v-on:click="profileSettings()">Profil</a>
+			<a class="text-white p-2">Karte</a>
+			<a class="text-white p-2" v-if="role != 'CUSTOMER'">Manifestacije</a>
+			<a class="text-white p-2" v-if="role != 'CUSTOMER'">Komentari</a>
+			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" v-on:click="signOut()">Sign Out</button>
+		</form>
+		<form class="form-inline"  v-if="!isLoggedIn">
+			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" type="submit" v-on:click="signIn">Sign In</button>
+		</form>
 	</nav>
  </div>
 </template>
@@ -23,37 +23,33 @@ module.exports = {
 	data() {
 		return {
 			isLoggedIn: false,
-			user: {}
+			role: null
 		}	
 	},
 	methods: {
-		logOut: function() {
+		signOut: function() {
 			axios
 			.post("rest/users/logout")
-			.then(response => {
-				
-				this.user = response.data;
+			.then(function() {
 				this.isLoggedIn = false;
-				alert(this.user);
 				window.location.reload();
-
 			});
 		},
+		signIn: function() {
+			window.location.replace("#/login");
+		},
 		profileSettings: function() {
-			window.location.replace("#/userinfo");
+			window.location.replace("#/profile");
 		}
 	},
 	mounted() {
 		axios
-			.get("rest/users/test-login")
+			.get("rest/users/role")
 			.then(response => {
-				
-				this.user = response.data;
-				if(!isEmpty(this.user)) {
-						// this.$root.$emit('logged-in-user',response.data);
+				if(!isEmpty(response.data)) {
 						this.isLoggedIn = true;
+						this.role = response.data;
 					}
-
 			});
 	}
 }

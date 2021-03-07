@@ -115,7 +115,7 @@
 	
     mounted () {
 		axios
-			.get("rest/users/test-login")
+			.get("rest/users/role")
 			.then(response => {
 				if(!isEmpty(response.data)) {
 					this.redirect();

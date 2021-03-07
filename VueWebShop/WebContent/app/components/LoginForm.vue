@@ -32,13 +32,11 @@
   module.exports = {
     data() {
       return {
-		user:{},
 		msg : "poruka"
       }
 	},
     methods: {
       	login : () => {
-			
 			var username = $("#username").val();
 			var password = $("#password").val();
 			user = {username, password};
@@ -52,9 +50,7 @@
 					headers: {'content-type':'application/json'}
 				})
 				.then(response => {
-					this.user = response.data;
-					if(!isEmpty(this.user)) {
-						// this.$root.$emit('logged-in-user',response.data);
+					if(!isEmpty(response.data)) {
 						window.location.replace("#/");
 						window.location.reload();
 					}
@@ -67,7 +63,7 @@
 	
     mounted () {
 		axios
-			.get("rest/users/test-login")
+			.get("rest/users/role")
 			.then(response => {
 				if(!isEmpty(response.data)) {
 					this.redirect();

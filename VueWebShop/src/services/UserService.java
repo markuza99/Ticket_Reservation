@@ -17,6 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import beans.Role;
 import beans.User;
 import dao.CustomerDAO;
 import dao.LocationDAO;
@@ -24,7 +25,6 @@ import dao.ManifestationDAO;
 import dao.SellerDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
-import dto.RegistrationDTO;
 
 @Path("/users")
 public class UserService {
@@ -79,12 +79,22 @@ public class UserService {
 		return loggedUser;
 	}
 	
-	// proslediti iz login-a
 	@GET
-	@Path("/test-login")
+	@Path("/role")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public User testlogin(@Context HttpServletRequest request) {
+	public Role getRole(@Context HttpServletRequest request) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user != null)
+			return user.getRole();
+		return null;
+	}
+	
+	@GET
+	@Path("/me")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public User getUser(@Context HttpServletRequest request) {
 		return (User) request.getSession().getAttribute("user");
 	}
 	

@@ -86,7 +86,7 @@ module.exports = {
 	},
 	mounted() {
 		axios
-			.get("rest/users/test-login")
+			.get("rest/users/me")
 			.then(response => {
 				if(isEmpty(response.data)) {
 					// location.redirect

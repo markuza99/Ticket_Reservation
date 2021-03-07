@@ -1,6 +1,6 @@
 <template>
 	<div class="container">
-		<button type="button" class="btn btn-primary" v-if="user.role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">Dodaj manifestaciju</button>
+		<button type="button" class="btn btn-primary" v-if="role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">Dodaj manifestaciju</button>
 
 		<div class="modal fade" id="createManifestationModal" tabindex="-1" role="dialog" aria-labelledby="createManifestationModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -110,7 +110,7 @@
 module.exports = {
 	data() {
 		return {
-			user:{},
+			role:null,
 			manifestations: [],
 			new_manifestation : {
 				id: "",
@@ -260,9 +260,9 @@ module.exports = {
 			})
 
 		axios
-			.get("rest/users/test-login")
+			.get("rest/users/role")
 			.then(response => {
-				this.user = response.data;
+				this.role = response.data;
 			});
 	}
 }
