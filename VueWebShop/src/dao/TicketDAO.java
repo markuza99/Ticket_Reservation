@@ -30,24 +30,24 @@ public class TicketDAO {
 		loadTickets();
 	}
 	
-	public Ticket getOneTicket(String id) {
+	public Ticket getTicketById(String id) {
 		return tickets.get(id);
 	}
 	
 	public Ticket addTicket(ReservationDTO reservationDTO) {
 		String ticketId = generateRandomId();
-		while(getOneTicket(ticketId) != null) {
+		while(getTicketById(ticketId) != null) {
 			ticketId = generateRandomId();
 		}
 		Ticket ticket = new Ticket(ticketId,reservationDTO.manifestation,LocalDateTime.now(),reservationDTO.ticketPrice,
 									reservationDTO.user,TicketStatus.RESERVED,TicketType.FAN_PIT);
 		
 		tickets.put(ticketId, ticket);
-		append(getTicketLine(ticket));
+		appendToFile(ticketCSVRepresentation(ticket));
 		return ticket;
 	}
 	
-	public String generateRandomId() {
+	private String generateRandomId() {
 	    
 	    String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 + "0123456789"
@@ -61,7 +61,7 @@ public class TicketDAO {
         return sb.toString(); 
 	}
 	
-	public String getTicketLine(Ticket ticket) {
+	private String ticketCSVRepresentation(Ticket ticket) {
 		StringBuilder ticketString = new StringBuilder();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		ticketString.append(ticket.getId() + ";" + ticket.getManifestationId() + ";"
@@ -72,7 +72,6 @@ public class TicketDAO {
 	}
 	
 	public Boolean userAttended(String manifestationId, String username) {
-		// TODO Auto-generated method stub
 		for(Ticket ticket : tickets.values()) {
 			if(ticket.getManifestationId().equals(manifestationId)
 				&& ticket.getUser().equals(username)) {
@@ -82,7 +81,7 @@ public class TicketDAO {
 		return false;
 	}
 	
-	public void append(String line) {
+	private void appendToFile(String line) {
 		File file = new File(contextPath + "/repositories/tickets.txt");
 
         PrintWriter pw = null;
@@ -102,14 +101,14 @@ public class TicketDAO {
         }
 	}
 
-	private void write() {
+	private void writeToFile() {
         File file = new File(contextPath + "/repositories/tickets.txt");
 
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
             for(Ticket ticket : tickets.values()) {
-            	pw.println(getTicketLine(ticket));
+            	pw.println(ticketCSVRepresentation(ticket));
             }
             
         } catch (IOException e) {
@@ -125,7 +124,6 @@ public class TicketDAO {
 	}
 	
 	private void loadTickets() {
-		// TODO Auto-generated method stub
 		BufferedReader reader = null;
 		try {
 			File file = new File(contextPath + "/repositories/tickets.txt");
@@ -162,21 +160,22 @@ public class TicketDAO {
 			}
 		}
 	}
-	public void updateTicket(String oldUser, String newUser) {
-		ArrayList<Ticket> ticketsUser = new ArrayList<Ticket>();
-		for(Iterator<Map.Entry<String, Ticket>> it = tickets.entrySet().iterator(); it.hasNext(); ) {
-		    Map.Entry<String, Ticket> entry = it.next();
-		    if(entry.getValue().getUser().equals(oldUser)) {
-		    	Ticket t = entry.getValue();
-		        it.remove();
-		        ticketsUser.add(t);
-		    }
-		}
-		for (Ticket ticket : ticketsUser) {
-			ticket.setUser(newUser);
-			tickets.put(ticket.getId(), ticket);
-		}
-		write();
-		
-	}
+	
+//	public void updateTicket(String oldUser, String newUser) {
+//		ArrayList<Ticket> ticketsUser = new ArrayList<Ticket>();
+//		for(Iterator<Map.Entry<String, Ticket>> it = tickets.entrySet().iterator(); it.hasNext(); ) {
+//		    Map.Entry<String, Ticket> entry = it.next();
+//		    if(entry.getValue().getUser().equals(oldUser)) {
+//		    	Ticket t = entry.getValue();
+//		        it.remove();
+//		        ticketsUser.add(t);
+//		    }
+//		}
+//		for (Ticket ticket : ticketsUser) {
+//			ticket.setUser(newUser);
+//			tickets.put(ticket.getId(), ticket);
+//		}
+//		writeToFile();
+//		
+//	}
 }

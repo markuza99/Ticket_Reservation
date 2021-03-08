@@ -5,20 +5,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 
 import beans.Manifestation;
-import beans.User;
 import dao.CommentDAO;
 import dao.CustomerDAO;
 import dao.LocationDAO;
@@ -27,7 +16,7 @@ import dao.SellerDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
 
-@Path("/manifestations")
+
 public class ManifestationService {
 	@Context
 	ServletContext ctx;
@@ -35,9 +24,7 @@ public class ManifestationService {
 	@PostConstruct
 	public void init() {
 		String contextPath = ctx.getRealPath("");
-		if(ctx.getAttribute("LocationDAO") == null) {
-			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
-		}
+		
 		if(ctx.getAttribute("ManifestationDAO") == null) {
 			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
 			System.out.println(contextPath);
@@ -68,42 +55,28 @@ public class ManifestationService {
 		}
 	}
 	
-	@GET
-	@Path("/active")
-	@Produces(MediaType.APPLICATION_JSON)
 	public List<Manifestation> getActiveManifestations() {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		return  manifestationDao.getActiveManifestations();
 	}
 	
-	@GET
-	@Path("/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Manifestation getManifestation(@PathParam("id") String id) {
+	public Manifestation getManifestation(String id) {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		return manifestationDao.getManifestation(id);
 	}
 	
-	@GET
-	@Path("/search")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getSearchedManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("selected") String selected) throws ParseException {
+	public List<Manifestation> getSearchedManifestations(String name,String dateFrom,String dateTo,String place,
+			int priceFrom,  int priceTo, String selected) throws ParseException {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		return manifestationDao.search(name, dateFrom, dateTo, place, priceFrom, priceTo, selected);
 	}
 	
-
-	@GET
-	@Path("/filter")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Manifestation> getFilterManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("selected") String selected, @QueryParam("type") String izborTipa, @QueryParam("not_sold_out") boolean nijeRasprodato) throws ParseException {
+	public List<Manifestation> getFilterManifestations(String name, String dateFrom, String dateTo,
+			String place,int priceFrom,int priceTo,String selected,String izborTipa, boolean nijeRasprodato) throws ParseException {
 		ManifestationDAO manifestationDao = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		return manifestationDao.filter(name, dateFrom, dateTo, place, priceFrom, priceTo, selected,izborTipa, nijeRasprodato);
 	}
 
-	@PUT
-	@Path("/")
-	@Consumes(MediaType.APPLICATION_JSON)
 	public Boolean updateManifestation(Manifestation manifestation) {
 		ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		if(manifestationDAO.update(manifestation)) {

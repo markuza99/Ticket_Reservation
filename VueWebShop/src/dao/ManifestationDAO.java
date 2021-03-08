@@ -39,10 +39,10 @@ public class ManifestationDAO {
 		return new ArrayList<Manifestation>(manifestations.values());
 	}
 	
-	public void reduceNumberOfSeats(ReservationDTO reservationDTO) {
+	public void reduceNumberOfSeats(String manifestationId , int numberOfTickets) {
 
-		Manifestation manifestation = getManifestation(reservationDTO.manifestation);
-		int remaining = manifestation.getRemainingNumberOfSeats() - reservationDTO.numberOfTickets;
+		Manifestation manifestation = getManifestation(manifestationId);
+		int remaining = manifestation.getRemainingNumberOfSeats() - numberOfTickets;
 		manifestation.setRemainingNumberOfSeats(remaining);
 		write();
 	}

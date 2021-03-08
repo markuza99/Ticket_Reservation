@@ -1,23 +1,10 @@
 package services;
 
-import java.util.List;
+import java.util.List; 
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
-import beans.Role;
 import beans.User;
 import dao.CustomerDAO;
 import dao.LocationDAO;
@@ -26,7 +13,7 @@ import dao.SellerDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
 
-@Path("/users")
+
 public class UserService {
 	@Context
 	ServletContext ctx;
@@ -64,100 +51,40 @@ public class UserService {
 		}
 	}
 	
-	@POST
-	@Path("/login")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public User login(@Context HttpServletRequest request, User user) {
+	public User login(User user) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		User loggedUser = userDao.find(user.getUsername(), user.getPassword());
-		
-		if(loggedUser != null) {
-			request.getSession().setAttribute("user", loggedUser);
-		}
 		
 		return loggedUser;
 	}
 	
-	@GET
-	@Path("/role")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Role getRole(@Context HttpServletRequest request) {
-		User user = (User) request.getSession().getAttribute("user");
-		if(user != null)
-			return user.getRole();
-		return null;
-	}
-	
-	@GET
-	@Path("/me")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public User getUser(@Context HttpServletRequest request) {
-		return (User) request.getSession().getAttribute("user");
-	}
-	
-	@POST
-	@Path("/logout")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public boolean doLogOut(@Context HttpServletRequest request) {
-		User u = null;
-		u = (User) request.getSession().getAttribute("user");
-		if(u != null) {
-			request.getSession().invalidate();
-		}
-		return true;
-	}
-	
-	
-	@POST
-	@Path("/register")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public User registerUser(@Context HttpServletRequest request, User user) {
+	public User registerUser(User user) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		User u = userDao.registration(user);
 		return u;
 	}
 	
-	
-	@GET
-	@Path("/")
-	@Produces(MediaType.APPLICATION_JSON)
 	public List<User> allUsers() {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		return userDao.getAllUsers();
 	}
 	
-	@DELETE
-	@Path("/{username}")
-	public List<User> deleteUser(@PathParam("username") String username) {
+	public List<User> deleteUser(String username) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		return userDao.deleteUser(username);
 	}
 	
-	@PUT
-	@Path("/retrieve/{username}")
-	public List<User> retrieveUser(@PathParam("username") String username) {
+	public List<User> retrieveUser(String username) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		return userDao.retrieveUser(username);
 	}
 	
-	@GET
-	@Path("/search")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<User> search(@QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo) {
+	public List<User> search(String searchQuery, String dateFrom, String dateTo) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		return userDao.search(searchQuery, dateFrom, dateTo);
 	}
 	
-	@GET
-	@Path("/filter")
-	public List<User> filter(@QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom,
-			@QueryParam("dateTo") String dateTo, @QueryParam("role") String role,
-			@QueryParam("userStatus") String userStatus) {
+	public List<User> filter(String searchQuery, String dateFrom, String dateTo, String role, String userStatus) {
 		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
 		List<User> searchedUsers = userDao.search(searchQuery, dateFrom, dateTo);
 		return userDao.filter(searchedUsers, role, userStatus);

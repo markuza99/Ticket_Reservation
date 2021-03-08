@@ -92,7 +92,8 @@ public class CustomerDAO {
 		
 		customer.getTickets().add(ticket);
 		
-		manifestationDAO.reduceNumberOfSeats(reservationDTO);
+		manifestationDAO.reduceNumberOfSeats(reservationDTO.manifestation,reservationDTO.numberOfTickets);
+		//prvo se skida broj karata pa se tek onda porucuje
 		
 		changeCustomersPoints(reservationDTO, customer);
 		
@@ -212,7 +213,7 @@ public class CustomerDAO {
 						StringTokenizer st2 = new StringTokenizer(tickets, ":");
 						while(st2.hasMoreTokens()) {
 							String ticketId = st2.nextToken().trim();
-							Ticket ticket = ticketDAO.getOneTicket(ticketId);
+							Ticket ticket = ticketDAO.getTicketById(ticketId);
 							ticketsArray.add(ticket);
 						}
 					}

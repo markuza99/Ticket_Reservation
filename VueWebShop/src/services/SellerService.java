@@ -1,23 +1,14 @@
 package services;
 
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
 import beans.Manifestation;
-import beans.User;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
 import dao.SellerDAO;
 
-@Path("/sellers")
+
 public class SellerService {
 	@Context
 	ServletContext ctx;
@@ -39,12 +30,8 @@ public class SellerService {
 		}
 	}
 	
-	@POST
-	@Path("/add-manifestation")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Manifestation addManifestation(@Context HttpServletRequest request, Manifestation manifestation) {
+	public Manifestation addManifestation(String username, Manifestation manifestation) {
 		SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
-		User user = (User) request.getSession().getAttribute("user");
-		return sellerDAO.add(manifestation, user.getUsername());
+		return sellerDAO.add(manifestation, username);
 	}
 }
