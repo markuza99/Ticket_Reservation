@@ -57,10 +57,14 @@
 								</select>
 							</div>
 							<div class="form-group col-md-6">
-								<!-- <label for="file">Poster manifestacije</label>
-								<p>NAPOMENA! Sami stavite sliku u folder</p>
-								<input type="file" id="file" ref="file" class="form-control-file"> -->
+								<label for="file">Poster manifestacije</label>
+								<input type="file" id="file" ref="file" class="form-control-file" v-on:change="loadFile">
+															
 							</div>
+							<div id="preview">
+								<img v-if="url" :src="url"/>
+							</div>
+							<img id="output"/>
 						</div>
 					</form>
 					<p id="error"></p>
@@ -88,8 +92,10 @@ module.exports = {
 				status: "NONACTIVE",
 				ticketPrice : 0,
 				location: "",
-				image: "bla"
+				image: ""
 			},
+			img_url : null,
+			url : null,
 			types : ["Koncert","Festival","Pozoriste"],
 			locations : [],
 			number_of_seats_error: false,
@@ -105,6 +111,7 @@ module.exports = {
 			})
     },
     methods: {
+		
         createManifestation() {
 			this.new_manifestation.remainingNumberOfSeats = parseInt(this.new_manifestation.numberOfSeats);
 			this.new_manifestation.numberOfSeats = parseInt(this.new_manifestation.numberOfSeats);
@@ -117,10 +124,10 @@ module.exports = {
 				return;
 			}
 
-			if(forbiddenSignInFields(this.new_manifestation)) {
-                $('#error').html("Ne mozete koristiti ; znak.");
-                return;
-            }
+			// if(forbiddenSignInFields(this.new_manifestation)) {
+            //     $('#error').html("Ne mozete koristiti ; znak.");
+            //     return;
+            // }
 			
 			if(!validateNumberRange(1, 100000, parseInt(this.new_manifestation.numberOfSeats))) {
 				this.number_of_seats_error = true;
@@ -143,6 +150,7 @@ module.exports = {
 			this.setManifestationType();
             this.formatDate();
 
+			console.log(this.new_manifestation);
 			axios
 				.post("rest/sellers/add-manifestation", JSON.stringify(this.new_manifestation), {
 					headers: {'content-type':'application/json'}
@@ -162,6 +170,57 @@ module.exports = {
 				})
 
 		},
+		onFileChange(e) {
+            // const file = e.target.files[0];
+            // this.url = URL.createObjectURL(file);
+			// console.log(this.url);
+			// let params = $('#file').val().split('\\');
+			// let img_name = params[params.length-1];
+			// console.log(img_name);
+			// url = this.url.toString(); // OVDE DOBIJEM blob:http://localhost:3000/a879c079-98f0-40d3-a8cb-71820c4aa7e7
+			// for(var i = 0; i < 5; i++) {
+			// 	url = url.substring(1);
+			// }
+			var reader = new FileReader();
+			reader.onload = function(){
+				// var output = document.getElementById('output');
+				// output.src = reader.result;
+				console.log("result : ",(reader.result));
+			};
+			//console.log("result : ",(reader.result));
+			//reader.readAsDataURL(e.target.files[0]);
+
+			// console.log(img_url);
+			// this.new_manifestation.image = img_url;
+        },
+		base64EncodeUnicode(str) {
+		// Firstly, escape the string using encodeURIComponent to get the UTF-8 encoding of the characters, 
+		// Secondly, we convert the percent encodings into raw bytes, and add it to btoa() function.
+			utf8Bytes = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
+					return String.fromCharCode('0x' + p1);
+				});
+
+			return btoa(utf8Bytes);
+		},
+		loadFile(event) {
+			var reader = new FileReader();
+			let img = "";
+			let vueComponent = this;
+			reader.onload = function(){
+				var output = document.getElementById('output');
+				output.src = reader.result;
+				//console.log(reader.result);
+				img = reader.result;
+				
+				vueComponent.new_manifestation.image = reader.result;
+				console.log(vueComponent.new_manifestation.image);
+			}
+			console.log("hoo");
+			// this.new_manifestation.image = reader.result;
+			// console.log(this.new_manifestation.image);
+			reader.readAsDataURL(event.target.files[0]);
+		},
+
         formatDate() {
             dateparams = this.new_manifestation.date.split("T");
             dateparams[1] = dateparams[1] + ":00";

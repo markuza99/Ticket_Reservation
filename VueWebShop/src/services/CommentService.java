@@ -47,9 +47,8 @@ public class CommentService {
 			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
 		}
 		if(ctx.getAttribute("CommentDAO") == null) {
-			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 			SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
-			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath, manifestationDAO, sellerDAO));
+			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath, sellerDAO));
 		}
 		if(ctx.getAttribute("TicketDAO") == null) {
 			ctx.setAttribute("TicketDAO", new TicketDAO(contextPath));

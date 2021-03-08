@@ -1,6 +1,6 @@
 package dao;
 
-import java.io.BufferedReader;
+import java.io.BufferedReader; 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -12,6 +12,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.Scanner;
 
 import beans.Customer;
 import beans.Manifestation;
@@ -40,6 +44,10 @@ public class SellerDAO {
 		if(!manifestationDAO.checkManifestationMaintainance(manifestation.getDate(), manifestation.getLocation(), manifestation.getId())) {
 			return null;
 		}
+//		System.out.println(manifestation.getImage());
+		writeImg(manifestation.getImage());
+		manifestation.setImage("img1.jpg");
+//		System.out.println(base64UrlEncode(img));
 		manifestationDAO.getManifestations().put(manifestation.getId(), manifestation);
 		Seller seller = getSeller(user);
 		seller.getManifestations().add(manifestation);
@@ -47,6 +55,35 @@ public class SellerDAO {
 
 		manifestationDAO.append(manifestationDAO.getManifestationLine(manifestation));
 		return manifestation;
+	}
+	
+	private static String base64UrlEncode(String value) {
+	    try {
+	        return Base64.getUrlEncoder()
+	                    .encodeToString(value.getBytes(StandardCharsets.UTF_8.toString()));
+	    } catch(UnsupportedEncodingException ex) {
+	        throw new RuntimeException(ex);
+	    }
+	}
+	
+	public void writeImg(String img) {
+		File file = new File(contextPath + "/images/img1.jpg");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            	pw.println(img);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
 	}
 	
 	private void loadSellers() {

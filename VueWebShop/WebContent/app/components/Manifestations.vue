@@ -7,6 +7,7 @@
 					<div class="manifestation" v-bind:id="m.id" v-on:click="goToManifestation(m.id)">
 						<div class="image-holder">
 							<img class="fit-img" v-bind:src="'images/' + m.image">
+							<!-- <img class="fit-img" v-bind:src="'http://localhost:3000/' + m.image"> -->
 						</div>
 						<div class="description-holder">
 							<h3 class="name">{{m.name}}</h3>

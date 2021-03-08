@@ -58,7 +58,7 @@
                     <input type="file" id="file" ref="file" v-on:change="handleFileUpload" class="form-control-file" disabled>
                     <button v-on:click="submitFile">Submit file</button>
                     </div>
-                     <div id="preview">
+                    <div id="preview">
                         <img v-if="url" :src="url" />
                     </div>
                 </div>

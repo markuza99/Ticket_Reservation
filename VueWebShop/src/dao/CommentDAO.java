@@ -23,12 +23,10 @@ import beans.Status;
 public class CommentDAO {
 	private Map<String, Comment> comments = new HashMap<>();
 	private String contextPath;
-	private ManifestationDAO manifestationDAO;
 	private SellerDAO sellerDAO;
 	
-	public CommentDAO(String contextPath, ManifestationDAO manifestationDAO, SellerDAO sellerDAO) {
+	public CommentDAO(String contextPath, SellerDAO sellerDAO) {
 		this.contextPath = contextPath;
-		this.manifestationDAO = manifestationDAO;
 		this.sellerDAO = sellerDAO;
 		loadComments();
 	}

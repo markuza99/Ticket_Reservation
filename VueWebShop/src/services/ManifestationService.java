@@ -63,9 +63,8 @@ public class ManifestationService {
 			ctx.setAttribute("UserDAO", new UserDAO(contextPath, customerDAO, sellerDAO));
 		}
 		if(ctx.getAttribute("CommentDAO") == null) {
-			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 			SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
-			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath, manifestationDAO, sellerDAO));
+			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath, sellerDAO));
 		}
 	}
 	
