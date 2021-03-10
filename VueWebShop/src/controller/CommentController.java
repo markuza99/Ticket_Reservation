@@ -2,6 +2,8 @@ package controller;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -15,12 +17,48 @@ import javax.ws.rs.core.MediaType;
 
 import beans.Comment;
 import beans.User;
+import dao.CommentDAO;
+import dao.LocationDAO;
+import dao.ManifestationDAO;
+import dao.SellerDAO;
+import dao.TicketDAO;
 import dto.ManifestationDTO;
 import services.CommentService;
 
 @Path("/comments")
 public class CommentController {
-	private CommentService commentService = new CommentService();
+	@Context
+	ServletContext ctx;
+	private CommentService commentService;
+	
+	@PostConstruct
+	public void init() {
+		
+		String contextPath = ctx.getRealPath("");
+		if(ctx.getAttribute("TicketDAO") == null) {
+			ctx.setAttribute("TicketDAO", new TicketDAO(contextPath));
+		}
+		if(ctx.getAttribute("LocationDAO") == null) {
+			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
+		}
+		if(ctx.getAttribute("ManifestationDAO") == null) {
+			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
+			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath, locationDAO));
+		}
+		if(ctx.getAttribute("SellerDAO") == null) {
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
+		}
+		if(ctx.getAttribute("CommentDAO") == null) {
+			SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
+			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath, sellerDAO));
+		}
+		
+//		LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
+		TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");
+		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
+		commentService = new CommentService(commentDAO, ticketDAO);
+	}
 	
 	@GET
 	@Path("manifestation/{id}")

@@ -9,13 +9,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import beans.Customer;
 import beans.Ticket;
 import beans.TicketStatus;
 import beans.TicketType;

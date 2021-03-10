@@ -1,5 +1,7 @@
 package controller;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -10,11 +12,25 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import beans.User;
+import dao.TicketDAO;
 import services.TicketService;
 
 @Path("/tickets")
 public class TicketController {
-	private TicketService ticketServise = new TicketService();
+	@Context
+	ServletContext ctx;
+	private TicketService ticketService;
+	
+	@PostConstruct
+	public void init() {
+		String contextPath = ctx.getRealPath("");
+		if(ctx.getAttribute("TicketDAO") == null) {
+			TicketDAO ticketDAO = new TicketDAO(contextPath);
+			ctx.setAttribute("TicketDAO",ticketDAO);
+			
+		}
+		ticketService = new TicketService((TicketDAO) ctx.getAttribute("TicketDAO"));
+	}
 	
 	@GET
 	@Path("/user-attended/{id}")
@@ -23,6 +39,6 @@ public class TicketController {
 	public Boolean userAttended(@Context HttpServletRequest request, @PathParam("id") String manifestationId) {
 		User user = (User) request.getSession().getAttribute("user");
 		if(user == null) return false;
-		return ticketServise.userAttended(user.getUsername(), manifestationId);
+		return ticketService.userAttended(user.getUsername(), manifestationId);
 	}
 }

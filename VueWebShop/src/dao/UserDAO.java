@@ -15,45 +15,116 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import beans.Customer;
 import beans.Gender;
-import beans.Manifestation;
 import beans.Role;
-import beans.Seller;
-import beans.Ticket;
 import beans.User;
+import dao.interfaces.IUserDAO;
 
-public class UserDAO {
+public class UserDAO implements IUserDAO {
 	private Map<String, User> users = new HashMap<>();
 	private String contextPath;
-	private CustomerDAO customerDAO;
-	private SellerDAO sellerDAO;
 	
 	public UserDAO() {}
 	
-	public UserDAO(String contextPath, CustomerDAO customerDAO, SellerDAO sellerDAO) {
+	public UserDAO(String contextPath) {
 		this.contextPath = contextPath;
-		this.customerDAO = customerDAO;
-		this.sellerDAO = sellerDAO;
 		loadUsers();
 	}
-	
-	public User find(String username, String password) {
-		User user = users.get(username);
-		if(user == null)
-			return null;
-		if (!user.getPassword().equals(password)) {
-			return null;
+
+	@Override
+	public User create(User user) {
+		if(read(user.getUsername()) != null) {
+            return null;
 		}
+		users.put(user.getUsername(), user);
+		appendToFile(userCSVRepresentation(user));
+		return user;
+	}
+
+	@Override
+	public User read(String username) {
+		return users.get(username);
+	}
+
+	@Override
+	public User update(User user) {
+		users.put(user.getUsername(), user);
+		writeToFile();
+		return user;
+	}
+
+	@Override
+	public User delete(String username) {
+		User user = users.get(username);
+		user.setIsDeleted("1");
+		writeToFile();
 		return user;
 	}
 	
-	public List<User> getAllUsers() {
+	@Override
+	public User retrieve(String username) {
+		User user = users.get(username);
+		user.setIsDeleted("0");
+		writeToFile();
+		return user;
+	}
+	
+	@Override
+	public List<User> getAll() {
 		return new ArrayList<User>(users.values());
 	}
 	
-	public User getOneUser(String id) {
-		return users.get(id);
+	private String userCSVRepresentation(User user) {
+		StringBuilder userString = new StringBuilder();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		String deleted = user.getIsDeleted() ? "1" : "0";
+		userString.append(user.getRole() + ";" + user.getUsername() + ";" + user.getPassword() + ";" 
+             + user.getFirstName() + ";" + user.getLastName() + ";"
+             + user.getGender() + ";" + user.getBirthDate().format(formatter) + ";" + deleted);
+
+        return userString.toString();
+	}
+	
+	private void appendToFile(String line) {
+		File file = new File(contextPath + "/repositories/users.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            pw.println(line);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+	}
+	
+	private void writeToFile() {
+		File file = new File(contextPath + "/repositories/users.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+            for(User user : users.values()) {
+            	pw.println(userCSVRepresentation(user));
+            }
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
 	}
 	
 	private void loadUsers() {
@@ -99,162 +170,5 @@ public class UserDAO {
 		
 	}
 
-	
-	public User registration(User user) {
-		
-        if(usernameExists(user.getUsername())) {
-            return null;
-        }
-        
-        users.put(user.getUsername(), user);
-        append(getUserLine(user));
-        
-        if(user.getRole() == Role.CUSTOMER) {
-        	String customerLine = user.getUsername() + "; ;" + 0 + ";" + "regularni";
-        	customerDAO.append(customerLine);
-        	customerDAO.getCustomers().put(user.getUsername(),
-            		new Customer(user.getUsername(), new ArrayList<Ticket>(),
-            		0, customerDAO.getCustomerType("regularni")));
-        } else if(user.getRole() == Role.SELLER) {
-        	String sellerLine = user.getUsername() + "; ;";
-        	sellerDAO.append(sellerLine);
-        	sellerDAO.getSellers().put(user.getUsername(), new Seller(user.getUsername(), new ArrayList<Manifestation>()));
-        }
-        return user;
-    }
-	
-	private Boolean usernameExists(String username) {
-	    return users.containsKey(username);
-	}
-	
-	private void append(String line) {
-		File file = new File(contextPath + "/repositories/users.txt");
-
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-            pw.println(line);
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if(pw != null) {
-                try {
-                    pw.close();
-                }
-                catch (Exception e) {}
-            }
-        }
-	}
-	
-	public String getUserLine(User user) {
-		StringBuilder userString = new StringBuilder();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		String deleted = user.getIsDeleted() ? "1" : "0";
-		userString.append(user.getRole() + ";" + user.getUsername() + ";" + user.getPassword() + ";" 
-             + user.getFirstName() + ";" + user.getLastName() + ";"
-             + user.getGender() + ";" + user.getBirthDate().format(formatter) + ";" + deleted);
-
-        return userString.toString();
-	}
-	
-	private void write() {
-		File file = new File(contextPath + "/repositories/users.txt");
-
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-            for(User user : users.values()) {
-            	pw.println(getUserLine(user));
-            }
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if(pw != null) {
-                try {
-                    pw.close();
-                }
-                catch (Exception e) {}
-            }
-        }
-	}
-
-	public List<User> deleteUser(String username) {
-		// TODO Auto-generated method stub
-		User user = users.get(username);
-		user.setIsDeleted("1");
-		write();
-		return getAllUsers();
-	}
-
-	public List<User> retrieveUser(String username) {
-		// TODO Auto-generated method stub
-		User user = users.get(username);
-		user.setIsDeleted("0");
-		write();
-		return getAllUsers();
-	}
-
-	public List<User> search(String text, String dateFrom, String dateTo) {
-		// TODO Auto-generated method stub
-		List<User> searchedUsers = new ArrayList<>();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate LdateFrom = null;
-		LocalDate LdateTo = null;
-		
-		if(!dateFrom.equals("")) {
-			LdateFrom = LocalDate.parse(dateFrom, formatter);;
-		}
-		if(!dateTo.equals("")) {
-			LdateTo = LocalDate.parse(dateTo, formatter);
-		}
-		
-		for(User user : users.values()) {
-			if(correspondsSearch(user, text, LdateFrom, LdateTo)) {
-				searchedUsers.add(user);
-			}
-		}
-		return searchedUsers;
-	}
-
-	private boolean correspondsSearch(User user, String searchQuery, LocalDate dateFrom, LocalDate dateTo) {
-		boolean btext = searchQuery.trim() == "" ? true : (user.getUsername().contains(searchQuery) || user.getFirstName().contains(searchQuery)
-				|| user.getLastName().contains(searchQuery));
-		boolean bdateFrom = dateFrom == null ? true : user.getBirthDate().isAfter(dateFrom);
-		boolean bdateTo = dateTo == null ? true : user.getBirthDate().isBefore(dateTo);
-		return btext && bdateFrom && bdateTo;
-	}
-
-	public List<User> filter(List<User> searchedUsers, String role, String userStatus) {
-		List<User> filteredUsers = new ArrayList<>();
-		for(User user : searchedUsers) {
-			if(correspondsFilter(user, role, userStatus)) {
-				filteredUsers.add(user);
-			}
-		}
-		return filteredUsers;
-	}
-
-	private boolean correspondsFilter(User user, String role, String userStatus) {
-		// TODO Auto-generated method stub
-		boolean buserType = role.equals("Svi") ? true : (user.getRole() == Role.valueOf(role));
-		String deleted = "0";
-		if(user.getIsDeleted()) {
-			deleted = "1";
-		}
-		boolean buserStatus = userStatus.equals("Svi") ? true : userStatus.equals(deleted);
-		return buserType && buserStatus;
-	}
-	
-	public User updateUser(User u, String oldUser) {
-		if(!u.getUsername().equals(oldUser) && usernameExists(u.getUsername())) {
-			return null;
-		}
-		users.remove(oldUser);
-		users.put(u.getUsername(), u);
-		write();
-		return u;
-	}
 	
 }

@@ -2,6 +2,8 @@ package controller;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -17,12 +19,49 @@ import javax.ws.rs.core.MediaType;
 
 import beans.Role;
 import beans.User;
+import dao.CustomerDAO;
+import dao.LocationDAO;
+import dao.ManifestationDAO;
+import dao.SellerDAO;
+import dao.TicketDAO;
+import dao.UserDAO;
 import services.UserService;
 
 @Path("/users")
 public class UserController {
-	private UserService userService = new UserService();
+	@Context
+	ServletContext ctx;
+	private UserService userService;
 	
+	@PostConstruct
+	public void init() {
+		String contextPath = ctx.getRealPath("");
+		if(ctx.getAttribute("TicketDAO") == null) {
+			ctx.setAttribute("TicketDAO", new TicketDAO(contextPath));
+		}
+		if(ctx.getAttribute("LocationDAO") == null) {
+			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
+		}
+		if(ctx.getAttribute("ManifestationDAO") == null) {
+			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
+			ctx.setAttribute("ManifestationDAO",
+			new ManifestationDAO(contextPath, locationDAO));
+		}
+		if(ctx.getAttribute("CustomerDAO") == null) {
+			TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			ctx.setAttribute("CustomerDAO", 
+			new CustomerDAO(contextPath, ticketDAO, manifestationDAO));
+		}
+		if(ctx.getAttribute("SellerDAO") == null) {
+			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
+		}
+		if(ctx.getAttribute("UserDAO") == null) {
+			ctx.setAttribute("UserDAO", new UserDAO(contextPath));
+		}
+		userService = new UserService((UserDAO) ctx.getAttribute("UserDAO"));
+	}
 	
 	@POST
 	@Path("/login")
@@ -81,18 +120,18 @@ public class UserController {
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<User> allUsers() {
-		return userService.allUsers();
+		return userService.getAllUsers();
 	}
 	
 	@DELETE
 	@Path("/{username}")
-	public List<User> deleteUser(@PathParam("username") String username) {
+	public User deleteUser(@PathParam("username") String username) {
 		return userService.deleteUser(username);
 	}
 	
 	@PUT
 	@Path("/retrieve/{username}")
-	public List<User> retrieveUser(@PathParam("username") String username) {
+	public User retrieveUser(@PathParam("username") String username) {
 		return userService.retrieveUser(username);
 	}
 	
