@@ -18,9 +18,7 @@ import java.util.StringTokenizer;
 import beans.Ticket;
 import beans.TicketStatus;
 import beans.TicketType;
-import beans.User;
 import dao.interfaces.ITicketDAO;
-import dto.ReservationDTO;
 
 public class TicketDAO implements ITicketDAO {
 	private String contextPath;
@@ -30,14 +28,55 @@ public class TicketDAO implements ITicketDAO {
 		this.contextPath = contextPath;
 		loadTickets();
 	}
+
+	@Override
+	public Ticket create(Ticket ticket) {
+		tickets.put(ticket.getId(), ticket);
+		appendToFile(ticketCSVRepresentation(ticket));
+		return ticket;
+	}
+
+	@Override
+	public Ticket read(String id) {
+		return tickets.get(id);
+	}
+
+	@Override
+	public Ticket update(Ticket ticket) {
+		tickets.put(ticket.getId(), ticket);
+		writeToFile();
+		return ticket;
+	}
+
+	@Override
+	public Ticket delete(String id) {
+		Ticket ticket = tickets.get(id);
+		ticket.setIsDeleted("1");
+		writeToFile();
+		return ticket;
+	}
+
+	@Override
+	public List<Ticket> getAll() {
+		return new ArrayList<Ticket>(tickets.values());
+	}
+
+	@Override
+	public Ticket retrieve(String id) {
+		Ticket ticket = tickets.get(id);
+		ticket.setIsDeleted("0");
+		writeToFile();
+		return ticket;
+	}
 	
 	private String ticketCSVRepresentation(Ticket ticket) {
 		StringBuilder ticketString = new StringBuilder();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		String deleted = ticket.getIsDeleted() ? "1" : "0";
 		ticketString.append(ticket.getId() + ";" + ticket.getManifestationId() + ";"
 				+ ticket.getDateTime().format(formatter) + ";" + ticket.getPrice() + ";"
 				+ ticket.getUser() + ";" + ticket.getTicketStatus() + ";"
-				+ ticket.getTicketType());
+				+ ticket.getTicketType() + ";" + deleted);
         return ticketString.toString();
 	}
 	
@@ -105,7 +144,12 @@ public class TicketDAO implements ITicketDAO {
 					String user = st.nextToken().trim();
 					TicketStatus status = TicketStatus.valueOf(st.nextToken().trim());
 					TicketType type = TicketType.valueOf(st.nextToken().trim());
-					tickets.put(id, new Ticket(id, manifestation, maintenance, price, user, status, type));
+					String deleted = st.nextToken().trim();
+					Boolean isDeleted = false;
+					if(deleted.equals("1")) {
+						isDeleted = true;
+					}
+					tickets.put(id, new Ticket(id, manifestation, maintenance, price, user, status, type, isDeleted));
 					
 				}
 			}
@@ -121,44 +165,6 @@ public class TicketDAO implements ITicketDAO {
 		}
 	}
 
-	@Override
-	public Ticket create(Ticket ticket) {
-		tickets.put(ticket.getId(), ticket);
-		appendToFile(ticketCSVRepresentation(ticket));
-		return ticket;
-	}
-
-	@Override
-	public Ticket read(String id) {
-		return tickets.get(id);
-	}
-
-	@Override
-	public Ticket update(Ticket entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Ticket delete(String id) {
-//		Ticket ticket = tickets.get(id);
-//		ticket.setIsDeleted("1");
-//		writeToFile();
-//		return ticket;
-		return null;
-	}
-
-	@Override
-	public List<Ticket> getAll() {
-		// TODO Auto-generated method stub
-		return new ArrayList<Ticket>(tickets.values());
-	}
-
-	@Override
-	public Ticket retrieve(String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 //	public void updateTicket(String oldUser, String newUser) {
 //		ArrayList<Ticket> ticketsUser = new ArrayList<Ticket>();

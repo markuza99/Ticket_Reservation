@@ -12,7 +12,7 @@ public class User {
 	private Gender gender;
 	private LocalDate birthDate;
 	private Role role;
-	private Boolean isDeleted;
+	private boolean isDeleted;
 	
 	public User() {
 		
@@ -24,7 +24,7 @@ public class User {
 	}
 
 	public User(String username, String firstName, String lastName, String password, Gender gender,
-			LocalDate birthDate, Role role, Boolean isDeleted) {
+			LocalDate birthDate, Role role, boolean isDeleted) {
 		this.username = username;
 		this.firstName = firstName;
 		this.lastName = lastName;

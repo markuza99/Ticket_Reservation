@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import beans.Ticket;
 import beans.User;
 import dao.CustomerDAO;
 import dao.LocationDAO;
@@ -64,7 +65,9 @@ public class TicketController {
 	@POST
 	@Path("/reserve-ticket")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void reserveTickets(ReservationDTO reservationDTO) {
-		ticketService.reserveTickets(reservationDTO);
+	public Ticket reserveTickets(@Context HttpServletRequest request, ReservationDTO reservationDTO) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		return ticketService.reserveTickets(reservationDTO, user.getUsername());
 	}
 }

@@ -1,6 +1,6 @@
 package dao;
 
-import java.io.BufferedReader;
+import java.io.BufferedReader; 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,10 +15,7 @@ import java.util.StringTokenizer;
 
 import beans.Customer;
 import beans.CustomerType;
-import beans.Ticket;
-import beans.User;
 import dao.interfaces.ICustomerDAO;
-import dto.ReservationDTO;
 
 public class CustomerDAO implements ICustomerDAO {
 	private Map<String, Customer> customers = new HashMap<>();
@@ -29,18 +25,9 @@ public class CustomerDAO implements ICustomerDAO {
 	public CustomerDAO(String contextPath) {
 		this.contextPath = contextPath;
 		loadCustomerTypes();
-		Collections.sort(customerTypes);
 		loadCustomers();
 	}
 	
-//	public Map<String, Customer> getCustomers() {
-//		return customers;
-//	}
-//
-//	public void setCustomers(Map<String, Customer> customers) {
-//		this.customers = customers;
-//	}
-//
 	public CustomerType getCustomerType(String id) {
 		for(CustomerType ct : customerTypes) {
 			if(ct.getTypeName().equals(id)) {
@@ -49,51 +36,15 @@ public class CustomerDAO implements ICustomerDAO {
 		}
 		return null;
 	}
-//	
-//	public Customer getCustomer(String id) {
-//		return customers.get(id);
-//	}
-//	
-//	private void changeCustomersPoints(ReservationDTO reservationDTO, Customer customer) {
-//		int currentPoints = customer.getPoints();
-//		int newPoints = currentPoints+reservationDTO.points;
-//		customer.setPoints(newPoints);
-//		
-//		int typePosition = customerTypes.indexOf(customer.getCustomerType());
-//		int typesSize = customerTypes.size();
-//		if(typesSize - typePosition == 1) {
-//			//onda je poslednji
-//		} else {
-//			//naredni elem
-//			while(true) {
-//				CustomerType newType = customerTypes.get(typePosition + 1);
-//				if(newPoints > newType.getPoints())
-//					customer.setCustomerType(newType);
-//				else {
-//					break;
-//				}
-//				typePosition++;
-//				if(typesSize - typePosition == 1)
-//					break;
-//			}
-//			
-//		}
-//	}
-//	
-//	public void reserve(ReservationDTO reservationDTO) {
-//		Customer customer = customers.get(reservationDTO.user);
-//		Ticket ticket = ticketDAO.addTicket(reservationDTO);
-//		
-//		customer.getTickets().add(ticket);
-//		
-//		manifestationDAO.reduceNumberOfSeats(reservationDTO.manifestation,reservationDTO.numberOfTickets);
-//		//prvo se skida broj karata pa se tek onda porucuje
-//		
-//		changeCustomersPoints(reservationDTO, customer);
-//		
-//		write();
-//	}
-//	
+	
+	public List<CustomerType> getCustomerTypes() {
+		return customerTypes;
+	}
+
+	public void setCustomerTypes(List<CustomerType> customerTypes) {
+		this.customerTypes = customerTypes;
+	}
+
 	public String customerCSVRepresentation(Customer customer) {
 		StringBuilder customerString = new StringBuilder(); 
 		customerString.append(customer.getUsername() + ";");
@@ -110,7 +61,7 @@ public class CustomerDAO implements ICustomerDAO {
 		customerString.append(customer.getPoints() + ";" + type);
         return customerString.toString();
 	}
-//	
+	
 	public void appendToFile(String line) {
 		File file = new File(contextPath + "/repositories/customers.txt");
 
@@ -287,4 +238,5 @@ public class CustomerDAO implements ICustomerDAO {
 //		return customer;
 		return null;
 	}
+
 }

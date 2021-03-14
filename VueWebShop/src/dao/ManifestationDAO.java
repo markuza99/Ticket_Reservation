@@ -28,14 +28,7 @@ public class ManifestationDAO implements IManifestationDAO {
 		this.contextPath = contextPath;
 		loadManifestations();
 	}
-//	
-//	public void reduceNumberOfSeats(String manifestationId , int numberOfTickets) {
-//
-//		Manifestation manifestation = getManifestation(manifestationId);
-//		int remaining = manifestation.getRemainingNumberOfSeats() - numberOfTickets;
-//		manifestation.setRemainingNumberOfSeats(remaining);
-//		write();
-//	}
+
 	@Override
 	public Manifestation create(Manifestation manifestation) {
 		manifestations.put(manifestation.getId(), manifestation);
@@ -181,7 +174,5 @@ public class ManifestationDAO implements IManifestationDAO {
             }
         }
 	}
-
-	
 
 }

@@ -1,6 +1,6 @@
 package controller;
 
-import java.util.List;
+import java.util.List; 
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -22,7 +22,6 @@ import dao.LocationDAO;
 import dao.ManifestationDAO;
 import dao.SellerDAO;
 import dao.TicketDAO;
-import dto.ManifestationDTO;
 import services.CommentService;
 
 @Path("/comments")

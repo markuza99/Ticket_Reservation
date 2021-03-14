@@ -1,8 +1,12 @@
 package services;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 import beans.Customer;
+import beans.CustomerType;
+import beans.Manifestation;
 import beans.Ticket;
 import beans.TicketStatus;
 import beans.TicketType;
@@ -47,24 +51,54 @@ public class TicketService {
 	    return sb.toString(); 
 	}
 	
-	public Ticket reserveTickets(ReservationDTO reservationDTO) {
-	//provera jel ima karata
-		Customer customer = customerDAO.read(reservationDTO.user);
+	public Ticket reserveTickets(ReservationDTO reservationDTO, String username) {
+		Manifestation manifestation = manifestationDAO.read(reservationDTO.manifestationId);
+		if(manifestation.getRemainingNumberOfSeats() < reservationDTO.numberOfTickets) {
+			return null;
+		}
+		manifestation.setRemainingNumberOfSeats(manifestation.getRemainingNumberOfSeats() - reservationDTO.numberOfTickets);
+		manifestationDAO.update(manifestation);
+		
 		String ticketId = generateRandomId();
 		while(ticketDAO.read(ticketId) != null) {
 			ticketId = generateRandomId();
 		}
-		Ticket ticket = ticketDAO.create(new Ticket(ticketId,reservationDTO.manifestation,LocalDateTime.now(),reservationDTO.ticketPrice,
-				reservationDTO.user,TicketStatus.RESERVED,TicketType.FAN_PIT));
+		Ticket ticket = ticketDAO.create(new Ticket(ticketId,reservationDTO.manifestationId,LocalDateTime.now(),reservationDTO.ticketPrice,
+				username,TicketStatus.RESERVED,TicketType.valueOf(reservationDTO.ticketType), false));
 		
-	//	customer.getTickets().add(ticket);
-	//	
-	//	manifestationDAO.reduceNumberOfSeats(reservationDTO.manifestation,reservationDTO.numberOfTickets);
-	//	//prvo se skida broj karata pa se tek onda porucuje
-	//	
-	//	changeCustomersPoints(reservationDTO, customer);
-	//	
-	//	write();
+		Customer customer = customerDAO.read(username);
+		customer.getTickets().add(ticketId);
+		changeCustomersPoints(reservationDTO.points, customer);
+		customerDAO.update(customer);
+		
 		return ticket;
+	}
+	
+	private void changeCustomersPoints(int points, Customer customer) {
+		List<CustomerType> customerTypes = customerDAO.getCustomerTypes();
+		int currentPoints = customer.getPoints();
+		int newPoints = currentPoints + points;
+		customer.setPoints(newPoints);
+		
+		Collections.sort(customerTypes);
+		int typePosition = customerTypes.indexOf(customer.getCustomerType());
+		int typesSize = customerTypes.size();
+		if(typesSize - typePosition == 1) {
+			//onda je poslednji
+		} else {
+			//naredni elem
+			while(true) {
+				CustomerType newType = customerTypes.get(typePosition + 1);
+				if(newPoints > newType.getPoints())
+					customer.setCustomerType(newType);
+				else {
+					break;
+				}
+				typePosition++;
+				if(typesSize - typePosition == 1)
+					break;
+			}
+			
+		}
 	}
 }

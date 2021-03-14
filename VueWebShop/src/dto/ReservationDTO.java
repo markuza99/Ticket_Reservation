@@ -2,36 +2,33 @@ package dto;
 
 public class ReservationDTO {
 	public int points;
-	public String manifestation;
+	public String manifestationId;
 	public int numberOfTickets;
-	public String user;
 	public double ticketPrice;
-	
-	public ReservationDTO() {}
-
-	public ReservationDTO(int points, String manifestation, int numberOfTickets, String user
-			,double ticketPrice) {
-		this.points = points;
-		this.manifestation = manifestation;
-		this.numberOfTickets = numberOfTickets;
-		this.user = user;
-		this.ticketPrice = ticketPrice;
-	}
+	public String ticketType;
 
 	public int getPoints() {
 		return points;
+	}
+
+	public String getTicketType() {
+		return ticketType;
+	}
+
+	public void setTicketType(String ticketType) {
+		this.ticketType = ticketType;
 	}
 
 	public void setPoints(int points) {
 		this.points = points;
 	}
 
-	public String getManifestation() {
-		return manifestation;
+	public String getManifestationId() {
+		return manifestationId;
 	}
 
-	public void setManifestation(String manifestation) {
-		this.manifestation = manifestation;
+	public void setManifestationId(String manifestationId) {
+		this.manifestationId = manifestationId;
 	}
 
 	public int getNumberOfTickets() {
@@ -40,14 +37,6 @@ public class ReservationDTO {
 
 	public void setNumberOfTickets(int numberOfTickets) {
 		this.numberOfTickets = numberOfTickets;
-	}
-
-	public String getUser() {
-		return user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
 	}
 
 	public double getTicketPrice() {

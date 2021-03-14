@@ -10,11 +10,12 @@ public class Ticket {
 	private String user;
 	private TicketStatus ticketStatus;
 	private TicketType ticketType;
+	private boolean isDeleted;
 	
 	public Ticket() {}
 	
 	public Ticket(String id, String manifestationId, LocalDateTime dateTime, double price, String user,
-			TicketStatus ticketStatus, TicketType ticketType) {
+			TicketStatus ticketStatus, TicketType ticketType, boolean isDeleted) {
 		this.id = id;
 		this.manifestationId = manifestationId;
 		this.dateTime = dateTime;
@@ -22,6 +23,16 @@ public class Ticket {
 		this.user = user;
 		this.ticketStatus = ticketStatus;
 		this.ticketType = ticketType;
+		this.isDeleted = isDeleted;
+	}
+
+	
+	public boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(String isDeleted) {
+		this.isDeleted = isDeleted.equals("1") ? true : false;
 	}
 
 	public String getId() {
