@@ -35,31 +35,31 @@ public class CommentService {
 		return commentDAO.postComment(comment);
 	}
 
-	public ManifestationDTO getCommentParams(User user,String id) {
-		ManifestationDTO manifestationDTO = new ManifestationDTO();
-		manifestationDTO.manifestationRating = commentDAO.getManifestationRating(id);
-		if(user != null) {
-			manifestationDTO.commentSucces = commentDAO.userCommentedManifestation(id, user.getUsername());
-			manifestationDTO.userAttended = ticketDAO.userAttended(id, user.getUsername());
-			manifestationDTO.user = user.getUsername();
-			manifestationDTO.role = user.getRole();
-		}
-		return manifestationDTO;
-	}
+//	public ManifestationDTO getCommentParams(User user,String id) {
+//		ManifestationDTO manifestationDTO = new ManifestationDTO();
+//		manifestationDTO.manifestationRating = commentDAO.getManifestationRating(id);
+//		if(user != null) {
+//			manifestationDTO.commentSucces = commentDAO.userCommentedManifestation(id, user.getUsername());
+//			manifestationDTO.userAttended = ticketDAO.userAttended(id, user.getUsername());
+//			manifestationDTO.user = user.getUsername();
+//			manifestationDTO.role = user.getRole();
+//		}
+//		return manifestationDTO;
+//	}
 	
-	public List<Comment> getAllComments(User user) {
-		if(user != null && user.getRole() == Role.SELLER) {
-			return commentDAO.getCommentsForSeller(user.getUsername());
-		} else {
-			return commentDAO.getAllComments();
-		}
-	}
-
-	public List<Comment> approveComment(String username, Comment comment) {
-		return commentDAO.approveComment(comment, username);
-	}
-	
-	public List<Comment> declineComment(String username, Comment comment) {
-		return commentDAO.declineComment(comment, username);
-	}
+//	public List<Comment> getAllComments(User user) {
+//		if(user != null && user.getRole() == Role.SELLER) {
+//			return commentDAO.getCommentsForSeller(user.getUsername());
+//		} else {
+//			return commentDAO.getAllComments();
+//		}
+//	}
+//
+//	public List<Comment> approveComment(String username, Comment comment) {
+//		return commentDAO.approveComment(comment, username);
+//	}
+//	
+//	public List<Comment> declineComment(String username, Comment comment) {
+//		return commentDAO.declineComment(comment, username);
+//	}
 }

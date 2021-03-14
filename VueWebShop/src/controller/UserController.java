@@ -43,19 +43,17 @@ public class UserController {
 			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
 		}
 		if(ctx.getAttribute("ManifestationDAO") == null) {
-			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
 			ctx.setAttribute("ManifestationDAO",
-			new ManifestationDAO(contextPath, locationDAO));
+			new ManifestationDAO(contextPath));
 		}
 		if(ctx.getAttribute("CustomerDAO") == null) {
 			TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");
 			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 			ctx.setAttribute("CustomerDAO", 
-			new CustomerDAO(contextPath, ticketDAO, manifestationDAO));
+			new CustomerDAO(contextPath));
 		}
 		if(ctx.getAttribute("SellerDAO") == null) {
-			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
+			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath));
 		}
 		if(ctx.getAttribute("UserDAO") == null) {
 			ctx.setAttribute("UserDAO", new UserDAO(contextPath));

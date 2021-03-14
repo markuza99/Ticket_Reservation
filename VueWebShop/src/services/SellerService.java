@@ -12,7 +12,7 @@ public class SellerService {
 	}
 	
 
-	public Manifestation addManifestation(String username, Manifestation manifestation) {
-		return sellerDAO.add(manifestation, username);
-	}
+//	public Manifestation addManifestation(String username, Manifestation manifestation) {
+//		return sellerDAO.add(manifestation, username);
+//	}
 }

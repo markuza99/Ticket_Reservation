@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 public class Customer {
 	private String username;
-	private ArrayList<Ticket> tickets;
+	private ArrayList<String> tickets;
 	private int points;
 	private CustomerType customerType;
 	
-	public Customer(String username, ArrayList<Ticket> tickets, int points, CustomerType customerType) {
+	public Customer(String username, ArrayList<String> tickets, int points, CustomerType customerType) {
 		this.username = username;
 		this.tickets = tickets;
 		this.points = points;
@@ -17,11 +17,11 @@ public class Customer {
 	
 	public Customer() {}
 
-	public ArrayList<Ticket> getTickets() {
+	public ArrayList<String> getTickets() {
 		return tickets;
 	}
 
-	public void setTickets(ArrayList<Ticket> tickets) {
+	public void setTickets(ArrayList<String> tickets) {
 		this.tickets = tickets;
 	}
 

@@ -36,13 +36,10 @@ public class CustomerController {
 			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
 		}
 		if(ctx.getAttribute("ManifestationDAO") == null) {
-			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
-			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath, locationDAO));
+			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath));
 		}
 		if(ctx.getAttribute("CustomerDAO") == null) {
-			TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");
-			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-			ctx.setAttribute("CustomerDAO", new CustomerDAO(contextPath, ticketDAO, manifestationDAO));
+			ctx.setAttribute("CustomerDAO", new CustomerDAO(contextPath));
 		}
 		customerService = new CustomerService((CustomerDAO) ctx.getAttribute("CustomerDAO"));
 	}
@@ -56,10 +53,10 @@ public class CustomerController {
 	}
 
 	
-	@POST
-	@Path("/reserve-ticket")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public void reserveTickets(ReservationDTO reservationDTO) {
-		customerService.reserveTickets(reservationDTO);
-	}
+//	@POST
+//	@Path("/reserve-ticket")
+//	@Consumes(MediaType.APPLICATION_JSON)
+//	public void reserveTickets(ReservationDTO reservationDTO) {
+//		customerService.reserveTickets(reservationDTO);
+//	}
 }

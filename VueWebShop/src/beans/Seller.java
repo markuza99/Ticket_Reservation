@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class Seller {
 	private String username;
-	private ArrayList<Manifestation> manifestations;
+	private ArrayList<String> manifestations;
 	
-	public Seller(String username, ArrayList<Manifestation> manifestations) {
+	public Seller(String username, ArrayList<String> manifestations) {
 		this.username = username;
 		this.manifestations = manifestations;
 	}
@@ -21,11 +21,11 @@ public class Seller {
 
 	public Seller() {}
 
-	public ArrayList<Manifestation> getManifestations() {
+	public ArrayList<String> getManifestations() {
 		return manifestations;
 	}
 
-	public void setManifestations(ArrayList<Manifestation> manifestations) {
+	public void setManifestations(ArrayList<String> manifestations) {
 		this.manifestations = manifestations;
 	}
 	

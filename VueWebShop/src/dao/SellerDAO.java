@@ -21,70 +21,90 @@ import beans.Customer;
 import beans.Manifestation;
 import beans.Seller;
 import beans.Ticket;
+import dao.interfaces.ISellerDAO;
 
-public class SellerDAO {
+public class SellerDAO implements ISellerDAO {
 	private Map<String, Seller> sellers = new HashMap<>();
 	private String contextPath;
-	private ManifestationDAO manifestationDAO;
 	
-	public SellerDAO(String contextPath, ManifestationDAO manifestationDAO) {
+	public SellerDAO(String contextPath) {
 		this.contextPath = contextPath;
-		this.manifestationDAO = manifestationDAO;
 		loadSellers();
 	}
 	
-	public Seller getSeller(String id) {
+	@Override
+	public Seller create(Seller seller) {
+		if(read(seller.getUsername()) != null) {
+            return null;
+		}
+		sellers.put(seller.getUsername(), seller);
+		appendToFile(sellerCSVRepresentation(seller));
+		return seller;
+	}
+
+	@Override
+	public Seller read(String id) {
 		return sellers.get(id);
 	}
-	
-	public Manifestation add(Manifestation manifestation, String user) {
-		if(manifestationDAO.idExists(manifestation.getId())) {
-			return null;
-		}
-		if(!manifestationDAO.checkManifestationMaintainance(manifestation.getDate(), manifestation.getLocation(), manifestation.getId())) {
-			return null;
-		}
-//		System.out.println(manifestation.getImage());
-		writeImg(manifestation.getImage());
-		manifestation.setImage("img1.jpg");
-//		System.out.println(base64UrlEncode(img));
-		manifestationDAO.getManifestations().put(manifestation.getId(), manifestation);
-		Seller seller = getSeller(user);
-		seller.getManifestations().add(manifestation);
-		write();
 
-		manifestationDAO.append(manifestationDAO.getManifestationLine(manifestation));
-		return manifestation;
+	@Override
+	public Seller update(Seller seller) {
+		sellers.put(seller.getUsername(), seller);
+		writeToFile();
+		return seller;
 	}
-	
-	private static String base64UrlEncode(String value) {
-	    try {
-	        return Base64.getUrlEncoder()
-	                    .encodeToString(value.getBytes(StandardCharsets.UTF_8.toString()));
-	    } catch(UnsupportedEncodingException ex) {
-	        throw new RuntimeException(ex);
-	    }
-	}
-	
-	public void writeImg(String img) {
-		File file = new File(contextPath + "/images/img1.jpg");
 
-        PrintWriter pw = null;
-        try {
-            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-            	pw.println(img);
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if(pw != null) {
-                try {
-                    pw.close();
-                }
-                catch (Exception e) {}
-            }
-        }
+	@Override
+	public Seller delete(String id) {
+//		Seller seller = sellers.get(username);
+//		seller.setIsDeleted("1");
+//		writeToFile();
+//		return seller;
+		return null;
 	}
+
+	@Override
+	public List<Seller> getAll() {
+		return new ArrayList<Seller>(sellers.values());
+	}
+
+	@Override
+	public Seller retrieve(String id) {
+//		Seller seller = sellers.get(username);
+//		seller.setIsDeleted("0");
+//		writeToFile();
+//		return seller;
+		return null;
+	}
+	
+//	private static String base64UrlEncode(String value) {
+//	    try {
+//	        return Base64.getUrlEncoder()
+//	                    .encodeToString(value.getBytes(StandardCharsets.UTF_8.toString()));
+//	    } catch(UnsupportedEncodingException ex) {
+//	        throw new RuntimeException(ex);
+//	    }
+//	}
+	
+//	public void writeImg(String img) {
+//		File file = new File(contextPath + "/images/img1.jpg");
+//
+//        PrintWriter pw = null;
+//        try {
+//            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+//            	pw.println(img);
+//            
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if(pw != null) {
+//                try {
+//                    pw.close();
+//                }
+//                catch (Exception e) {}
+//            }
+//        }
+//	}
 	
 	private void loadSellers() {
 		BufferedReader reader = null;
@@ -100,15 +120,14 @@ public class SellerDAO {
 				st = new StringTokenizer(line, ";");
 				while(st.hasMoreTokens()) {
 					String username = st.nextToken().trim();
-					ArrayList<Manifestation> manifestationArray = new ArrayList<Manifestation>();
+					ArrayList<String> manifestationArray = new ArrayList<String>();
 					
 					String manifestations = st.nextToken().trim();
 					if(!manifestations.equals("")) {
 						StringTokenizer st2 = new StringTokenizer(manifestations, ":");
 						while(st2.hasMoreTokens()) {
 							String manifestationId = st2.nextToken().trim();
-							Manifestation manifestation = manifestationDAO.getManifestation(manifestationId);
-							manifestationArray.add(manifestation);
+							manifestationArray.add(manifestationId);
 						}
 					}
 					
@@ -127,7 +146,7 @@ public class SellerDAO {
 		}
 	}
 
-	public void append(String sellerLine) {
+	public void appendToFile(String sellerLine) {
 		File file = new File(contextPath + "/repositories/sellers.txt");
 
         PrintWriter pw = null;
@@ -147,14 +166,14 @@ public class SellerDAO {
         }
 	}
 	
-	public void write() {
+	public void writeToFile() {
 		File file = new File(contextPath + "/repositories/sellers.txt");
 
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
             for(Seller seller : sellers.values()) {
-            	pw.println(getSellerLine(seller));
+            	pw.println(sellerCSVRepresentation(seller));
             }
             
         } catch (IOException e) {
@@ -169,27 +188,27 @@ public class SellerDAO {
         }
 	}
 
-	private String getSellerLine(Seller seller) {
+	private String sellerCSVRepresentation(Seller seller) {
 		// TODO Auto-generated method stub
 		StringBuilder sellerString = new StringBuilder(); 
 		sellerString.append(seller.getUsername() + ";");
 		if(seller.getManifestations().size() == 0) {
 			sellerString.append(" ;");
 		} else {
-			for(Manifestation m : seller.getManifestations()) {
-				sellerString.append(m.getId() + ":");
+			for(String m : seller.getManifestations()) {
+				sellerString.append(m + ":");
 			}
 			sellerString.append(";");
 		}
         return sellerString.toString();
 	}
 
-	public Map<String, Seller> getSellers() {
-		return sellers;
-	}
+//	public Map<String, Seller> getSellers() {
+//		return sellers;
+//	}
+//
+//	public void setSellers(Map<String, Seller> sellers) {
+//		this.sellers = sellers;
+//	}
 
-	public void setSellers(Map<String, Seller> sellers) {
-		this.sellers = sellers;
-	}
-	
 }

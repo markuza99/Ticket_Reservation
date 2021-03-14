@@ -177,42 +177,42 @@ public class CommentDAO {
 		return sumOfRatings / n;
 	}
 
-	public List<Comment> getCommentsForSeller(String username) {
-		// TODO Auto-generated method stub
-		List<Comment> manifestationComments = new ArrayList<Comment>();
-		
-		for(Comment comment : comments.values()) {
-			Seller seller = sellerDAO.getSeller(username);
-			for(Manifestation m : seller.getManifestations()) {
-				if(comment.getManifestation().equals(m.getId())) {
-					manifestationComments.add(comment);
-				}
-			}
-		}
+//	public List<Comment> getCommentsForSeller(String username) {
+//		// TODO Auto-generated method stub
+//		List<Comment> manifestationComments = new ArrayList<Comment>();
+//		
+//		for(Comment comment : comments.values()) {
+//			Seller seller = sellerDAO.getSeller(username);
+//			for(Manifestation m : seller.getManifestations()) {
+//				if(comment.getManifestation().equals(m.getId())) {
+//					manifestationComments.add(comment);
+//				}
+//			}
+//		}
+//
+//		return manifestationComments;
+//	}
 
-		return manifestationComments;
-	}
-
-	public List<Comment> approveComment(Comment comment, String username) {
-		for(Comment c : comments.values()) {
-			if(c.getUser().equals(comment.getUser()) && c.getManifestation().equals(comment.getManifestation())) {
-				c.setCommentStatus("ACTIVE");
-				c.setApproval("ACCEPTED");
-			}
-		}
-		write();
-		return getCommentsForSeller(username);
-	}
-
-	public List<Comment> declineComment(Comment comment, String username) {
-		// TODO Auto-generated method stub
-		for(Comment c : comments.values()) {
-			if(c.getUser().equals(comment.getUser()) && c.getManifestation().equals(comment.getManifestation())) {
-				c.setCommentStatus("ACTIVE");
-				c.setApproval("DENIED");
-			}
-		}
-		write();
-		return getCommentsForSeller(username);
-	}
+//	public List<Comment> approveComment(Comment comment, String username) {
+//		for(Comment c : comments.values()) {
+//			if(c.getUser().equals(comment.getUser()) && c.getManifestation().equals(comment.getManifestation())) {
+//				c.setCommentStatus("ACTIVE");
+//				c.setApproval("ACCEPTED");
+//			}
+//		}
+//		write();
+//		return getCommentsForSeller(username);
+//	}
+//
+//	public List<Comment> declineComment(Comment comment, String username) {
+//		// TODO Auto-generated method stub
+//		for(Comment c : comments.values()) {
+//			if(c.getUser().equals(comment.getUser()) && c.getManifestation().equals(comment.getManifestation())) {
+//				c.setCommentStatus("ACTIVE");
+//				c.setApproval("DENIED");
+//			}
+//		}
+//		write();
+//		return getCommentsForSeller(username);
+//	}
 }

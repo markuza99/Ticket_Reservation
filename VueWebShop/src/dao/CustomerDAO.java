@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,36 +16,31 @@ import java.util.StringTokenizer;
 
 import beans.Customer;
 import beans.CustomerType;
-import beans.Manifestation;
 import beans.Ticket;
-import beans.TicketStatus;
-import beans.TicketType;
+import beans.User;
+import dao.interfaces.ICustomerDAO;
 import dto.ReservationDTO;
 
-public class CustomerDAO {
+public class CustomerDAO implements ICustomerDAO {
 	private Map<String, Customer> customers = new HashMap<>();
 	private List<CustomerType> customerTypes = new ArrayList<>();
 	private String contextPath;
-	private TicketDAO ticketDAO;
-	private ManifestationDAO manifestationDAO;
 	
-	public CustomerDAO(String contextPath, TicketDAO ticketDAO, ManifestationDAO manifestationDAO) {
+	public CustomerDAO(String contextPath) {
 		this.contextPath = contextPath;
-		this.ticketDAO = ticketDAO;
-		this.manifestationDAO = manifestationDAO;
 		loadCustomerTypes();
 		Collections.sort(customerTypes);
 		loadCustomers();
 	}
 	
-	public Map<String, Customer> getCustomers() {
-		return customers;
-	}
-
-	public void setCustomers(Map<String, Customer> customers) {
-		this.customers = customers;
-	}
-
+//	public Map<String, Customer> getCustomers() {
+//		return customers;
+//	}
+//
+//	public void setCustomers(Map<String, Customer> customers) {
+//		this.customers = customers;
+//	}
+//
 	public CustomerType getCustomerType(String id) {
 		for(CustomerType ct : customerTypes) {
 			if(ct.getTypeName().equals(id)) {
@@ -55,59 +49,59 @@ public class CustomerDAO {
 		}
 		return null;
 	}
-	
-	public Customer getCustomer(String id) {
-		return customers.get(id);
-	}
-	
-	private void changeCustomersPoints(ReservationDTO reservationDTO, Customer customer) {
-		int currentPoints = customer.getPoints();
-		int newPoints = currentPoints+reservationDTO.points;
-		customer.setPoints(newPoints);
-		
-		int typePosition = customerTypes.indexOf(customer.getCustomerType());
-		int typesSize = customerTypes.size();
-		if(typesSize - typePosition == 1) {
-			//onda je poslednji
-		} else {
-			//naredni elem
-			while(true) {
-				CustomerType newType = customerTypes.get(typePosition + 1);
-				if(newPoints > newType.getPoints())
-					customer.setCustomerType(newType);
-				else {
-					break;
-				}
-				typePosition++;
-				if(typesSize - typePosition == 1)
-					break;
-			}
-			
-		}
-	}
-	
-	public void reserve(ReservationDTO reservationDTO) {
-		Customer customer = customers.get(reservationDTO.user);
-		Ticket ticket = ticketDAO.addTicket(reservationDTO);
-		
-		customer.getTickets().add(ticket);
-		
-		manifestationDAO.reduceNumberOfSeats(reservationDTO.manifestation,reservationDTO.numberOfTickets);
-		//prvo se skida broj karata pa se tek onda porucuje
-		
-		changeCustomersPoints(reservationDTO, customer);
-		
-		write();
-	}
-	
-	public String getCustomerLine(Customer customer) {
+//	
+//	public Customer getCustomer(String id) {
+//		return customers.get(id);
+//	}
+//	
+//	private void changeCustomersPoints(ReservationDTO reservationDTO, Customer customer) {
+//		int currentPoints = customer.getPoints();
+//		int newPoints = currentPoints+reservationDTO.points;
+//		customer.setPoints(newPoints);
+//		
+//		int typePosition = customerTypes.indexOf(customer.getCustomerType());
+//		int typesSize = customerTypes.size();
+//		if(typesSize - typePosition == 1) {
+//			//onda je poslednji
+//		} else {
+//			//naredni elem
+//			while(true) {
+//				CustomerType newType = customerTypes.get(typePosition + 1);
+//				if(newPoints > newType.getPoints())
+//					customer.setCustomerType(newType);
+//				else {
+//					break;
+//				}
+//				typePosition++;
+//				if(typesSize - typePosition == 1)
+//					break;
+//			}
+//			
+//		}
+//	}
+//	
+//	public void reserve(ReservationDTO reservationDTO) {
+//		Customer customer = customers.get(reservationDTO.user);
+//		Ticket ticket = ticketDAO.addTicket(reservationDTO);
+//		
+//		customer.getTickets().add(ticket);
+//		
+//		manifestationDAO.reduceNumberOfSeats(reservationDTO.manifestation,reservationDTO.numberOfTickets);
+//		//prvo se skida broj karata pa se tek onda porucuje
+//		
+//		changeCustomersPoints(reservationDTO, customer);
+//		
+//		write();
+//	}
+//	
+	public String customerCSVRepresentation(Customer customer) {
 		StringBuilder customerString = new StringBuilder(); 
 		customerString.append(customer.getUsername() + ";");
 		if(customer.getTickets().size() == 0) {
 			customerString.append(" ;");
 		} else {
-			for(Ticket t : customer.getTickets()) {
-				customerString.append(t.getId() + ":");
+			for(String id : customer.getTickets()) {
+				customerString.append(id + ":");
 			}
 			customerString.append(";");
 		}
@@ -116,8 +110,8 @@ public class CustomerDAO {
 		customerString.append(customer.getPoints() + ";" + type);
         return customerString.toString();
 	}
-	
-	public void append(String line) {
+//	
+	public void appendToFile(String line) {
 		File file = new File(contextPath + "/repositories/customers.txt");
 
         PrintWriter pw = null;
@@ -136,15 +130,15 @@ public class CustomerDAO {
             }
         }
 	}
-	
-	private void write() {
+//	
+	private void writeToFile() {
         File file = new File(contextPath + "/repositories/customers.txt");
 
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
             for(Customer customer : customers.values()) {
-            	pw.println(getCustomerLine(customer));
+            	pw.println(customerCSVRepresentation(customer));
             }
             
         } catch (IOException e) {
@@ -158,7 +152,7 @@ public class CustomerDAO {
             }
         }
     }
-	
+//	
 	private void loadCustomerTypes() {
 		BufferedReader reader = null;
 		try {
@@ -192,7 +186,7 @@ public class CustomerDAO {
 			}
 		}
 	}
-	
+//	
 	private void loadCustomers() {
 		BufferedReader reader = null;
 		try {
@@ -206,15 +200,15 @@ public class CustomerDAO {
 					continue;
 				st = new StringTokenizer(line, ";");
 				while(st.hasMoreTokens()) {
-					ArrayList<Ticket> ticketsArray = new ArrayList<Ticket>();
+					ArrayList<String> ticketsArray = new ArrayList<String>();
 					String username = st.nextToken().trim();
 					String tickets = st.nextToken().trim();
 					if(!tickets.equals("")) {
 						StringTokenizer st2 = new StringTokenizer(tickets, ":");
 						while(st2.hasMoreTokens()) {
 							String ticketId = st2.nextToken().trim();
-							Ticket ticket = ticketDAO.getTicketById(ticketId);
-							ticketsArray.add(ticket);
+//							Ticket ticket = ticketDAO.getTicketById(ticketId);
+							ticketsArray.add(ticketId);
 						}
 					}
 					
@@ -238,14 +232,59 @@ public class CustomerDAO {
 		}
 		
 	}
-	public void updateCustomer(String oldUser, String newUser) {
-		Customer cust = customers.get(oldUser);
-		if(cust != null) {
-			customers.remove(oldUser);
-			cust.setUsername(newUser);
-			customers.put(newUser, cust);
-			write();
+//	public void updateCustomer(String oldUser, String newUser) {
+//		Customer cust = customers.get(oldUser);
+//		if(cust != null) {
+//			customers.remove(oldUser);
+//			cust.setUsername(newUser);
+//			customers.put(newUser, cust);
+//			write();
+//		}
+//		
+//	}
+
+	@Override
+	public Customer create(Customer customer) {
+		if(read(customer.getUsername()) != null) {
+            return null;
 		}
-		
+		customers.put(customer.getUsername(), customer);
+		appendToFile(customerCSVRepresentation(customer));
+		return customer;
+	}
+
+	@Override
+	public Customer read(String username) {
+		return customers.get(username);
+	}
+
+	@Override
+	public Customer update(Customer customer) {
+		customers.put(customer.getUsername(), customer);
+		writeToFile();
+		return customer;
+	}
+	
+	@Override
+	public Customer delete(String username) {
+//		Customer customer = customers.get(username);
+//		customer.setIsDeleted("1");
+//		writeToFile();
+//		return customer;
+		return null;
+	}
+
+	@Override
+	public List<Customer> getAll() {
+		return new ArrayList<Customer>(customers.values());
+	}
+	
+	@Override
+	public Customer retrieve(String username) {
+//		Customer customer = customers.get(username);
+//		customer.setIsDeleted("0");
+//		writeToFile();
+//		return customer;
+		return null;
 	}
 }

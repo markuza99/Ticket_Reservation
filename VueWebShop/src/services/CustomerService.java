@@ -1,31 +1,36 @@
 package services;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
-
 import beans.Customer;
-import dao.CustomerDAO;
-import dao.LocationDAO;
-import dao.ManifestationDAO;
-import dao.TicketDAO;
-import dto.ReservationDTO;
+import dao.interfaces.ICustomerDAO;
 
 
 public class CustomerService {
-	private CustomerDAO customerDAO;
+	private ICustomerDAO customerDAO;
 	
-	public CustomerService(CustomerDAO customerDAO) {
+	public CustomerService(ICustomerDAO customerDAO) {
 		this.customerDAO = customerDAO;
 	}
 	
 	//????
 	public Customer getCustomer(String username) {
-		return customerDAO.getCustomer(username);
+		return customerDAO.read(username);
 	}
 
 	
-	public void reserveTickets(ReservationDTO reservationDTO) {
-		customerDAO.reserve(reservationDTO);
-	}
+//	public void reserveTickets(ReservationDTO reservationDTO) {
+//		customerDAO.reserve(reservationDTO);
+		
+//		Customer customer = customerDAO.read(reservationDTO.user);
+//		Ticket ticket = ticketDAO.addTicket(reservationDTO);
+//		
+//		customer.getTickets().add(ticket);
+//		
+//		manifestationDAO.reduceNumberOfSeats(reservationDTO.manifestation,reservationDTO.numberOfTickets);
+//		//prvo se skida broj karata pa se tek onda porucuje
+//		
+//		changeCustomersPoints(reservationDTO, customer);
+//		
+//		write();
+		
+//	}
 }

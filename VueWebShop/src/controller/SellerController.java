@@ -29,22 +29,13 @@ public class SellerController {
 			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
 		}
 		if(ctx.getAttribute("ManifestationDAO") == null) {
-			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
 			System.out.println(contextPath);
-			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath, locationDAO));
+			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath));
 		}
 		if(ctx.getAttribute("SellerDAO") == null) {
-			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
+			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath));
 		}
 		sellerService = new SellerService((SellerDAO) ctx.getAttribute("SellerDAO"));
 	}
 	
-	@POST
-	@Path("/add-manifestation")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Manifestation addManifestation(@Context HttpServletRequest request, Manifestation manifestation) {
-		User user = (User) request.getSession().getAttribute("user");
-		return sellerService.addManifestation(user.getUsername(), manifestation);
-	}
 }

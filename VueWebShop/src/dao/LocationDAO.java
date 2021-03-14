@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import beans.Location;
-import beans.User;
+import dao.interfaces.ILocationDAO;
 
-public class LocationDAO {
+public class LocationDAO implements ILocationDAO {
 	private Map<String, Location> locations = new HashMap<>();
 	private String contextPath;
 
@@ -20,23 +20,46 @@ public class LocationDAO {
 		this.contextPath = contextPath;
 		loadLocations();
 	}
-	
-	public List<Location> getAllLocations() {
-		return new ArrayList<Location>(locations.values());
+
+	@Override
+	public Location create(Location entity) {
+		return null;
 	}
-	
-	public Location getLocationForManifestation(String id) {
+
+	@Override
+	public Location read(String id) {
 		return locations.get(id);
 	}
-	
-	public List<String> getLocationsId() {
-		List<String> locationsId = new ArrayList<>();
-		for(String key : locations.keySet()) {
-			locationsId.add(key);
-		}
-		return locationsId;
+
+	@Override
+	public Location update(Location entity) {
+		return null;
+	}
+
+	@Override
+	public Location delete(String id) {
+		return null;
+	}
+
+	@Override
+	public List<Location> getAll() {
+		return new ArrayList<Location>(locations.values());
+	}
+
+	@Override
+	public Location retrieve(String id) {
+		return null;
 	}
 	
+//	
+//	public List<String> getLocationsId() {
+//		List<String> locationsId = new ArrayList<>();
+//		for(String key : locations.keySet()) {
+//			locationsId.add(key);
+//		}
+//		return locationsId;
+//	}
+//	
 	private Location loadLocations() {
 		BufferedReader reader = null;
 		try {

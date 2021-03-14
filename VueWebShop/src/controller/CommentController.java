@@ -42,19 +42,16 @@ public class CommentController {
 			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
 		}
 		if(ctx.getAttribute("ManifestationDAO") == null) {
-			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
-			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath, locationDAO));
+			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath));
 		}
 		if(ctx.getAttribute("SellerDAO") == null) {
-			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath, manifestationDAO));
+			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath));
 		}
 		if(ctx.getAttribute("CommentDAO") == null) {
 			SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
 			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath, sellerDAO));
 		}
 		
-//		LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
 		TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
 		commentService = new CommentService(commentDAO, ticketDAO);
@@ -76,35 +73,35 @@ public class CommentController {
 		return commentService.postComment(u.getUsername(), comment);
 	}
 
-	@GET
-	@Path("/comment-params/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public ManifestationDTO getCommentParams(@Context HttpServletRequest request, @PathParam("id") String id) {
-		User user = (User) request.getSession().getAttribute("user");
-		return commentService.getCommentParams(user, id);
-	}
-	
-	@GET
-	@Path("/")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Comment> getAllComments(@Context HttpServletRequest request) {
-		User user = (User) request.getSession().getAttribute("user");
-		return commentService.getAllComments(user);
-	}
-
-	@PUT
-	@Path("/approve-comment")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public List<Comment> approveComment(@Context HttpServletRequest request, Comment comment) {
-		User user = (User) request.getSession().getAttribute("user");
-		return commentService.approveComment(user.getUsername(), comment);
-	}
-	
-	@PUT
-	@Path("/decline-comment")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public List<Comment> declineComment(@Context HttpServletRequest request, Comment comment) {
-		User user = (User) request.getSession().getAttribute("user");
-		return commentService.declineComment(user.getUsername(), comment);
-	}
+//	@GET
+//	@Path("/comment-params/{id}")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public ManifestationDTO getCommentParams(@Context HttpServletRequest request, @PathParam("id") String id) {
+//		User user = (User) request.getSession().getAttribute("user");
+//		return commentService.getCommentParams(user, id);
+//	}
+//	
+//	@GET
+//	@Path("/")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public List<Comment> getAllComments(@Context HttpServletRequest request) {
+//		User user = (User) request.getSession().getAttribute("user");
+//		return commentService.getAllComments(user);
+//	}
+//
+//	@PUT
+//	@Path("/approve-comment")
+//	@Consumes(MediaType.APPLICATION_JSON)
+//	public List<Comment> approveComment(@Context HttpServletRequest request, Comment comment) {
+//		User user = (User) request.getSession().getAttribute("user");
+//		return commentService.approveComment(user.getUsername(), comment);
+//	}
+//	
+//	@PUT
+//	@Path("/decline-comment")
+//	@Consumes(MediaType.APPLICATION_JSON)
+//	public List<Comment> declineComment(@Context HttpServletRequest request, Comment comment) {
+//		User user = (User) request.getSession().getAttribute("user");
+//		return commentService.declineComment(user.getUsername(), comment);
+//	}
 }
