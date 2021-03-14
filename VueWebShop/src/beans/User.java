@@ -93,7 +93,7 @@ public class User {
 		this.role = Role.valueOf(role);
 	}
 
-	public Boolean getIsDeleted() {
+	public boolean getIsDeleted() {
 		return isDeleted;
 	}
 

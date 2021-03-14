@@ -56,10 +56,6 @@ public class SellerDAO implements ISellerDAO {
 
 	@Override
 	public Seller delete(String id) {
-//		Seller seller = sellers.get(username);
-//		seller.setIsDeleted("1");
-//		writeToFile();
-//		return seller;
 		return null;
 	}
 
@@ -69,11 +65,7 @@ public class SellerDAO implements ISellerDAO {
 	}
 
 	@Override
-	public Seller retrieve(String id) {
-//		Seller seller = sellers.get(username);
-//		seller.setIsDeleted("0");
-//		writeToFile();
-//		return seller;
+	public Seller retrieve(String username) {
 		return null;
 	}
 	
@@ -189,7 +181,6 @@ public class SellerDAO implements ISellerDAO {
 	}
 
 	private String sellerCSVRepresentation(Seller seller) {
-		// TODO Auto-generated method stub
 		StringBuilder sellerString = new StringBuilder(); 
 		sellerString.append(seller.getUsername() + ";");
 		if(seller.getManifestations().size() == 0) {
@@ -202,6 +193,7 @@ public class SellerDAO implements ISellerDAO {
 		}
         return sellerString.toString();
 	}
+
 
 //	public Map<String, Seller> getSellers() {
 //		return sellers;

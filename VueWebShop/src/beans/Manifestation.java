@@ -14,9 +14,10 @@ public class Manifestation implements Comparable<Manifestation>{
 	private Status status;
 	private String location;
 	private String image;
+	private boolean isDeleted;
 	
 	public Manifestation(String id, String name, ManifestationType type, int numberOfSeats, int remainingNumberOfSeats, LocalDateTime date, int ticketPrice,
-			Status status, String location, String image) {
+			Status status, String location, String image, boolean isDeleted) {
 		this.id = id;
 		this.name = name;
 		this.type = type;
@@ -27,6 +28,7 @@ public class Manifestation implements Comparable<Manifestation>{
 		this.status = status;
 		this.location = location;
 		this.image = image;
+		this.isDeleted = isDeleted;
 	}
 	
 	public Manifestation() {}
@@ -105,12 +107,14 @@ public class Manifestation implements Comparable<Manifestation>{
 		this.image = image;
 	}
 
-	@Override
-	public String toString() {
-		return "Manifestation [id=" + id + ", name=" + name + ", type=" + type + ", numberOfSeats=" + numberOfSeats
-				+ ", date=" + date + ", ticketPrice=" + ticketPrice + ", status=" + status + ", location=" + location
-				+ ", image=" + image + "]";
+	public boolean getIsDeleted() {
+		return isDeleted;
 	}
+
+	public void setIsDeleted(String isDeleted) {
+		this.isDeleted = isDeleted.equals("1") ? true : false;
+	}
+	
 
 	@Override
 	public int compareTo(Manifestation o) {

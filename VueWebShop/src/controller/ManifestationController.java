@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -42,7 +43,6 @@ public class ManifestationController {
 			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
 		}
 		if(ctx.getAttribute("ManifestationDAO") == null) {
-			LocationDAO locationDAO = (LocationDAO) ctx.getAttribute("LocationDAO");
 			System.out.println(contextPath);
 			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath));
 		}
@@ -93,6 +93,11 @@ public class ManifestationController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Manifestation addManifestation(@Context HttpServletRequest request, Manifestation manifestation) {
 		User user = (User) request.getSession().getAttribute("user");
-		return manifestationService.addManifestation( manifestation, user.getUsername());
+		try {
+			return manifestationService.addManifestation( manifestation, user.getUsername());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

@@ -1,11 +1,15 @@
 package dao;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,11 +54,10 @@ public class ManifestationDAO implements IManifestationDAO {
 
 	@Override
 	public Manifestation delete(String id) {
-//		Manifestation manifestation = manifestations.get(id);
-//		manifestation.setIsDeleted("1");
-//		writeToFile();
-//		return manifestation;
-		return null;
+		Manifestation manifestation = manifestations.get(id);
+		manifestation.setIsDeleted("1");
+		writeToFile();
+		return manifestation;
 	}
 
 	@Override
@@ -64,11 +67,10 @@ public class ManifestationDAO implements IManifestationDAO {
 
 	@Override
 	public Manifestation retrieve(String id) {
-//		Manifestation manifestation = manifestations.get(id);
-//		manifestation.setIsDeleted("0");
-//		writeToFile();
-//		return manifestation;
-		return null;
+		Manifestation manifestation = manifestations.get(id);
+		manifestation.setIsDeleted("0");
+		writeToFile();
+		return manifestation;
 	}
 
 
@@ -85,7 +87,7 @@ public class ManifestationDAO implements IManifestationDAO {
 			manifestationString.append("0;");
 		}
 		manifestationString.append(manifestation.getLocation() + ";"
-				+ manifestation.getImage());
+				+ manifestation.getImage() + ";" + manifestation.getIsDeleted());
         return manifestationString.toString();
 	}
 	
@@ -136,10 +138,15 @@ public class ManifestationDAO implements IManifestationDAO {
 							Status.ACTIVE : Status.NONACTIVE;
 					String location = st.nextToken().trim();
 					String imagePath = st.nextToken().trim();
+					String deleted = st.nextToken().trim();
+					Boolean isDeleted = false;
+					if(deleted.equals("1")) {
+						isDeleted = true;
+					}
 					manifestations.put(id, new Manifestation(
 							id, name, type, numberOfSeats,
 							remainingNumberOfSeats, maintenance, ticketPrice,
-							status, location, imagePath));
+							status, location, imagePath, isDeleted));
 				}
 			}
 		} catch(Exception ex) {
@@ -172,6 +179,16 @@ public class ManifestationDAO implements IManifestationDAO {
                 }
                 catch (Exception e) {}
             }
+        }
+	}
+
+	@Override
+	public void saveImage(byte[] imageBytes, String imageName) {
+		 File file = new File(contextPath + "/images/" + imageName);
+        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))) {
+            outputStream.write(imageBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 	}
 

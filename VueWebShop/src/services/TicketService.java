@@ -1,6 +1,7 @@
 package services;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,42 +38,63 @@ public class TicketService {
 		return false;
 	}
 	
-	private String generateRandomId() {
-    
-	    String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	            + "0123456789"
-	            + "abcdefghijklmnopqrstuvxyz"; 
-	    StringBuilder sb = new StringBuilder(10);
-	    for (int i = 0; i < 10; i++) {  
-	        int index = (int)(AlphaNumericString.length() * Math.random()); 
-	        sb.append(AlphaNumericString.charAt(index)); 
-	    } 
-	
-	    return sb.toString(); 
-	}
-	
 	public Ticket reserveTickets(ReservationDTO reservationDTO, String username) {
-		Manifestation manifestation = manifestationDAO.read(reservationDTO.manifestationId);
-		if(manifestation.getRemainingNumberOfSeats() < reservationDTO.numberOfTickets) {
+		
+		if(!updateManifestationNumberOfSeats(reservationDTO.manifestationId, reservationDTO.numberOfTickets)) {
 			return null;
 		}
-		manifestation.setRemainingNumberOfSeats(manifestation.getRemainingNumberOfSeats() - reservationDTO.numberOfTickets);
-		manifestationDAO.update(manifestation);
 		
+		Ticket ticket = createTicket(reservationDTO, username);
+		
+		//dodati number of tickets
+		//promeniti
+		addTicketToCustomer(username, ticket.getId(), reservationDTO.points);
+		
+		return ticket;
+	}
+	
+	
+	private boolean updateManifestationNumberOfSeats(String manifestationId, int numberOfTickets) {
+		Manifestation manifestation = manifestationDAO.read(manifestationId);
+		
+		if(manifestation == null || manifestation.getRemainingNumberOfSeats() < numberOfTickets) {
+			return false;
+		}
+		
+		manifestation.setRemainingNumberOfSeats(manifestation.getRemainingNumberOfSeats() - numberOfTickets);
+		manifestationDAO.update(manifestation);
+		return true;
+	}
+	
+	private Ticket createTicket(ReservationDTO reservationDTO, String username) {
 		String ticketId = generateRandomId();
 		while(ticketDAO.read(ticketId) != null) {
 			ticketId = generateRandomId();
 		}
-		Ticket ticket = ticketDAO.create(new Ticket(ticketId,reservationDTO.manifestationId,LocalDateTime.now(),reservationDTO.ticketPrice,
+		return ticketDAO.create(new Ticket(ticketId,reservationDTO.manifestationId,LocalDateTime.now(),reservationDTO.ticketPrice,
 				username,TicketStatus.RESERVED,TicketType.valueOf(reservationDTO.ticketType), false));
-		
-		Customer customer = customerDAO.read(username);
-		customer.getTickets().add(ticketId);
-		changeCustomersPoints(reservationDTO.points, customer);
-		customerDAO.update(customer);
-		
-		return ticket;
 	}
+	
+	private CustomerType getInitialCustomerType() {
+		List<CustomerType> customerTypes = customerDAO.getCustomerTypes();
+		Collections.sort(customerTypes);
+		return customerTypes.get(0);
+	}
+	
+	private void addTicketToCustomer(String username, String ticketId, int points) {
+		Customer customer = customerDAO.read(username);
+		
+		if(customer == null) {
+			ArrayList<String> tickets = new ArrayList<String>();
+			customer = new Customer(username, tickets, 0, getInitialCustomerType());
+		}
+		
+		customer.getTickets().add(ticketId);
+		changeCustomersPoints(points, customer);
+		customerDAO.update(customer);
+	}
+	
+	
 	
 	private void changeCustomersPoints(int points, Customer customer) {
 		List<CustomerType> customerTypes = customerDAO.getCustomerTypes();
@@ -101,4 +123,19 @@ public class TicketService {
 			
 		}
 	}
+	
+	private String generateRandomId() {
+	    
+	    String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	            + "0123456789"
+	            + "abcdefghijklmnopqrstuvxyz"; 
+	    StringBuilder sb = new StringBuilder(10);
+	    for (int i = 0; i < 10; i++) {  
+	        int index = (int)(AlphaNumericString.length() * Math.random()); 
+	        sb.append(AlphaNumericString.charAt(index)); 
+	    } 
+	
+	    return sb.toString(); 
+	}
+	
 }

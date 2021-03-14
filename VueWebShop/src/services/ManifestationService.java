@@ -1,10 +1,19 @@
 package services;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import beans.Location;
 import beans.Manifestation;
@@ -161,14 +170,36 @@ public class ManifestationService {
 		return btip && bnotrasp;
 	}
 	
-	public Manifestation addManifestation(Manifestation manifestation, String username) {
-		if(manifestationDAO.read(manifestation.getId()) == null) {
+	public Manifestation addManifestation(Manifestation manifestation, String username) throws IOException {
+		String base64Image = manifestation.getImage().split(",")[1];
+		byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
+//		BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageBytes));
+
+		String imageName = "robotic.jpg";
+		manifestationDAO.saveImage(imageBytes, imageName);
+		//promeniti transport
+		manifestation.setImage(imageName);
+	        
+		if(manifestationDAO.read(manifestation.getId()) != null) {
 			return null;
 		}
 		if(!checkManifestationMaintainance(manifestation.getDate(), manifestation.getLocation(), manifestation.getId())) {
 			return null;
 		}
 		manifestationDAO.create(manifestation);
+		
+		Seller seller = sellerDAO.read(username);
+		if(seller != null) {
+			seller.getManifestations().add(manifestation.getId());
+			sellerDAO.update(seller);
+		} else {
+			ArrayList<String> sellersManifestations = new ArrayList<String>();
+			sellersManifestations.add(manifestation.getId());
+			seller = new Seller(username, sellersManifestations);
+			sellerDAO.create(seller);
+		}
+		
+		
 //		System.out.println(manifestation.getImage());
 //		writeImg(manifestation.getImage());
 //		manifestation.setImage("img1.jpg");

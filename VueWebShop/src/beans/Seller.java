@@ -11,6 +11,8 @@ public class Seller {
 		this.manifestations = manifestations;
 	}
 
+	public Seller() {}
+
 	public String getUsername() {
 		return username;
 	}
@@ -18,9 +20,7 @@ public class Seller {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
-	public Seller() {}
-
+	
 	public ArrayList<String> getManifestations() {
 		return manifestations;
 	}
