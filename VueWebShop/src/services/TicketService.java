@@ -46,8 +46,6 @@ public class TicketService {
 		
 		Ticket ticket = createTicket(reservationDTO, username);
 		
-		//dodati number of tickets
-		//promeniti
 		addTicketToCustomer(username, ticket.getId(), reservationDTO.points);
 		
 		return ticket;
@@ -71,14 +69,9 @@ public class TicketService {
 		while(ticketDAO.read(ticketId) != null) {
 			ticketId = generateRandomId();
 		}
-		return ticketDAO.create(new Ticket(ticketId,reservationDTO.manifestationId,LocalDateTime.now(),reservationDTO.ticketPrice,
-				username,TicketStatus.RESERVED,TicketType.valueOf(reservationDTO.ticketType), false));
-	}
-	
-	private CustomerType getInitialCustomerType() {
-		List<CustomerType> customerTypes = customerDAO.getCustomerTypes();
-		Collections.sort(customerTypes);
-		return customerTypes.get(0);
+		return ticketDAO.create(
+				new Ticket(ticketId,reservationDTO.manifestationId,LocalDateTime.now(),reservationDTO.ticketPrice,
+				username,TicketStatus.RESERVED,TicketType.valueOf(reservationDTO.ticketType), reservationDTO.numberOfTickets, false));
 	}
 	
 	private void addTicketToCustomer(String username, String ticketId, int points) {
@@ -90,25 +83,25 @@ public class TicketService {
 		}
 		
 		customer.getTickets().add(ticketId);
-		changeCustomersPoints(points, customer);
+		changeCustomersPoints(points, customer, customerDAO.getCustomerTypes());
 		customerDAO.update(customer);
 	}
 	
-	
-	
-	private void changeCustomersPoints(int points, Customer customer) {
+	private CustomerType getInitialCustomerType() {
 		List<CustomerType> customerTypes = customerDAO.getCustomerTypes();
+		Collections.sort(customerTypes);
+		return customerTypes.get(0);
+	}
+	
+	private void changeCustomersPoints(int points, Customer customer, List<CustomerType> customerTypes) {
+		Collections.sort(customerTypes);
 		int currentPoints = customer.getPoints();
 		int newPoints = currentPoints + points;
 		customer.setPoints(newPoints);
 		
-		Collections.sort(customerTypes);
 		int typePosition = customerTypes.indexOf(customer.getCustomerType());
 		int typesSize = customerTypes.size();
-		if(typesSize - typePosition == 1) {
-			//onda je poslednji
-		} else {
-			//naredni elem
+		if(typesSize - typePosition != 1) {
 			while(true) {
 				CustomerType newType = customerTypes.get(typePosition + 1);
 				if(newPoints > newType.getPoints())
@@ -119,7 +112,7 @@ public class TicketService {
 				typePosition++;
 				if(typesSize - typePosition == 1)
 					break;
-			}
+			} 
 			
 		}
 	}

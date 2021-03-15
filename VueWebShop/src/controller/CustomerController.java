@@ -44,13 +44,13 @@ public class CustomerController {
 		customerService = new CustomerService((CustomerDAO) ctx.getAttribute("CustomerDAO"));
 	}
 	//????
-	@GET
-	@Path("/get-customer")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Customer getCustomer(@Context HttpServletRequest request) {
-		User user = (User) request.getSession().getAttribute("user");
-		return customerService.getCustomer(user.getUsername());
-	}
+//	@GET
+//	@Path("/get-customer")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public Customer getCustomer(@Context HttpServletRequest request) {
+//		User user = (User) request.getSession().getAttribute("user");
+//		return customerService.getCustomer(user.getUsername());
+//	}
 
 	
 //	@POST

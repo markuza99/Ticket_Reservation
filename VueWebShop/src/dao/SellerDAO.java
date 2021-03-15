@@ -12,15 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Scanner;
 
-import beans.Customer;
-import beans.Manifestation;
 import beans.Seller;
-import beans.Ticket;
 import dao.interfaces.ISellerDAO;
 
 public class SellerDAO implements ISellerDAO {
@@ -68,35 +61,6 @@ public class SellerDAO implements ISellerDAO {
 	public Seller retrieve(String username) {
 		return null;
 	}
-	
-//	private static String base64UrlEncode(String value) {
-//	    try {
-//	        return Base64.getUrlEncoder()
-//	                    .encodeToString(value.getBytes(StandardCharsets.UTF_8.toString()));
-//	    } catch(UnsupportedEncodingException ex) {
-//	        throw new RuntimeException(ex);
-//	    }
-//	}
-	
-//	public void writeImg(String img) {
-//		File file = new File(contextPath + "/images/img1.jpg");
-//
-//        PrintWriter pw = null;
-//        try {
-//            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
-//            	pw.println(img);
-//            
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            if(pw != null) {
-//                try {
-//                    pw.close();
-//                }
-//                catch (Exception e) {}
-//            }
-//        }
-//	}
 	
 	private void loadSellers() {
 		BufferedReader reader = null;
@@ -193,14 +157,4 @@ public class SellerDAO implements ISellerDAO {
 		}
         return sellerString.toString();
 	}
-
-
-//	public Map<String, Seller> getSellers() {
-//		return sellers;
-//	}
-//
-//	public void setSellers(Map<String, Seller> sellers) {
-//		this.sellers = sellers;
-//	}
-
 }

@@ -1,19 +1,11 @@
 package services;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import beans.Location;
 import beans.Manifestation;
@@ -24,6 +16,7 @@ import beans.value_objects.SortManifestations;
 import dao.interfaces.ILocationDAO;
 import dao.interfaces.IManifestationDAO;
 import dao.interfaces.ISellerDAO;
+import dto.ManifestationDTO;
 
 
 public class ManifestationService {
@@ -148,7 +141,7 @@ public class ManifestationService {
 	}
 	
 	private boolean correspondsSearch(Manifestation m,String name,  LocalDateTime dateFrom, LocalDateTime dateTo, String place, int priceFrom, int priceTo) {
-	boolean bname = m.getName().toLowerCase().contains(name);
+		boolean bname = m.getName().toLowerCase().contains(name);
 		String locationId = m.getLocation();
 		Location location = locationDAO.read(locationId);
 		boolean bplace = location.getCity().toLowerCase().contains(place);
@@ -170,44 +163,36 @@ public class ManifestationService {
 		return btip && bnotrasp;
 	}
 	
-	public Manifestation addManifestation(Manifestation manifestation, String username) throws IOException {
-		String base64Image = manifestation.getImage().split(",")[1];
+	public Manifestation addManifestation(ManifestationDTO manifestationDTO, String username) throws IOException {
+		String base64Image = manifestationDTO.getImage64base().split(",")[1];
 		byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
-//		BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageBytes));
 
-		String imageName = "robotic.jpg";
-		manifestationDAO.saveImage(imageBytes, imageName);
-		//promeniti transport
-		manifestation.setImage(imageName);
+		manifestationDAO.saveImage(imageBytes, manifestationDTO.getImageName());
 	        
-		if(manifestationDAO.read(manifestation.getId()) != null) {
+		if(manifestationDAO.read(manifestationDTO.getId()) != null) {
 			return null;
 		}
-		if(!checkManifestationMaintainance(manifestation.getDate(), manifestation.getLocation(), manifestation.getId())) {
+		
+		if(!checkManifestationMaintainance(manifestationDTO.getDate(), manifestationDTO.getLocation(), manifestationDTO.getId())) {
 			return null;
 		}
+		
+		int numberOfSeats = manifestationDTO.getNumberOfSeats();
+		Manifestation manifestation = new Manifestation(manifestationDTO.getId(), manifestationDTO.getName(), manifestationDTO.getType(),
+				numberOfSeats,numberOfSeats,manifestationDTO.getDate(), manifestationDTO.getTicketPrice(), Status.ACTIVE,
+				manifestationDTO.getLocation(), manifestationDTO.getImageName(), false);
 		manifestationDAO.create(manifestation);
 		
 		Seller seller = sellerDAO.read(username);
 		if(seller != null) {
-			seller.getManifestations().add(manifestation.getId());
+			seller.getManifestations().add(manifestationDTO.getId());
 			sellerDAO.update(seller);
 		} else {
 			ArrayList<String> sellersManifestations = new ArrayList<String>();
-			sellersManifestations.add(manifestation.getId());
+			sellersManifestations.add(manifestationDTO.getId());
 			seller = new Seller(username, sellersManifestations);
 			sellerDAO.create(seller);
 		}
-		
-		
-//		System.out.println(manifestation.getImage());
-//		writeImg(manifestation.getImage());
-//		manifestation.setImage("img1.jpg");
-//		System.out.println(base64UrlEncode(img));
-//		manifestationDAO.getManifestations().put(manifestation.getId(), manifestation);
-//		Seller seller = sellerDAO.read(username);
-//		seller.getManifestations().add(manifestation);
-//		sellerDAO.writeToFile();
 
 		return manifestation;
 	}

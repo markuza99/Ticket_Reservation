@@ -15,37 +15,63 @@ import java.util.StringTokenizer;
 
 import beans.Comment;
 import beans.CommentApproval;
-import beans.Manifestation;
-import beans.Seller;
 import beans.Status;
+import beans.User;
+import dao.interfaces.ICommentDAO;
 
 
-public class CommentDAO {
+public class CommentDAO implements ICommentDAO {
 	private Map<String, Comment> comments = new HashMap<>();
 	private String contextPath;
-	private SellerDAO sellerDAO;
 	
-	public CommentDAO(String contextPath, SellerDAO sellerDAO) {
+	public CommentDAO(String contextPath) {
 		this.contextPath = contextPath;
-		this.sellerDAO = sellerDAO;
 		loadComments();
 	}
-	
-	public List<Comment> getAllComments() {
+
+	@Override
+	public Comment create(Comment comment) {
+		if(read(comment.getUser() + comment.getManifestation()) != null) {
+            return null;
+		}
+		comments.put(comment.getUser() + comment.getManifestation(), comment);
+		appendToFile(commentCSVRepresentation(comment));
+		return comment;
+	}
+
+	@Override
+	public Comment read(String id) {
+		return comments.get(id);
+	}
+
+	@Override
+	public Comment update(Comment comment) {
+		comments.put(comment.getUser() + comment.getManifestation(), comment);
+		writeToFile();
+		return comment;
+	}
+
+	@Override
+	public Comment delete(String id) {
+		Comment comment = comments.get(id);
+		comment.setIsDeleted("1");
+		writeToFile();
+		return comment;
+	}
+
+	@Override
+	public List<Comment> getAll() {
 		return new ArrayList<Comment>(comments.values());
 	}
-	 
-	public List<Comment> getCommentsForManifestation(String id, Status status) {
-		List<Comment> manifestationComments = new ArrayList<Comment>();
-		
-		for(Comment c : comments.values()) {
-			if(c.getManifestation().equals(id) && c.getCommentStatus() == status && c.getApproval() == CommentApproval.ACCEPTED) {
-				manifestationComments.add(c);
-			}
-		}
-		return manifestationComments;
+
+	@Override
+	public Comment retrieve(String id) {
+		Comment comment = comments.get(id);
+		comment.setIsDeleted("0");
+		writeToFile();
+		return comment;
 	}
-	
+
 	private void loadComments() {
 		BufferedReader reader = null;
 		try {
@@ -63,10 +89,14 @@ public class CommentDAO {
 					String manifestation = st.nextToken().trim();
 					String description = st.nextToken().trim();
 					int review = Integer.parseInt(st.nextToken().trim());
-					Status status = Status.valueOf(st.nextToken().trim());
 					String id = user + manifestation;
 					CommentApproval approval = CommentApproval.valueOf(st.nextToken().trim());
-					comments.put(id, new Comment(user, manifestation, description, review, status, approval));
+					String deleted = st.nextToken().trim();
+					Boolean isDeleted = false;
+					if(deleted.equals("1")) {
+						isDeleted = true;
+					}
+					comments.put(id, new Comment(user, manifestation, description, review, approval, isDeleted));
 				}
 			}
 		} catch(Exception ex) {
@@ -81,30 +111,19 @@ public class CommentDAO {
 		}
 	}
 
-	public List<Comment> postComment(Comment comment) {
-		String id = comment.getUser() + comment.getManifestation();
-		comments.put(id, comment);
-//		String commentLine = comment.getUser() + ";"
-//				+ comment.getManifestation() + ";"
-//				+ comment.getDescription() + ";" + comment.getRating()
-//				+ ";" + Status.NONACTIVE;
-		append(getCommentLine(comment));
-		return new ArrayList<Comment> (comments.values());
-	}
-	
-	public String getCommentLine(Comment comment) {
+	public String commentCSVRepresentation(Comment comment) {
 		StringBuilder commentString = new StringBuilder(); 
+		String deleted = comment.getIsDeleted() ? "1" : "0";
 		commentString.append(comment.getUser() + ";"
 				+ comment.getManifestation() + ";"
 				+ comment.getDescription() + ";"
 				+ comment.getRating() + ";"
-				+ comment.getCommentStatus() + ";"
-				+ comment.getApproval());
-
+				+ comment.getApproval() + ";"
+				+ deleted);
         return commentString.toString();
 	}
 	
-	public void append(String line) {
+	public void appendToFile(String line) {
 		File file = new File(contextPath + "/repositories/comments.txt");
 
         PrintWriter pw = null;
@@ -124,14 +143,14 @@ public class CommentDAO {
         }
 	}
 	
-	private void write() {
+	private void writeToFile() {
 		File file = new File(contextPath + "/repositories/comments.txt");
 
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
             for(Comment comment : comments.values()) {
-            	pw.println(getCommentLine(comment));
+            	pw.println(commentCSVRepresentation(comment));
             }
             
         } catch (IOException e) {
@@ -146,36 +165,36 @@ public class CommentDAO {
         }
     }
 
-	public Boolean userCommentedManifestation(String manifestationId, String username) {
-		for(Comment c : comments.values()) {
-			if(c.getManifestation().equals(manifestationId)
-					&& c.getUser().equals(username)
-					&& c.getCommentStatus() == Status.NONACTIVE) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-
-
-	public int getManifestationRating(String manifestationId) {
-		// TODO Auto-generated method stub
-		int sumOfRatings = 0;
-		int n = 0;
-		for(Comment comment : comments.values()) {
-			if(comment.getManifestation().equals(manifestationId)
-					&& comment.getCommentStatus() == Status.ACTIVE) {
-				sumOfRatings += comment.getRating();
-				n++;
-			}
-		}
-		if(n == 0) {
-			return 0;
-		}
-		// TO DO -- srediti average rating
-		return sumOfRatings / n;
-	}
+//	public Boolean userCommentedManifestation(String manifestationId, String username) {
+//		for(Comment c : comments.values()) {
+//			if(c.getManifestation().equals(manifestationId)
+//					&& c.getUser().equals(username)
+//					&& c.getCommentStatus() == Status.NONACTIVE) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
+//
+//
+//
+//	public int getManifestationRating(String manifestationId) {
+//		// TODO Auto-generated method stub
+//		int sumOfRatings = 0;
+//		int n = 0;
+//		for(Comment comment : comments.values()) {
+//			if(comment.getManifestation().equals(manifestationId)
+//					&& comment.getCommentStatus() == Status.ACTIVE) {
+//				sumOfRatings += comment.getRating();
+//				n++;
+//			}
+//		}
+//		if(n == 0) {
+//			return 0;
+//		}
+//		// TO DO -- srediti average rating
+//		return sumOfRatings / n;
+//	}
 
 //	public List<Comment> getCommentsForSeller(String username) {
 //		// TODO Auto-generated method stub

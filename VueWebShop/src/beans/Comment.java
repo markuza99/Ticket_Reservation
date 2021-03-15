@@ -5,19 +5,27 @@ public class Comment {
 	private String manifestation;
 	private String description;
 	private int rating;
-	private Status commentStatus;
 	private CommentApproval approval; //accepted, denied, notChecked
+	private boolean isDeleted;
 	
-	public Comment(String user, String manifestation, String description, int rating, Status commentStatus, CommentApproval approval) {
+	public Comment(String user, String manifestation, String description, int rating, CommentApproval approval, boolean isDeleted) {
 		this.user = user;
 		this.manifestation = manifestation;
 		this.description = description;
 		this.rating = rating;
-		this.commentStatus = commentStatus;
 		this.approval = approval;
+		this.isDeleted = isDeleted;
 	}
 	
 	public Comment() {}
+
+	public boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(String isDeleted) {
+		this.isDeleted = isDeleted.equals("1") ? true : false;
+	}
 
 	public String getUser() {
 		return user;
@@ -58,14 +66,5 @@ public class Comment {
 	public void setRating(int rating) {
 		this.rating = rating;
 	}
-
-	public Status getCommentStatus() {
-		return commentStatus;
-	}
-
-	public void setCommentStatus(String commentStatus) {
-		this.commentStatus = Status.valueOf(commentStatus);
-	}
-
 	
 }

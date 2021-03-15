@@ -12,9 +12,9 @@ public class CustomerService {
 	}
 	
 	//????
-	public Customer getCustomer(String username) {
-		return customerDAO.read(username);
-	}
+//	public Customer getCustomer(String username) {
+//		return customerDAO.read(username);
+//	}
 
 	
 //	public void reserveTickets(ReservationDTO reservationDTO) {

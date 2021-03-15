@@ -76,7 +76,7 @@ public class TicketDAO implements ITicketDAO {
 		ticketString.append(ticket.getId() + ";" + ticket.getManifestationId() + ";"
 				+ ticket.getDateTime().format(formatter) + ";" + ticket.getPrice() + ";"
 				+ ticket.getUser() + ";" + ticket.getTicketStatus() + ";"
-				+ ticket.getTicketType() + ";" + deleted);
+				+ ticket.getTicketType() + ";" + ticket.getNumberOfTickets() + ";" + deleted);
         return ticketString.toString();
 	}
 	
@@ -144,12 +144,13 @@ public class TicketDAO implements ITicketDAO {
 					String user = st.nextToken().trim();
 					TicketStatus status = TicketStatus.valueOf(st.nextToken().trim());
 					TicketType type = TicketType.valueOf(st.nextToken().trim());
+					int numberOfTickets = Integer.parseInt(st.nextToken().trim());
 					String deleted = st.nextToken().trim();
 					Boolean isDeleted = false;
 					if(deleted.equals("1")) {
 						isDeleted = true;
 					}
-					tickets.put(id, new Ticket(id, manifestation, maintenance, price, user, status, type, isDeleted));
+					tickets.put(id, new Ticket(id, manifestation, maintenance, price, user, status, type, numberOfTickets, isDeleted));
 					
 				}
 			}

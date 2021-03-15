@@ -1,21 +1,14 @@
 package services;
 
-import java.util.List; 
-
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Context;
+import java.util.ArrayList;
+import java.util.List;
 
 import beans.Comment;
-import beans.Role;
+import beans.CommentApproval;
 import beans.Status;
-import beans.User;
 import dao.CommentDAO;
-import dao.LocationDAO;
-import dao.ManifestationDAO;
-import dao.SellerDAO;
 import dao.TicketDAO;
-import dto.ManifestationDTO;
+import dto.CommentDTO;
 
 public class CommentService {
 	private CommentDAO commentDAO;
@@ -26,15 +19,47 @@ public class CommentService {
 		this.ticketDAO = ticketDAO;
 	}
 	
-	public List<Comment> getCommentsForManifestation(String id) {
-		return commentDAO.getCommentsForManifestation(id, Status.ACTIVE);
+	public List<Comment> getActiveAcceptedCommentsForManifestation(String id) {
+		return getCommentsForManifestation(id, false, CommentApproval.ACCEPTED);
 	}
 	
-	public List<Comment> postComment(String username, Comment comment) {
-		comment.setUser(username);
-		return commentDAO.postComment(comment);
+	public List<Comment> getCommentsForManifestation(String id, boolean isDeleted, CommentApproval commentApproval) {
+		List<Comment> manifestationComments = new ArrayList<Comment>();
+
+		for(Comment c : commentDAO.getAll()) {
+			if(c.getManifestation().equals(id) && c.getIsDeleted() == isDeleted && c.getApproval() == commentApproval) {
+				manifestationComments.add(c);
+			}
+		}
+		return manifestationComments;
+	}
+	
+	public Comment postComment(String username, CommentDTO commentDTO) {
+		return commentDAO.create(new Comment(commentDTO.getUser(), commentDTO.getManifestation(), commentDTO.getDescription(),
+				commentDTO.getRating(), CommentApproval.NOT_CHECKED, false));
 	}
 
+	public Comment approveComment(String username, CommentDTO commentDTO) {
+		for(Comment c : commentDAO.getAll()) {
+			if(c.getUser().equals(commentDTO.getUser()) && c.getManifestation().equals(commentDTO.getManifestation())) {
+//				c.setCommentStatus("ACTIVE");
+				c.setApproval("ACCEPTED");
+				return commentDAO.update(c);
+			}
+		}
+		return null;
+	}
+	
+	public Comment declineComment(String username, CommentDTO commentDTO) {
+		for(Comment c : commentDAO.getAll()) {
+			if(c.getUser().equals(commentDTO.getUser()) && c.getManifestation().equals(commentDTO.getManifestation())) {
+//				c.setCommentStatus("ACTIVE");
+				c.setApproval("DENIED");
+				return commentDAO.update(c);
+			}
+		}
+		return null;
+	}
 //	public ManifestationDTO getCommentParams(User user,String id) {
 //		ManifestationDTO manifestationDTO = new ManifestationDTO();
 //		manifestationDTO.manifestationRating = commentDAO.getManifestationRating(id);

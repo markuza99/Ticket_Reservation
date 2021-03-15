@@ -20,14 +20,10 @@ import javax.ws.rs.core.MediaType;
 
 import beans.Manifestation;
 import beans.User;
-import dao.CommentDAO;
-import dao.CustomerDAO;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
-import dao.SellerDAO;
-import dao.TicketDAO;
-import dao.UserDAO;
 import dao.interfaces.ISellerDAO;
+import dto.ManifestationDTO;
 import services.ManifestationService;
 
 @Path("/manifestations")
@@ -91,10 +87,10 @@ public class ManifestationController {
 	@POST
 	@Path("/add")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Manifestation addManifestation(@Context HttpServletRequest request, Manifestation manifestation) {
+	public Manifestation addManifestation(@Context HttpServletRequest request, ManifestationDTO manifestationDTO) {
 		User user = (User) request.getSession().getAttribute("user");
 		try {
-			return manifestationService.addManifestation( manifestation, user.getUsername());
+			return manifestationService.addManifestation(manifestationDTO, user.getUsername());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

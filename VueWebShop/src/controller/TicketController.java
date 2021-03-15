@@ -60,7 +60,7 @@ public class TicketController {
 		User user = (User) request.getSession().getAttribute("user");
 		if(user == null) return false;
 		return ticketService.userAttended(user.getUsername(), manifestationId);
-	}
+	} 
 	
 	@POST
 	@Path("/reserve-ticket")

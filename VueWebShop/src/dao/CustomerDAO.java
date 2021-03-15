@@ -28,6 +28,43 @@ public class CustomerDAO implements ICustomerDAO {
 		loadCustomers();
 	}
 	
+	@Override
+	public Customer create(Customer customer) {
+		if(read(customer.getUsername()) != null) {
+            return null;
+		}
+		customers.put(customer.getUsername(), customer);
+		appendToFile(customerCSVRepresentation(customer));
+		return customer;
+	}
+
+	@Override
+	public Customer read(String username) {
+		return customers.get(username);
+	}
+
+	@Override
+	public Customer update(Customer customer) {
+		customers.put(customer.getUsername(), customer);
+		writeToFile();
+		return customer;
+	}
+	
+	@Override
+	public Customer delete(String username) {
+		return null;
+	}
+
+	@Override
+	public List<Customer> getAll() {
+		return new ArrayList<Customer>(customers.values());
+	}
+	
+	@Override
+	public Customer retrieve(String username) {
+		return null;
+	}
+	
 	public CustomerType getCustomerType(String id) {
 		for(CustomerType ct : customerTypes) {
 			if(ct.getTypeName().equals(id)) {
@@ -81,7 +118,7 @@ public class CustomerDAO implements ICustomerDAO {
             }
         }
 	}
-//	
+	
 	private void writeToFile() {
         File file = new File(contextPath + "/repositories/customers.txt");
 
@@ -103,7 +140,7 @@ public class CustomerDAO implements ICustomerDAO {
             }
         }
     }
-//	
+	
 	private void loadCustomerTypes() {
 		BufferedReader reader = null;
 		try {
@@ -158,7 +195,6 @@ public class CustomerDAO implements ICustomerDAO {
 						StringTokenizer st2 = new StringTokenizer(tickets, ":");
 						while(st2.hasMoreTokens()) {
 							String ticketId = st2.nextToken().trim();
-//							Ticket ticket = ticketDAO.getTicketById(ticketId);
 							ticketsArray.add(ticketId);
 						}
 					}
@@ -182,61 +218,6 @@ public class CustomerDAO implements ICustomerDAO {
 			}
 		}
 		
-	}
-//	public void updateCustomer(String oldUser, String newUser) {
-//		Customer cust = customers.get(oldUser);
-//		if(cust != null) {
-//			customers.remove(oldUser);
-//			cust.setUsername(newUser);
-//			customers.put(newUser, cust);
-//			write();
-//		}
-//		
-//	}
-
-	@Override
-	public Customer create(Customer customer) {
-		if(read(customer.getUsername()) != null) {
-            return null;
-		}
-		customers.put(customer.getUsername(), customer);
-		appendToFile(customerCSVRepresentation(customer));
-		return customer;
-	}
-
-	@Override
-	public Customer read(String username) {
-		return customers.get(username);
-	}
-
-	@Override
-	public Customer update(Customer customer) {
-		customers.put(customer.getUsername(), customer);
-		writeToFile();
-		return customer;
-	}
-	
-	@Override
-	public Customer delete(String username) {
-//		Customer customer = customers.get(username);
-//		customer.setIsDeleted("1");
-//		writeToFile();
-//		return customer;
-		return null;
-	}
-
-	@Override
-	public List<Customer> getAll() {
-		return new ArrayList<Customer>(customers.values());
-	}
-	
-	@Override
-	public Customer retrieve(String username) {
-//		Customer customer = customers.get(username);
-//		customer.setIsDeleted("0");
-//		writeToFile();
-//		return customer;
-		return null;
 	}
 
 }
