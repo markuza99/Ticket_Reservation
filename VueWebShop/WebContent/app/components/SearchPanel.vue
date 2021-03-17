@@ -39,19 +39,6 @@
 		
 		</nav>
 		
-		<div>
-			Sortiraj:
-			<select name="order" id="order" v-model="selected">
-				<option>po nazivu manifestacije rastuce</option>
-				<option>po nazivu manifestacije opadajuce</option>
-				<option>po datumu manifestacije rastuce</option>
-				<option>po datumu manifestacije opadajuce</option>
-				<option>po ceni manifestacije rastuce</option>
-				<option>po ceni manifestacije opadajuce</option>
-				<option>po lokaciji manifestacije rastuce</option>
-				<option>po lokaciji manifestacije opadajuce</option>
-			</select>
-		</div>
 	</div>
 </template>
 
@@ -121,7 +108,7 @@ module.exports = {
 			.then(response => {
 				$('.nav').removeClass("error");
 				this.$root.$emit('searched-manifestations',response.data);
-				this.$root.$emit('from-search-to-filter', response.data,this.name,this.dateFrom,this.dateTo,this.place,this.priceFrom,this.priceTo,this.new_selected);			
+				this.$root.$emit('from-search-to-sort-and-filter',this.name,this.dateFrom,this.dateTo,this.place,this.priceFrom,this.priceTo,this.new_selected);			
 			});
 
 		}

@@ -1,5 +1,4 @@
 const manifestations = httpVueLoader("./app/components/Manifestations.vue");
-const filteringPanel = httpVueLoader("./app/components/FilteringPanel.vue");
 const searchPanel = httpVueLoader("./app/components/SearchPanel.vue");
 
 Vue.component("welcome-page", {
@@ -11,9 +10,7 @@ Vue.component("welcome-page", {
 	template: `
 		<div>
 			<search-panel></search-panel>
-			<div class="container">
-				<filtering-panel></filtering-panel>
-			</div>
+			
 		    <manifestations></manifestations>
 		</div>
 	`,
@@ -22,7 +19,6 @@ Vue.component("welcome-page", {
 	},
 	components: {
 		"manifestations" : manifestations,
-		"filtering-panel":filteringPanel,
 		"search-panel":searchPanel
 	}
 });

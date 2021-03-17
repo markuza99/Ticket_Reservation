@@ -1,6 +1,43 @@
 <template>
-  <div class="container">
-    <button
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-3 col-md-12">
+        <filtering-panel></filtering-panel>
+      </div>
+      <div class="col-lg-9 col-md-12">
+        <div id="manifestations" class="row">
+          <div class="col-lg-4 col-md-4 col-sm-6" v-for="m in manifestations" :key="m.id">
+            <div class="manifestation" v-bind:id="m.id" v-on:click="goToManifestation(m.id)">
+              <div class="image-holder">
+                <img class="fit-img" v-bind:src="'images/' + m.image" />
+              </div>
+              <div class="description-holder">
+                <h3 class="name">{{ m.name }}</h3>
+                <span class="text-info">{{ m.location.street }}, </span>
+                <span class="text-info">{{ m.location.city }}</span><br />
+              </div>
+              <div class="price" style="text-align: right">
+                <span class="p-2 bg-danger" style="color: white; position: relative; bottom: 6px">{{ m.ticketPrice }},00 RSD</span>
+              </div>
+              <div class="date" style="text-align: right; white-space: nowrap">
+                <div class="bg-warning" style="padding: 0 7px">
+                  {{ m.date.dayOfMonth }}
+                  {{ m.formattedMonth }}
+                  {{ m.date.year }}
+                </div>
+              </div>
+
+              <div class="text-center w-100 pt-1 pb-1 manifestation-type">
+                {{ m.formattedType }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+
+    <!-- <button
       type="button"
       class="btn btn-primary"
       v-if="role == 'SELLER'"
@@ -8,49 +45,9 @@
       data-target="#createManifestationModal"
     >
       Dodaj manifestaciju
-    </button>
+    </button> -->
     <create-manifestation-modal></create-manifestation-modal>
-    <div id="manifestations" class="row">
-      <div
-        class="col-lg-4 col-md-4 col-sm-6"
-        v-for="m in manifestations"
-        :key="m.id"
-      >
-        <div
-          class="manifestation"
-          v-bind:id="m.id"
-          v-on:click="goToManifestation(m.id)"
-        >
-          <div class="image-holder">
-            <img class="fit-img" v-bind:src="'images/' + m.image" />
-          </div>
-          <div class="description-holder">
-            <h3 class="name">{{ m.name }}</h3>
-            <span class="text-info">{{ m.location.street }}, </span>
-            <span class="text-info">{{ m.location.city }}</span
-            ><br />
-          </div>
-          <div class="price" style="text-align: right">
-            <span
-              class="p-2 bg-danger"
-              style="color: white; position: relative; bottom: 6px"
-              >{{ m.ticketPrice }},00 RSD</span
-            >
-          </div>
-          <div class="date" style="text-align: right; white-space: nowrap">
-            <div class="bg-warning" style="padding: 0 7px">
-              {{ m.date.dayOfMonth }}
-              {{ m.formattedMonth }}
-              {{ m.date.year }}
-            </div>
-          </div>
-
-          <div class="text-center w-100 pt-1 pb-1 manifestation-type">
-            {{ m.formattedType }}
-          </div>
-        </div>
-      </div>
-    </div>
+    
   </div>
 </template>
 
@@ -66,6 +63,7 @@ module.exports = {
     "create-manifestation-modal": httpVueLoader(
       "./CreateManifestationModal.vue"
     ),
+    "filtering-panel":httpVueLoader("./FilterAndSortPanel.vue")
   },
   methods: {
     goToManifestation(id) {
@@ -82,10 +80,15 @@ module.exports = {
       this.manifestations = manifestations;
       this.format();
     });
-    this.$root.$on("filtered-manifestations", (manifestations) => {
+    this.$root.$on('sorted-filtered-manifestations', (manifestations) => {
       this.manifestations = manifestations;
       this.format();
     });
+
+    // this.$root.$on("filtered-manifestations", (manifestations) => {
+    //   this.manifestations = manifestations;
+    //   this.format();
+    // });
     this.$root.$on("create-manifestation", (manifestation) => {
       formatType(manifestation);
       makeDate(manifestation);
@@ -94,6 +97,7 @@ module.exports = {
 
     axios.get("rest/manifestations/active").then((response) => {
       this.manifestations = response.data;
+      console.log(this.manifestation);
       this.format();
     });
 
