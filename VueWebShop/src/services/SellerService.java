@@ -1,13 +1,12 @@
 package services;
 
-import beans.Manifestation;
-import dao.SellerDAO;
+import dao.interfaces.ISellerDAO;
 
 
 public class SellerService {
-	private SellerDAO sellerDAO;
+	private ISellerDAO sellerDAO;
 	
-	public SellerService(SellerDAO sellerDAO) {
+	public SellerService(ISellerDAO sellerDAO) {
 		this.sellerDAO = sellerDAO;
 	}
 	

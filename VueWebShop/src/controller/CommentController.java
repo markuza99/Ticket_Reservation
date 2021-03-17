@@ -23,6 +23,7 @@ import dao.ManifestationDAO;
 import dao.SellerDAO;
 import dao.TicketDAO;
 import dto.CommentDTO;
+import dto.CommentingConditionsDTO;
 import services.CommentService;
 
 @Path("/comments")
@@ -53,7 +54,9 @@ public class CommentController {
 		
 		TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
-		commentService = new CommentService(commentDAO, ticketDAO);
+		ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
+		SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
+		commentService = new CommentService(commentDAO, ticketDAO, manifestationDAO, sellerDAO);
 	}
 	
 	@GET
@@ -73,13 +76,13 @@ public class CommentController {
 		return commentService.postComment(u.getUsername(), commentDTO);
 	}
 
-//	@GET
-//	@Path("/comment-params/{id}")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public ManifestationDTO getCommentParams(@Context HttpServletRequest request, @PathParam("id") String id) {
-//		User user = (User) request.getSession().getAttribute("user");
-//		return commentService.getCommentParams(user, id);
-//	}
+	@GET
+	@Path("/commenting-conditions/manifestation/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public CommentingConditionsDTO getCommentParams(@Context HttpServletRequest request, @PathParam("id") String id) {
+		User user = (User) request.getSession().getAttribute("user");
+		return commentService.getCommentingConditions(user.getUsername(), id);
+	}
 //	
 //	@GET
 //	@Path("/")

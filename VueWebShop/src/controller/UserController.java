@@ -47,10 +47,7 @@ public class UserController {
 			new ManifestationDAO(contextPath));
 		}
 		if(ctx.getAttribute("CustomerDAO") == null) {
-			TicketDAO ticketDAO = (TicketDAO) ctx.getAttribute("TicketDAO");
-			ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
-			ctx.setAttribute("CustomerDAO", 
-			new CustomerDAO(contextPath));
+			ctx.setAttribute("CustomerDAO", new CustomerDAO(contextPath));
 		}
 		if(ctx.getAttribute("SellerDAO") == null) {
 			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath));

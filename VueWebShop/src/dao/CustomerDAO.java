@@ -174,7 +174,7 @@ public class CustomerDAO implements ICustomerDAO {
 			}
 		}
 	}
-//	
+	
 	private void loadCustomers() {
 		BufferedReader reader = null;
 		try {

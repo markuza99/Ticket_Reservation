@@ -1,6 +1,6 @@
 package dao;
 
-import java.io.BufferedReader;
+import java.io.BufferedReader; 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -15,8 +15,6 @@ import java.util.StringTokenizer;
 
 import beans.Comment;
 import beans.CommentApproval;
-import beans.Status;
-import beans.User;
 import dao.interfaces.ICommentDAO;
 
 
@@ -165,73 +163,6 @@ public class CommentDAO implements ICommentDAO {
         }
     }
 
-//	public Boolean userCommentedManifestation(String manifestationId, String username) {
-//		for(Comment c : comments.values()) {
-//			if(c.getManifestation().equals(manifestationId)
-//					&& c.getUser().equals(username)
-//					&& c.getCommentStatus() == Status.NONACTIVE) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
-//
-//
-//
-//	public int getManifestationRating(String manifestationId) {
-//		// TODO Auto-generated method stub
-//		int sumOfRatings = 0;
-//		int n = 0;
-//		for(Comment comment : comments.values()) {
-//			if(comment.getManifestation().equals(manifestationId)
-//					&& comment.getCommentStatus() == Status.ACTIVE) {
-//				sumOfRatings += comment.getRating();
-//				n++;
-//			}
-//		}
-//		if(n == 0) {
-//			return 0;
-//		}
-//		// TO DO -- srediti average rating
-//		return sumOfRatings / n;
-//	}
 
-//	public List<Comment> getCommentsForSeller(String username) {
-//		// TODO Auto-generated method stub
-//		List<Comment> manifestationComments = new ArrayList<Comment>();
-//		
-//		for(Comment comment : comments.values()) {
-//			Seller seller = sellerDAO.getSeller(username);
-//			for(Manifestation m : seller.getManifestations()) {
-//				if(comment.getManifestation().equals(m.getId())) {
-//					manifestationComments.add(comment);
-//				}
-//			}
-//		}
-//
-//		return manifestationComments;
-//	}
 
-//	public List<Comment> approveComment(Comment comment, String username) {
-//		for(Comment c : comments.values()) {
-//			if(c.getUser().equals(comment.getUser()) && c.getManifestation().equals(comment.getManifestation())) {
-//				c.setCommentStatus("ACTIVE");
-//				c.setApproval("ACCEPTED");
-//			}
-//		}
-//		write();
-//		return getCommentsForSeller(username);
-//	}
-//
-//	public List<Comment> declineComment(Comment comment, String username) {
-//		// TODO Auto-generated method stub
-//		for(Comment c : comments.values()) {
-//			if(c.getUser().equals(comment.getUser()) && c.getManifestation().equals(comment.getManifestation())) {
-//				c.setCommentStatus("ACTIVE");
-//				c.setApproval("DENIED");
-//			}
-//		}
-//		write();
-//		return getCommentsForSeller(username);
-//	}
 }
