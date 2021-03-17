@@ -118,7 +118,7 @@ public class ManifestationService {
 		return manifestations;
 	}
 	public List<Manifestation> sortManifestations(List<Manifestation> manifestations, String sortBy) {
-		return sortGivenManifestations(manifestationDAO.getAll(), sortBy);
+		return sortGivenManifestations(manifestations, sortBy);
 	}
 	
 	
@@ -145,7 +145,7 @@ public class ManifestationService {
 	}
 
 	private boolean correspondsFilter(Manifestation manifestation, String manifestationType, String ticketCondition) {
-		boolean btype = manifestationType.equals("ALL") || manifestationType.equals("") ? true : manifestation.getType().equals(ManifestationType.valueOf(manifestationType));
+		boolean btype = manifestationType.equals("all") || manifestationType.equals("") ? true : manifestation.getType().equals(ManifestationType.valueOf(manifestationType));
 		boolean bnotSoldOut;
 		if(ticketCondition.equals("notSoldOut")) {
 			bnotSoldOut = manifestation.getRemainingNumberOfSeats() > 0 ? true : false;

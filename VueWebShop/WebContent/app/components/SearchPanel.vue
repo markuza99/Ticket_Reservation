@@ -1,44 +1,35 @@
 <template>
 	<div class="search-panel">
-	
 		<nav class="navbar navbar-expand-lg navbar-light bg-primary">
-		
-		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-
-		<div class="collapse navbar-collapse search-navbar" id="navbarSupportedContent">
-			<ul class="nav navbar-nav navbar-center mr-auto">
-			<li class="nav-item">
-				<input v-model="name" type="text" class="form-control" placeholder="Naziv manifestacije..." id="nazivMan"/>
-			</li>
-			<li class="nav-item">
-				<input v-model="dateFrom" class="form-control" type="date" id="datumOdMan"/>
-			</li>
-			<li class="nav-item">
-				<input v-model="dateTo" class="form-control" type="date" id="datumDoMan"/>
-			</li>
-			
-			<li class="nav-item">
-				<input v-model="priceFrom" class="form-control" type="number" placeholder="Cena od" id="cenaOdMan"/>
-			</li>
-			<li class="nav-item">
-				<input v-model="priceTo" class="form-control" type="number" pattern="[1-9][0-9]*" placeholder="Cena do" id="cenaDoMan"/>
-			</li>
-			<li class="nav-item">
-				<input v-model="place" class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
-			</li>
-			
-			<li class = "nav-item">
-				<button class="my-2 my-sm-0 search-button" type="submit" v-on:click="search"><i class="fa fa-search"></i></button>
-			</li>
-			</ul>
-				
-			
-		</div>
-		
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse search-navbar" id="navbarSupportedContent">
+				<ul class="nav navbar-nav navbar-center mr-auto">
+					<li class="nav-item">
+						<input v-model="name" type="text" class="form-control" placeholder="Naziv manifestacije..." id="nazivMan"/>
+					</li>
+					<li class="nav-item">
+						<input v-model="dateFrom" class="form-control" type="date" id="datumOdMan"/>
+					</li>
+					<li class="nav-item">
+						<input v-model="dateTo" class="form-control" type="date" id="datumDoMan"/>
+					</li>
+					<li class="nav-item">
+						<input v-model="priceFrom" class="form-control" type="number" placeholder="Cena od" id="cenaOdMan"/>
+					</li>
+					<li class="nav-item">
+						<input v-model="priceTo" class="form-control" type="number" pattern="[1-9][0-9]*" placeholder="Cena do" id="cenaDoMan"/>
+					</li>
+					<li class="nav-item">
+						<input v-model="place" class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
+					</li>
+					<li class = "nav-item">
+						<button class="my-2 my-sm-0 search-button" type="submit" v-on:click="search"><i class="fa fa-search"></i></button>
+					</li>
+				</ul>
+			</div>
 		</nav>
-		
 	</div>
 </template>
 
@@ -52,63 +43,40 @@ module.exports = {
 			place:"",
 			priceFrom:"",
 			priceTo:"",
-			selected: "",
-			new_selected: ""
 		}
 	},
 	methods: {
-		setSelected() {
-			switch(this.selected) {
-			case "po ceni manifestacije rastuce":
-				this.new_selected = "priceAsc";
-				break;
-			case "po ceni manifestacije opadajuce":
-				this.new_selected = "priceDesc";
-				break;
-			case "po nazivu manifestacije rastuce":
-				this.new_selected = "nameAsc";
-				break;
-			case "po nazivu manifestacije opadajuce":
-				this.new_selected = "nameDesc";
-				break;
-			case "po lokaciji manifestacije rastuce":
-				this.new_selected = "locationAsc";
-				break;
-			case "po lokaciji manifestacije opadajuce":
-				this.new_selected = "locationDesc";
-				break;
-			case "po datumu manifestacije rastuce":
-				this.new_selected = "dateAsc";
-				break;
-			case "po datumu manifestacije opadajuce":
-				this.new_selected = "dateDesc";
-				break;
-			}
-		},
+		
 		search: function() {
 			if(!(validatePrice(this.priceFrom, this.priceTo) && validateRange(this.dateFrom, this.dateTo))) {
 				$('.nav').addClass("error");
 				return;
 			}
 
-			this.setSelected();
+			dateFrom = this.dateFrom;
+			dateTo = this.dateTo;
+			if(this.dateFrom != "") {
+				dateFrom = this.dateFrom.trim() + " 00:00:00";
+			}
+			if(this.dateTo != "") {
+				dateTo = this.dateTo.trim() + " 00:00:00";
+			}
 			
 			axios
 			.get("rest/manifestations/search", {
 				params: {
 					"name" : this.name,
-					"dateFrom":this.dateFrom,
-					"dateTo":this.dateTo,
+					"dateFrom":dateFrom,
+					"dateTo":dateTo,
 					"place":this.place,
 					"priceFrom":this.priceFrom,
-					"priceTo":this.priceTo,
-					"selected":this.new_selected
+					"priceTo":this.priceTo
 				}
 			})
 			.then(response => {
 				$('.nav').removeClass("error");
-				this.$root.$emit('searched-manifestations',response.data);
-				this.$root.$emit('from-search-to-sort-and-filter',this.name,this.dateFrom,this.dateTo,this.place,this.priceFrom,this.priceTo,this.new_selected);			
+				this.$root.$emit('searched-manifestations', response.data);
+				this.$root.$emit('from-search-to-sort-and-filter', this.name, this.dateFrom, this.dateTo, this.priceFrom, this.priceTo, this.place);			
 			});
 
 		}

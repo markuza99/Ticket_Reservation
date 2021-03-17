@@ -26,7 +26,7 @@
 		<div class="form-group">
 			<div class="mb-2 mt-4 font-weight-bold">Tip manifestacije</div>
 			<select class="form-control" v-model="manifestation_type">
-				<option value="Sve">Sve</option>
+				<option value="all">Sve</option>
 				<option value="CONCERT">Koncert</option>
 				<option value="THEATER">Pozoriste</option>
 				<option value="FESTIVAL">Festival</option>
@@ -60,7 +60,7 @@ module.exports = {
 			place:"",
 			priceFrom:"",
 			priceTo:"",
-			manifestation_type: "Sve",
+			manifestation_type: "all",
 			not_sold_out: false,
 			sort_condition:"date",
 			sort_by:"",
@@ -82,12 +82,21 @@ module.exports = {
 		},
 		sort() {
 
+			dateFrom = this.dateFrom;
+			dateTo = this.dateTo;
+			if(this.dateFrom != "") {
+				dateFrom = this.dateFrom.trim() + " 00:00:00";
+			}
+			if(this.dateTo != "") {
+				dateTo = this.dateTo.trim() + " 00:00:00";
+			}
+
 			axios
 				.get("rest/manifestations/sort", {
 					params: {
 						"name" : this.name,
-						"dateFrom":this.dateFrom,
-						"dateTo":this.dateTo,
+						"dateFrom":dateFrom,
+						"dateTo":dateTo,
 						"priceFrom":this.priceFrom,
 						"priceTo":this.priceTo,
 						"place":this.place,
@@ -99,42 +108,32 @@ module.exports = {
 				});
 		},
 		filter() {
-			
-			manifestation_type = "ALL";
-			
-			if(this.manifestation_type == "Koncert") {
-				manifestation_type = "CONCERT";
-			} else if(this.manifestation_type == "Pozoriste") {
-				manifestation_type = "THEATER";
-			} else if(this.manifestation_type == "Festival") {
-				manifestation_type = "FESTIVAL";
+			dateFrom = this.dateFrom;
+			dateTo = this.dateTo;
+			if(this.dateFrom != "") {
+				dateFrom = this.dateFrom.trim() + " 00:00:00";
+			}
+			if(this.dateTo != "") {
+				dateTo = this.dateTo.trim() + " 00:00:00";
 			}
 
 			axios
 				.get("rest/manifestations/filter", {
 				 	params: {
 			 			"name" : this.name,
-						"dateFrom":this.dateFrom,
-						"dateTo":this.dateTo,
+						"dateFrom":dateFrom,
+						"dateTo":dateTo,
 						"priceFrom":this.priceFrom,
 						"priceTo":this.priceTo,
 						"place":this.place,
 						"sortBy":this.sort_by,
-						"manifestationType":manifestation_type,
+						"manifestationType":this.manifestation_type,
 						"ticketCondition":this.ticket_condition
 			 		}
 				})
 				.then(response => {
 				 	this.$root.$emit('sorted-filtered-manifestations', response.data);			
 				});
-		},
-		formatDateFromSearch() {
-			if(!this.dateFrom.equals("")) {
-				this.dateFrom = this.dateFrom.trim() + " 00:00:00";
-			}
-			if(!this.dateTo.equals("")) {
-				this.dateTo = this.dateTo.trim() + " 00:00:00";
-			}
 		}
 	},
 	mounted() {
@@ -147,7 +146,6 @@ module.exports = {
 			this.place = place;
 		});
 		this.sort_by = this.sort_condition + this.order_by;
-		this.formatDateFromSearch();
 	}
 }
 </script>

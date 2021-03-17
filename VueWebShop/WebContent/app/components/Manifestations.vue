@@ -85,10 +85,6 @@ module.exports = {
       this.format();
     });
 
-    // this.$root.$on("filtered-manifestations", (manifestations) => {
-    //   this.manifestations = manifestations;
-    //   this.format();
-    // });
     this.$root.$on("create-manifestation", (manifestation) => {
       formatType(manifestation);
       makeDate(manifestation);
