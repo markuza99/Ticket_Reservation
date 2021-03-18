@@ -1,51 +1,42 @@
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-lg-3 col-md-12">
+      <div class="col-lg-3 col-md-4">
+        
+        <button type="button" class="btn btn-primary mt-5" v-if="role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">
+          Dodaj manifestaciju
+        </button>
         <filtering-panel></filtering-panel>
       </div>
-      <div class="col-lg-9 col-md-12">
+      <div class="col-lg-9 col-md-8">
         <div id="manifestations" class="row">
-          <div class="col-lg-4 col-md-4 col-sm-6" v-for="m in manifestations" :key="m.id">
-            <div class="manifestation" v-bind:id="m.id" v-on:click="goToManifestation(m.id)">
+          <div class="col-lg-6 col-xl-4 col-md-6 col-sm-6" v-for="m in manifestations" :key="m.id">
+            <div class="card mb-4 box-shadow manifestation" v-on:click="goToManifestation(m.id)">
               <div class="image-holder">
-                <img class="fit-img" v-bind:src="'images/' + m.image" />
+                <img class="card-img-top" v-bind:src="'images/' + m.image" alt="Card image cap">
               </div>
-              <div class="description-holder">
-                <h3 class="name">{{ m.name }}</h3>
-                <span class="text-info">{{ m.location.street }}, </span>
-                <span class="text-info">{{ m.location.city }}</span><br />
-              </div>
-              <div class="price" style="text-align: right">
-                <span class="p-2 bg-danger" style="color: white; position: relative; bottom: 6px">{{ m.ticketPrice }},00 RSD</span>
-              </div>
-              <div class="date" style="text-align: right; white-space: nowrap">
-                <div class="bg-warning" style="padding: 0 7px">
-                  {{ m.date.dayOfMonth }}
-                  {{ m.formattedMonth }}
-                  {{ m.date.year }}
+              <div class="card-body">
+                <h5 class="card-title">{{ m.name }}</h5>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary">{{ m.formattedType }}</button>
+                    <button type="button" class="btn btn-sm btn-danger">{{ m.ticketPrice }},00 RSD</button>
+                  </div>
+                  <small class="text-muted">
+                    {{ m.date.dayOfMonth }}
+                    {{ m.formattedMonth }}
+                    {{ m.date.year }}
+                  </small>
                 </div>
               </div>
-
-              <div class="text-center w-100 pt-1 pb-1 manifestation-type">
-                {{ m.formattedType }}
-              </div>
+                <div class="card-footer text-muted">
+                  {{ m.location.street}} {{m.location.number}}, {{m.location.city}}, {{m.location.state}}
+                </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    
-
-    <!-- <button
-      type="button"
-      class="btn btn-primary"
-      v-if="role == 'SELLER'"
-      data-toggle="modal"
-      data-target="#createManifestationModal"
-    >
-      Dodaj manifestaciju
-    </button> -->
     <create-manifestation-modal></create-manifestation-modal>
     
   </div>
@@ -93,12 +84,13 @@ module.exports = {
 
     axios.get("rest/manifestations/active").then((response) => {
       this.manifestations = response.data;
-      console.log(this.manifestation);
+      console.log(this.manifestations);
       this.format();
     });
 
     axios.get("rest/users/role").then((response) => {
-      this.role = response.data;
+      // this.role = response.data;
+      this.role = "SELLER";
     });
   },
 };

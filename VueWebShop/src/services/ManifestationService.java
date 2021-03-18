@@ -17,6 +17,7 @@ import dao.interfaces.ILocationDAO;
 import dao.interfaces.IManifestationDAO;
 import dao.interfaces.ISellerDAO;
 import dto.ManifestationDTO;
+import dto.ManifestationWithLocationDTO;
 
 
 public class ManifestationService {
@@ -204,5 +205,24 @@ public class ManifestationService {
 		return true;
 	}
 
-	
+	public List<ManifestationWithLocationDTO> getActiveManifestationsWithLocation() {
+		List<ManifestationWithLocationDTO> manifestations = new ArrayList<ManifestationWithLocationDTO>();
+		
+		for(Manifestation m : getActiveManifestations()) {
+			Location location = locationDAO.read(m.getLocation());
+			manifestations.add(new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getDate(), m.getTicketPrice(),
+					m.getStatus(), location , m.getImage(), m.getIsDeleted()));
+		}
+		return manifestations;
+	}
+
+	public List<ManifestationWithLocationDTO> convertToManifestationsWithLocationDTO(List<Manifestation> manifestations) {
+		List<ManifestationWithLocationDTO> convertedManifestations = new ArrayList<ManifestationWithLocationDTO>();
+		for(Manifestation m : manifestations) {
+			Location location = locationDAO.read(m.getLocation());
+			convertedManifestations.add(new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getDate(), m.getTicketPrice(),
+					m.getStatus(), location , m.getImage(), m.getIsDeleted()));
+		}
+		return convertedManifestations;
+	}
 }

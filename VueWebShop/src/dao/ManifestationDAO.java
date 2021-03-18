@@ -134,7 +134,7 @@ public class ManifestationDAO implements IManifestationDAO {
 					LocalDateTime maintenance = LocalDateTime.parse(st.nextToken().trim(), formatter);
 					int ticketPrice = Integer.parseInt(st.nextToken().trim());
 					Status status = (Integer.parseInt(st.nextToken().trim())) == 1 ? 
-							Status.ACTIVE : Status.NONACTIVE;
+							Status.ACTIVE : Status.INACTIVE;
 					String location = st.nextToken().trim();
 					String imagePath = st.nextToken().trim();
 					String deleted = st.nextToken().trim();
