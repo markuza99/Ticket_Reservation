@@ -1,6 +1,7 @@
 package dto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import beans.Location;
 import beans.ManifestationType;
@@ -10,19 +11,21 @@ public class ManifestationWithLocationDTO {
 	private String id;
 	private String name;
 	private ManifestationType type;
-	private LocalDateTime date;
+	private LocalDateTime startTime;
+	private LocalDateTime endTime;
 	private int ticketPrice;
 	private Status status;
 	private Location location;
 	private String image;
 	private boolean isDeleted;
 	
-	public ManifestationWithLocationDTO(String id, String name, ManifestationType type, LocalDateTime date,
+	public ManifestationWithLocationDTO(String id, String name, ManifestationType type, LocalDateTime startTime, LocalDateTime endTime,
 			int ticketPrice, Status status, Location location, String image, boolean isDeleted) {
 		this.id = id;
 		this.name = name;
 		this.type = type;
-		this.date = date;
+		this.startTime = startTime;
+		this.endTime = endTime;
 		this.ticketPrice = ticketPrice;
 		this.status = status;
 		this.location = location;
@@ -47,11 +50,22 @@ public class ManifestationWithLocationDTO {
 	public void setType(ManifestationType type) {
 		this.type = type;
 	}
-	public LocalDateTime getDate() {
-		return date;
+	public LocalDateTime getStartTime() {
+		return startTime;
 	}
-	public void setDate(LocalDateTime date) {
-		this.date = date;
+
+	public void setStartTime(String startTime) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		this.startTime = LocalDateTime.parse(startTime, formatter);
+	}
+
+	public LocalDateTime getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		this.endTime = LocalDateTime.parse(endTime, formatter);
 	}
 	public int getTicketPrice() {
 		return ticketPrice;

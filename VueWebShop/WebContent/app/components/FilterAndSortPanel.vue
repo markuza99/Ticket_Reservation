@@ -20,7 +20,7 @@
 			</select>
 		</div>
 		<div class="text-right mt-2">
-		<button type="submit" class="btn btn-primary" v-on:click="sort">Sortiraj</button>
+		<button type="submit" class="btn btn-outline-primary" v-on:click="sort">Sortiraj</button>
 		</div>
 		
 		<div class="form-group">
@@ -44,7 +44,7 @@
 			</a>
 		</div>
 		<div class="text-right mt-2">
-			<button type="submit" class="btn btn-primary" v-on:click="filter">Filtriraj</button>
+			<button type="submit" class="btn btn-outline-primary mb-5" v-on:click="filter">Filtriraj</button>
 		</div>
 	</div>
 	
@@ -151,6 +151,12 @@ module.exports = {
 </script>
 
 <style>
+
+
+.list-group-item.active {
+	background-color: #bdbdbd;
+	border-color: #bdbdbd;
+}
 
 .latest-manifestations {
 	font-family: 'Open Sans Condensed', sans-serif;

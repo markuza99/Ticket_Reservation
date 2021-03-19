@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-lg-3 col-md-4">
         
-        <button type="button" class="btn btn-primary mt-5" v-if="role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">
+        <button type="button" class="btn btn-outline-primary mt-5" v-if="role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">
           Dodaj manifestaciju
         </button>
         <filtering-panel></filtering-panel>
@@ -23,9 +23,9 @@
                     <button type="button" class="btn btn-sm btn-danger">{{ m.ticketPrice }},00 RSD</button>
                   </div>
                   <small class="text-muted">
-                    {{ m.date.dayOfMonth }}
+                    {{ m.startTime.dayOfMonth }}
                     {{ m.formattedMonth }}
-                    {{ m.date.year }}
+                    {{ m.startTime.year }}
                   </small>
                 </div>
               </div>
@@ -89,8 +89,7 @@ module.exports = {
     });
 
     axios.get("rest/users/role").then((response) => {
-      // this.role = response.data;
-      this.role = "SELLER";
+      this.role = response.data;
     });
   },
 };

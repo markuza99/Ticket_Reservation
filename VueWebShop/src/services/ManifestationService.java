@@ -51,7 +51,7 @@ public class ManifestationService {
 
 
 	public Manifestation updateManifestation(Manifestation manifestation) {
-		if(!checkManifestationMaintainance(manifestation.getDate(), manifestation.getLocation(), manifestation.getId())) {
+		if(!checkManifestationMaintainance(manifestation.getStartTime(), manifestation.getEndTime() ,manifestation.getLocation(), manifestation.getId())) {
 			return null;
 		}
 		return manifestationDAO.update(manifestation);
@@ -138,8 +138,8 @@ public class ManifestationService {
 		String locationId = m.getLocation();
 		Location location = locationDAO.read(locationId);
 		boolean bplace = location.getCity().toLowerCase().contains(place);
-		boolean bdateFrom = dateFrom == null ? true : m.getDate().isAfter(dateFrom);
-		boolean bdateTo = dateTo == null ? true : m.getDate().isBefore(dateTo);
+		boolean bdateFrom = dateFrom == null ? true : m.getStartTime().isAfter(dateFrom);
+		boolean bdateTo = dateTo == null ? true : m.getEndTime().isBefore(dateTo);
 		boolean bpriceFrom = priceFrom == 0 ? true : (m.getTicketPrice() >= priceFrom);
 		boolean bpriceTo = priceTo == 0 ? true : (m.getTicketPrice() <= priceTo);
 		return bname && bplace && bdateFrom && bdateTo && bpriceFrom && bpriceTo;
@@ -168,13 +168,13 @@ public class ManifestationService {
 			return null;
 		}
 		
-		if(!checkManifestationMaintainance(manifestationDTO.getDate(), manifestationDTO.getLocation(), manifestationDTO.getId())) {
+		if(!checkManifestationMaintainance(manifestationDTO.getStartTime(), manifestationDTO.getEndTime(), manifestationDTO.getLocation(), manifestationDTO.getId())) {
 			return null;
 		}
 		
 		int numberOfSeats = manifestationDTO.getNumberOfSeats();
 		Manifestation manifestation = new Manifestation(manifestationDTO.getId(), manifestationDTO.getName(), manifestationDTO.getType(),
-				numberOfSeats,numberOfSeats,manifestationDTO.getDate(), manifestationDTO.getTicketPrice(), Status.ACTIVE,
+				numberOfSeats,numberOfSeats,manifestationDTO.getStartTime(), manifestationDTO.getEndTime(), manifestationDTO.getTicketPrice(), Status.ACTIVE,
 				manifestationDTO.getLocation(), manifestationDTO.getImageName(), false);
 		manifestationDAO.create(manifestation);
 		
@@ -192,14 +192,16 @@ public class ManifestationService {
 		return manifestation;
 	}
 	
-	public Boolean checkManifestationMaintainance(LocalDateTime date, String location, String id) {
+	public Boolean checkManifestationMaintainance(LocalDateTime startTime, LocalDateTime endTime, String location, String id) {
 		for(Manifestation manifestation : manifestationDAO.getAll()) {
 			
 			if(manifestation.getId().equals(id))
 				continue;
-			if(manifestation.getLocation().equals(location) &&
-			   manifestation.getDate().isEqual(date)) {
-				return false;
+			if(manifestation.getLocation().equals(location)) {
+				if(startTime.isAfter(manifestation.getStartTime()) || startTime.isBefore(manifestation.getEndTime()))
+					return false;
+				if(endTime.isAfter(manifestation.getStartTime()) || endTime.isBefore(manifestation.getEndTime()))
+					return false;
 			}
 		}
 		return true;
@@ -210,7 +212,7 @@ public class ManifestationService {
 		
 		for(Manifestation m : getActiveManifestations()) {
 			Location location = locationDAO.read(m.getLocation());
-			manifestations.add(new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getDate(), m.getTicketPrice(),
+			manifestations.add(new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getStartTime(), m.getEndTime(), m.getTicketPrice(),
 					m.getStatus(), location , m.getImage(), m.getIsDeleted()));
 		}
 		return manifestations;
@@ -220,7 +222,7 @@ public class ManifestationService {
 		List<ManifestationWithLocationDTO> convertedManifestations = new ArrayList<ManifestationWithLocationDTO>();
 		for(Manifestation m : manifestations) {
 			Location location = locationDAO.read(m.getLocation());
-			convertedManifestations.add(new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getDate(), m.getTicketPrice(),
+			convertedManifestations.add(new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getStartTime(), m.getEndTime(), m.getTicketPrice(),
 					m.getStatus(), location , m.getImage(), m.getIsDeleted()));
 		}
 		return convertedManifestations;

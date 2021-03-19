@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import beans.Location;
 import dao.LocationDAO;
 import services.LocationService;
 
@@ -33,7 +34,7 @@ public class LocationController {
 	@GET
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<String> getLocations() {
+	public List<Location> getLocations() {
 		return locationService.getLocations();
 	}
 }

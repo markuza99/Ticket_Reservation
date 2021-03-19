@@ -73,7 +73,7 @@ public class CommentService {
 	public CommentingConditionsDTO getCommentingConditions(String username, String id) {
 		Manifestation manifestation = manifestationDAO.read(id);
 		CommentingConditionsDTO ccDTO = new CommentingConditionsDTO(false, false, null, 0);
-		if(manifestation.getDate().isBefore(LocalDateTime.now())) {
+		if(manifestation.getEndTime().isBefore(LocalDateTime.now())) {
 			ccDTO.setManifestationPassed(true);
 			
 			for (Ticket t : ticketDAO.getAll()) {

@@ -10,7 +10,8 @@ public class ManifestationDTO {
 	private String name;
 	private ManifestationType type;
 	private int numberOfSeats;
-	private LocalDateTime date;
+	private LocalDateTime startTime;
+	private LocalDateTime endTime;
 	private int ticketPrice;
 	private String location;
 	private String imageName;
@@ -48,13 +49,22 @@ public class ManifestationDTO {
 		this.numberOfSeats = numberOfSeats;
 	}
 	
-	public LocalDateTime getDate() {
-		return date;
+	public LocalDateTime getStartTime() {
+		return startTime;
 	}
-	
-	public void setDate(String date) {
+
+	public void setStartTime(String startTime) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		this.date = LocalDateTime.parse(date, formatter);
+		this.startTime = LocalDateTime.parse(startTime, formatter);
+	}
+
+	public LocalDateTime getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		this.endTime = LocalDateTime.parse(endTime, formatter);
 	}
 	
 	public int getTicketPrice() {

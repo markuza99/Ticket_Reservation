@@ -86,7 +86,7 @@ function displayMap() {
  
 
  const makeDate = (manifestation) => {
-  switch(manifestation.date.month) {
+  switch(manifestation.startTime.month) {
 				
     case "JANUARY":
       manifestation.formattedMonth = "januar";
