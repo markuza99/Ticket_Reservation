@@ -1,8 +1,8 @@
 package services;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import beans.Location;
 import dao.interfaces.ILocationDAO;
 
 
@@ -14,12 +14,7 @@ public class LocationService {
 		this.locationDAO = locationDAO;
 	}
 
-	public List<String> getLocations() {
-//		List<String> locationsId = new ArrayList<>();
-//		for(String key : locationDAO.getAll().keySet()) {
-//			locationsId.add(key);
-//		}
-//		return locationsId;
-		return null;
+	public List<Location> getLocations() {
+		return locationDAO.getAll();
 	}
 }

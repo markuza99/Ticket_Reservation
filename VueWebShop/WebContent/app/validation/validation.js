@@ -10,7 +10,7 @@ const validatePrice = (...prices) => {
 	return validation;
 }
 
-const validateNumberRange = (from, to, number) => {
+const isNumberInRange = (from, to, number) => {
     console.log(from, to);
     console.log()
     return (number >= from && number <= to);

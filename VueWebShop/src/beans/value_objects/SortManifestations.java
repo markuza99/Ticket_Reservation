@@ -60,9 +60,7 @@ public class SortManifestations {
 				} else {
 					return o2.getCity().compareTo(o1.getCity());
 				}
-				// TODO Auto-generated method stub
 			}
-
 			
 		});
 	}
@@ -86,9 +84,9 @@ public class SortManifestations {
 			public int compare(Manifestation o1, Manifestation o2) {
 				// TODO Auto-generated method stub
 				if(ascending) {
-					return o1.getDate().compareTo(o2.getDate());
+					return o1.getStartTime().compareTo(o2.getStartTime());
 				} else {
-					return o2.getDate().compareTo(o1.getDate());
+					return o2.getStartTime().compareTo(o1.getStartTime());
 				}
 			}
 		});

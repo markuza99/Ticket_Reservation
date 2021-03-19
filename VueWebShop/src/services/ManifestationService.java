@@ -17,6 +17,7 @@ import dao.interfaces.ILocationDAO;
 import dao.interfaces.IManifestationDAO;
 import dao.interfaces.ISellerDAO;
 import dto.ManifestationDTO;
+import dto.ManifestationWithLocationDTO;
 
 
 public class ManifestationService {
@@ -32,108 +33,100 @@ public class ManifestationService {
 	
 	public List<Manifestation> getActiveManifestations() {
 		SortManifestations sort = new SortManifestations();
-		sort.sortByDate(true, manifestationDAO.getAll());
+		List<Manifestation> sortedManifestations = manifestationDAO.getAll();
+		sort.sortByDate(true, sortedManifestations);
 
 		List<Manifestation> activeManifestations = new ArrayList<Manifestation>();
-		for(Manifestation m : manifestationDAO.getAll()) {
+		for(Manifestation m : sortedManifestations) {
 			if(m.getStatus() == Status.ACTIVE) {
 				activeManifestations.add(m);
 			}
 		}
-		return null;
+		return activeManifestations;
 	}
 	
 	public Manifestation getManifestation(String id) {
 		return manifestationDAO.read(id);
 	}
-	
-	public List<Manifestation> searchManifestations(String name,String dateFrom,String dateTo,String place,
-			int priceFrom,  int priceTo, String selected) throws ParseException {
-		return search(name, dateFrom, dateTo, place, priceFrom, priceTo, selected);
-	}
-	
-	public List<Manifestation> filterManifestations(String name, String dateFrom, String dateTo,
-			String place,int priceFrom,int priceTo,String selected,String izborTipa, boolean nijeRasprodato) throws ParseException {
-		return filter(name, dateFrom, dateTo, place, priceFrom, priceTo, selected,izborTipa, nijeRasprodato);
-	}
+
 
 	public Manifestation updateManifestation(Manifestation manifestation) {
-		if(!checkManifestationMaintainance(manifestation.getDate(), manifestation.getLocation(), manifestation.getId())) {
+		if(!checkManifestationMaintainance(manifestation.getStartTime(), manifestation.getEndTime() ,manifestation.getLocation(), manifestation.getId())) {
 			return null;
 		}
 		return manifestationDAO.update(manifestation);
 	}
 	
-	public List<Manifestation> search(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo, String selected) {
-		List<Manifestation> searchedManifestations = new ArrayList<Manifestation>();
-		name = name.trim();
-		place = place.trim();
+	public List<Manifestation> searchAllManifestations(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		
 		LocalDateTime LdateFrom = null;
 		LocalDateTime LdateTo = null;
-		
 		if(!dateFrom.equals("")) {
-			dateFrom = dateFrom.trim() + " 00:00:00";
-			LdateFrom = LocalDateTime.parse(dateFrom, formatter);;
+			LdateFrom = LocalDateTime.parse(dateFrom, formatter);
 		}
 		if(!dateTo.equals("")) {
-			dateTo = dateTo.trim() + " 00:00:00";
 			LdateTo = LocalDateTime.parse(dateTo, formatter);
 		}
+
+		return searchGivenManifestations(manifestationDAO.getAll(), name, LdateFrom, LdateTo, place, priceFrom, priceTo);
+	}
+	
+	public List<Manifestation> searchGivenManifestations(List<Manifestation> manifestations, String name,  LocalDateTime dateFrom, LocalDateTime dateTo, String place, int priceFrom, int priceTo) {
+		List<Manifestation> searchedManifestations = new ArrayList<Manifestation>();
 		
-		for (Manifestation m : manifestationDAO.getAll()) {
-			if(correspondsSearch(m, name.toLowerCase(), LdateFrom, LdateTo, place.toLowerCase(), priceFrom, priceTo)) {
+		for (Manifestation m : manifestations) {
+			if(correspondsSearch(m, name.toLowerCase(), dateFrom, dateTo, place.toLowerCase(), priceFrom, priceTo)) {
 				searchedManifestations.add(m);
 			}
 		}
-
-		searchedManifestations = sortManifestations(selected, searchedManifestations);
 		
 		return searchedManifestations;
 	}
-	
-	private List<Manifestation> sortManifestations(String selected, List<Manifestation> searchedManifestations) {
+
+	public List<Manifestation> sortGivenManifestations(List<Manifestation> manifestations, String sortBy) {
 		List<Location> locations = locationDAO.getAll();
 		SortManifestations sort = new SortManifestations();
 		
-		switch(selected) {
+		switch(sortBy) {
 		case "priceAsc":
-			sort.sortByPrice(true, searchedManifestations);
+			sort.sortByPrice(true, manifestations);
 			break;
 		case "priceDesc":
-			sort.sortByPrice(false, searchedManifestations);
+			sort.sortByPrice(false, manifestations);
 			break;
 		case "nameAsc":
-			sort.sortByName(true, searchedManifestations);
+			sort.sortByName(true, manifestations);
 			break;
 		case "nameDesc":
-			sort.sortByName(false, searchedManifestations);
+			sort.sortByName(false, manifestations);
 			break;
 		case "locationAsc":
 			sort.sortLocations(true, locations);
-			searchedManifestations = sort.sortByLocation(searchedManifestations, locations);
+			manifestations = sort.sortByLocation(manifestations, locations);
 			break;
 		case "locationDesc":
 			sort.sortLocations(false, locations);
-			searchedManifestations = sort.sortByLocation(searchedManifestations, locations);
+			manifestations = sort.sortByLocation(manifestations, locations);
 			break;
 		case "dateAsc":
-			sort.sortByDate(true, searchedManifestations);
+			sort.sortByDate(true, manifestations);
 			break;
 		case "dateDesc":
-			sort.sortByDate(false, searchedManifestations);
+			sort.sortByDate(false, manifestations);
 			break;
 		}
-		return searchedManifestations;
-		
+		return manifestations;
 	}
-
+	public List<Manifestation> sortManifestations(List<Manifestation> manifestations, String sortBy) {
+		return sortGivenManifestations(manifestations, sortBy);
+	}
 	
-	public List<Manifestation> filter(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo, String selected,String type, boolean notSoldOut) {
-		List<Manifestation> searchedManifestations = search(name, dateFrom, dateTo, place, priceFrom, priceTo, selected);
+	
+	public List<Manifestation> filterManifestations(List<Manifestation> manifestations, String manifestationType, String ticketCondition) throws ParseException {		
 		List<Manifestation> filteredManifestations = new ArrayList<Manifestation>();
-		for (Manifestation m : searchedManifestations) {
-			if(correspondsFilter(m, type, notSoldOut)) {
+		for (Manifestation m : manifestations) {
+			if(correspondsFilter(m, manifestationType, ticketCondition)) {
 				filteredManifestations.add(m);
 			}
 		}
@@ -145,22 +138,24 @@ public class ManifestationService {
 		String locationId = m.getLocation();
 		Location location = locationDAO.read(locationId);
 		boolean bplace = location.getCity().toLowerCase().contains(place);
-		boolean bdateFrom = dateFrom == null ? true : m.getDate().isAfter(dateFrom);
-		boolean bdateTo = dateTo == null ? true : m.getDate().isBefore(dateTo);
+		boolean bdateFrom = dateFrom == null ? true : m.getStartTime().isAfter(dateFrom);
+		boolean bdateTo = dateTo == null ? true : m.getEndTime().isBefore(dateTo);
 		boolean bpriceFrom = priceFrom == 0 ? true : (m.getTicketPrice() >= priceFrom);
 		boolean bpriceTo = priceTo == 0 ? true : (m.getTicketPrice() <= priceTo);
 		return bname && bplace && bdateFrom && bdateTo && bpriceFrom && bpriceTo;
 	}
 
-	private boolean correspondsFilter(Manifestation m, String type, boolean nijeRasprodato) {
-		boolean btip = type.equals("SVE") || type.equals("") ? true : m.getType().equals(ManifestationType.valueOf(type));
-		boolean bnotrasp;
-		if(nijeRasprodato) {
-			bnotrasp = m.getNumberOfSeats() > 0 ? true : false;
+	private boolean correspondsFilter(Manifestation manifestation, String manifestationType, String ticketCondition) {
+		boolean btype = manifestationType.equals("all") || manifestationType.equals("") ? true : manifestation.getType().equals(ManifestationType.valueOf(manifestationType));
+		boolean bnotSoldOut;
+		if(ticketCondition.equals("notSoldOut")) {
+			bnotSoldOut = manifestation.getRemainingNumberOfSeats() > 0 ? true : false;
+		} else if(ticketCondition.equals("soldOut")) {
+			bnotSoldOut = manifestation.getRemainingNumberOfSeats() > 0 ? false : true;
 		} else {
-			bnotrasp = m.getNumberOfSeats() > 0 ? false : true;
+			bnotSoldOut = true;
 		}
-		return btip && bnotrasp;
+		return btype && bnotSoldOut;
 	}
 	
 	public Manifestation addManifestation(ManifestationDTO manifestationDTO, String username) throws IOException {
@@ -173,13 +168,13 @@ public class ManifestationService {
 			return null;
 		}
 		
-		if(!checkManifestationMaintainance(manifestationDTO.getDate(), manifestationDTO.getLocation(), manifestationDTO.getId())) {
+		if(!checkManifestationMaintainance(manifestationDTO.getStartTime(), manifestationDTO.getEndTime(), manifestationDTO.getLocation(), manifestationDTO.getId())) {
 			return null;
 		}
 		
 		int numberOfSeats = manifestationDTO.getNumberOfSeats();
 		Manifestation manifestation = new Manifestation(manifestationDTO.getId(), manifestationDTO.getName(), manifestationDTO.getType(),
-				numberOfSeats,numberOfSeats,manifestationDTO.getDate(), manifestationDTO.getTicketPrice(), Status.ACTIVE,
+				numberOfSeats,numberOfSeats,manifestationDTO.getStartTime(), manifestationDTO.getEndTime(), manifestationDTO.getTicketPrice(), Status.ACTIVE,
 				manifestationDTO.getLocation(), manifestationDTO.getImageName(), false);
 		manifestationDAO.create(manifestation);
 		
@@ -197,16 +192,39 @@ public class ManifestationService {
 		return manifestation;
 	}
 	
-	public Boolean checkManifestationMaintainance(LocalDateTime date, String location, String id) {
+	public Boolean checkManifestationMaintainance(LocalDateTime startTime, LocalDateTime endTime, String location, String id) {
 		for(Manifestation manifestation : manifestationDAO.getAll()) {
 			
 			if(manifestation.getId().equals(id))
 				continue;
-			if(manifestation.getLocation().equals(location) &&
-			   manifestation.getDate().isEqual(date)) {
-				return false;
+			if(manifestation.getLocation().equals(location)) {
+				if(startTime.isAfter(manifestation.getStartTime()) || startTime.isBefore(manifestation.getEndTime()))
+					return false;
+				if(endTime.isAfter(manifestation.getStartTime()) || endTime.isBefore(manifestation.getEndTime()))
+					return false;
 			}
 		}
 		return true;
+	}
+
+	public List<ManifestationWithLocationDTO> getActiveManifestationsWithLocation() {
+		List<ManifestationWithLocationDTO> manifestations = new ArrayList<ManifestationWithLocationDTO>();
+		
+		for(Manifestation m : getActiveManifestations()) {
+			Location location = locationDAO.read(m.getLocation());
+			manifestations.add(new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getStartTime(), m.getEndTime(), m.getTicketPrice(),
+					m.getStatus(), location , m.getImage(), m.getIsDeleted()));
+		}
+		return manifestations;
+	}
+
+	public List<ManifestationWithLocationDTO> convertToManifestationsWithLocationDTO(List<Manifestation> manifestations) {
+		List<ManifestationWithLocationDTO> convertedManifestations = new ArrayList<ManifestationWithLocationDTO>();
+		for(Manifestation m : manifestations) {
+			Location location = locationDAO.read(m.getLocation());
+			convertedManifestations.add(new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getStartTime(), m.getEndTime(), m.getTicketPrice(),
+					m.getStatus(), location , m.getImage(), m.getIsDeleted()));
+		}
+		return convertedManifestations;
 	}
 }

@@ -3,52 +3,53 @@ package dto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import beans.Location;
 import beans.ManifestationType;
+import beans.Status;
 
-public class ManifestationDTO {
+public class ManifestationWithLocationDTO {
 	private String id;
 	private String name;
 	private ManifestationType type;
-	private int numberOfSeats;
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
 	private int ticketPrice;
-	private String location;
-	private String imageName;
-	private String image64base;
+	private Status status;
+	private Location location;
+	private String image;
+	private boolean isDeleted;
 	
+	public ManifestationWithLocationDTO(String id, String name, ManifestationType type, LocalDateTime startTime, LocalDateTime endTime,
+			int ticketPrice, Status status, Location location, String image, boolean isDeleted) {
+		this.id = id;
+		this.name = name;
+		this.type = type;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.ticketPrice = ticketPrice;
+		this.status = status;
+		this.location = location;
+		this.image = image;
+		this.isDeleted = isDeleted;
+	}
 	public String getId() {
 		return id;
 	}
-	
 	public void setId(String id) {
 		this.id = id;
 	}
-	
 	public String getName() {
 		return name;
 	}
-	
 	public void setName(String name) {
 		this.name = name;
 	}
-	
 	public ManifestationType getType() {
 		return type;
 	}
-	
-	public void setType(String type) {
-		this.type = ManifestationType.valueOf(type);
+	public void setType(ManifestationType type) {
+		this.type = type;
 	}
-	
-	public int getNumberOfSeats() {
-		return numberOfSeats;
-	}
-	
-	public void setNumberOfSeats(int numberOfSeats) {
-		this.numberOfSeats = numberOfSeats;
-	}
-	
 	public LocalDateTime getStartTime() {
 		return startTime;
 	}
@@ -66,37 +67,36 @@ public class ManifestationDTO {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		this.endTime = LocalDateTime.parse(endTime, formatter);
 	}
-	
 	public int getTicketPrice() {
 		return ticketPrice;
 	}
-	
 	public void setTicketPrice(int ticketPrice) {
 		this.ticketPrice = ticketPrice;
 	}
-	
-	public String getLocation() {
+	public Status getStatus() {
+		return status;
+	}
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+	public Location getLocation() {
 		return location;
 	}
-	
-	public void setLocation(String location) {
+	public void setLocation(Location location) {
 		this.location = location;
 	}
-	
-	public String getImageName() {
-		return imageName;
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	public boolean isDeleted() {
+		return isDeleted;
+	}
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 	
-	public void setImageName(String imageName) {
-		this.imageName = imageName;
-	}
-	
-	public String getImage64base() {
-		return image64base;
-	}
-	
-	public void setImage64base(String image64base) {
-		this.image64base = image64base;
-	}
 	
 }

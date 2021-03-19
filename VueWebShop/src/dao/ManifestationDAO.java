@@ -78,7 +78,8 @@ public class ManifestationDAO implements IManifestationDAO {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		manifestationString.append(manifestation.getId() + ";" + manifestation.getName() + ";"
 				+ manifestation.getType() + ";" + manifestation.getNumberOfSeats() + ";"
-				+ manifestation.getRemainingNumberOfSeats() + ";" + manifestation.getDate().format(formatter) + ";"
+				+ manifestation.getRemainingNumberOfSeats() + ";" + manifestation.getStartTime().format(formatter) + ";"
+				+ manifestation.getEndTime().format(formatter) + ";"
 				+ manifestation.getTicketPrice() + ";");
 		if(manifestation.getStatus() == Status.ACTIVE) {
 			manifestationString.append("1;");
@@ -131,10 +132,11 @@ public class ManifestationDAO implements IManifestationDAO {
 					int numberOfSeats = Integer.parseInt(st.nextToken().trim());
 					int remainingNumberOfSeats = Integer.parseInt(st.nextToken().trim());
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");  
-					LocalDateTime maintenance = LocalDateTime.parse(st.nextToken().trim(), formatter);
+					LocalDateTime startTime = LocalDateTime.parse(st.nextToken().trim(), formatter);
+					LocalDateTime endTime = LocalDateTime.parse(st.nextToken().trim(), formatter);
 					int ticketPrice = Integer.parseInt(st.nextToken().trim());
 					Status status = (Integer.parseInt(st.nextToken().trim())) == 1 ? 
-							Status.ACTIVE : Status.NONACTIVE;
+							Status.ACTIVE : Status.INACTIVE;
 					String location = st.nextToken().trim();
 					String imagePath = st.nextToken().trim();
 					String deleted = st.nextToken().trim();
@@ -144,7 +146,7 @@ public class ManifestationDAO implements IManifestationDAO {
 					}
 					manifestations.put(id, new Manifestation(
 							id, name, type, numberOfSeats,
-							remainingNumberOfSeats, maintenance, ticketPrice,
+							remainingNumberOfSeats, startTime, endTime, ticketPrice,
 							status, location, imagePath, isDeleted));
 				}
 			}

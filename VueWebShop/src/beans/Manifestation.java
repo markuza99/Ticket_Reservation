@@ -3,27 +3,29 @@ package beans;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Manifestation implements Comparable<Manifestation>{
+public class Manifestation {
 	private String id;
 	private String name;
 	private ManifestationType type;
 	private int numberOfSeats;
 	private int remainingNumberOfSeats;
-	private LocalDateTime date;
+	private LocalDateTime startTime;
+	private LocalDateTime endTime;
 	private int ticketPrice;
 	private Status status;
 	private String location;
 	private String image;
 	private boolean isDeleted;
 	
-	public Manifestation(String id, String name, ManifestationType type, int numberOfSeats, int remainingNumberOfSeats, LocalDateTime date, int ticketPrice,
-			Status status, String location, String image, boolean isDeleted) {
+	public Manifestation(String id, String name, ManifestationType type, int numberOfSeats, int remainingNumberOfSeats, LocalDateTime startTime,
+			LocalDateTime endTime, int ticketPrice, Status status, String location, String image, boolean isDeleted) {
 		this.id = id;
 		this.name = name;
 		this.type = type;
 		this.numberOfSeats = numberOfSeats;
 		this.remainingNumberOfSeats = remainingNumberOfSeats;
-		this.date = date;
+		this.startTime = startTime;
+		this.endTime = endTime;
 		this.ticketPrice = ticketPrice;
 		this.status = status;
 		this.location = location;
@@ -65,14 +67,22 @@ public class Manifestation implements Comparable<Manifestation>{
 		this.numberOfSeats = numberOfSeats;
 	}
 
-	public LocalDateTime getDate() {
-		return date;
+	public LocalDateTime getStartTime() {
+		return startTime;
 	}
 
-	public void setDate(String date) {
+	public void setStartTime(String startTime) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		
-		this.date = LocalDateTime.parse(date, formatter);
+		this.startTime = LocalDateTime.parse(startTime, formatter);
+	}
+
+	public LocalDateTime getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(String endTime) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		this.endTime = LocalDateTime.parse(endTime, formatter);
 	}
 
 	public int getTicketPrice() {
@@ -116,11 +126,11 @@ public class Manifestation implements Comparable<Manifestation>{
 	}
 	
 
-	@Override
-	public int compareTo(Manifestation o) {
-		// TODO Auto-generated method stub
-		return getDate().compareTo(o.getDate());
-	}
+//	@Override
+//	public int compareTo(Manifestation o) {
+//		// TODO Auto-generated method stub
+//		return getDate().compareTo(o.getDate());
+//	}
 
 	public int getRemainingNumberOfSeats() {
 		return remainingNumberOfSeats;

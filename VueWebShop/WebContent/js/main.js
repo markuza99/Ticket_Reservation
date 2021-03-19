@@ -86,7 +86,7 @@ function displayMap() {
  
 
  const makeDate = (manifestation) => {
-  switch(manifestation.date.month) {
+  switch(manifestation.startTime.month) {
 				
     case "JANUARY":
       manifestation.formattedMonth = "januar";
@@ -98,31 +98,31 @@ function displayMap() {
       manifestation.formattedMonth = "mart";
       break;
     case "APRIL":
-      manifestation.formattedMonth = "mart";
+      manifestation.formattedMonth = "april";
       break;
     case "MAY":
-      manifestation.formattedMonth = "mart";
+      manifestation.formattedMonth = "maj";
       break;
     case "JUNE":
-      manifestation.formattedMonth = "mart";
+      manifestation.formattedMonth = "jun";
       break;
     case "JULY":
-      manifestation.formattedMonth = "mart";
+      manifestation.formattedMonth = "jul";
       break;
     case "AUGUST":
-      manifestation.formattedMonth = "mart";
+      manifestation.formattedMonth = "avgust";
       break;
     case "SEPTEMBER":
-      manifestation.formattedMonth = "mart";
+      manifestation.formattedMonth = "septembar";
       break;
     case "OCTOBER":
-      manifestation.formattedMonth = "mart";
+      manifestation.formattedMonth = "oktobar";
       break;
     case "NOVEMBER":
-      manifestation.formattedMonth = "mart";
+      manifestation.formattedMonth = "novembar";
       break;
     case "DECEMBER":
-      manifestation.formattedMonth = "mart";
+      manifestation.formattedMonth = "decembar";
       break;
     default:
       console.log("nista");
