@@ -104,10 +104,12 @@ public class ManifestationController {
 	@POST
 	@Path("/add")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Manifestation addManifestation(@Context HttpServletRequest request, ManifestationDTO manifestationDTO) {
+	public ManifestationWithLocationDTO addManifestation(@Context HttpServletRequest request, ManifestationDTO manifestationDTO) {
 		User user = (User) request.getSession().getAttribute("user");
 		try {
-			return manifestationService.addManifestation(manifestationDTO, user.getUsername());
+			Manifestation manifestation = manifestationService.addManifestation(manifestationDTO, user.getUsername());
+			if(manifestation == null) return null;
+			return manifestationService.convertToManifestationWithLocationDTO(manifestation);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -158,50 +158,77 @@ public class ManifestationService {
 		return btype && bnotSoldOut;
 	}
 	
-	public Manifestation addManifestation(ManifestationDTO manifestationDTO, String username) throws IOException {
-		String base64Image = manifestationDTO.getImage64base().split(",")[1];
-		byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
-
-		manifestationDAO.saveImage(imageBytes, manifestationDTO.getImageName());
-	        
-		if(manifestationDAO.read(manifestationDTO.getId()) != null) {
-			return null;
-		}
+	private boolean validateManifestation(ManifestationDTO manifestationDTO) {
+		if(locationDAO.read(manifestationDTO.getLocation()) == null) return false;
+		if(manifestationDAO.read(manifestationDTO.getId()) != null) return false;
 		
-		if(!checkManifestationMaintainance(manifestationDTO.getStartTime(), manifestationDTO.getEndTime(), manifestationDTO.getLocation(), manifestationDTO.getId())) {
-			return null;
-		}
-		
+		if(!checkManifestationMaintainance(manifestationDTO.getStartTime(), manifestationDTO.getEndTime(), 
+				manifestationDTO.getLocation(), manifestationDTO.getId())) return false;
+			
+		return true;
+	}
+	
+	private Manifestation createManifestation(ManifestationDTO manifestationDTO) {
 		int numberOfSeats = manifestationDTO.getNumberOfSeats();
+		
 		Manifestation manifestation = new Manifestation(manifestationDTO.getId(), manifestationDTO.getName(), manifestationDTO.getType(),
 				numberOfSeats,numberOfSeats,manifestationDTO.getStartTime(), manifestationDTO.getEndTime(), manifestationDTO.getTicketPrice(), Status.ACTIVE,
 				manifestationDTO.getLocation(), manifestationDTO.getImageName(), false);
 		manifestationDAO.create(manifestation);
 		
-		Seller seller = sellerDAO.read(username);
-		if(seller != null) {
-			seller.getManifestations().add(manifestationDTO.getId());
-			sellerDAO.update(seller);
-		} else {
-			ArrayList<String> sellersManifestations = new ArrayList<String>();
-			sellersManifestations.add(manifestationDTO.getId());
-			seller = new Seller(username, sellersManifestations);
-			sellerDAO.create(seller);
+		addImageToFolder(manifestationDTO.getImage64base(), manifestationDTO.getImageName());
+		return manifestation;
+	}
+	
+	private void addImageToFolder(String image64base, String imageName) {
+		String base64Image = image64base.split(",")[1];
+		byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
+
+		manifestationDAO.saveImage(imageBytes, imageName);
+	}
+
+	public Manifestation addManifestation(ManifestationDTO manifestationDTO, String username) throws IOException {
+		
+		if(!validateManifestation(manifestationDTO)) {
+			return null;
 		}
+		
+		Manifestation manifestation = createManifestation(manifestationDTO);
+		AddManifestationToSeller(manifestation.getId(), username);
 
 		return manifestation;
 	}
 	
+	private void AddManifestationToSeller(String id, String username) {
+		Seller seller = sellerDAO.read(username);
+		if(seller != null) {
+			seller.getManifestations().add(id);
+			sellerDAO.update(seller);
+		} else {
+			ArrayList<String> sellersManifestations = new ArrayList<String>();
+			sellersManifestations.add(id);
+			seller = new Seller(username, sellersManifestations);
+			sellerDAO.create(seller);
+		}
+	}
+
 	public Boolean checkManifestationMaintainance(LocalDateTime startTime, LocalDateTime endTime, String location, String id) {
 		for(Manifestation manifestation : manifestationDAO.getAll()) {
 			
 			if(manifestation.getId().equals(id))
 				continue;
 			if(manifestation.getLocation().equals(location)) {
-				if(startTime.isAfter(manifestation.getStartTime()) || startTime.isBefore(manifestation.getEndTime()))
-					return false;
-				if(endTime.isAfter(manifestation.getStartTime()) || endTime.isBefore(manifestation.getEndTime()))
-					return false;
+				if(startTime.isAfter(manifestation.getStartTime())) {
+					if(startTime.isBefore(manifestation.getEndTime())) {
+						return false;
+					}
+				}
+					
+				if(endTime.isAfter(manifestation.getStartTime())) {
+					if(endTime.isBefore(manifestation.getEndTime())) {
+						return false;	
+					}
+				}
 			}
 		}
 		return true;
@@ -220,11 +247,15 @@ public class ManifestationService {
 
 	public List<ManifestationWithLocationDTO> convertToManifestationsWithLocationDTO(List<Manifestation> manifestations) {
 		List<ManifestationWithLocationDTO> convertedManifestations = new ArrayList<ManifestationWithLocationDTO>();
-		for(Manifestation m : manifestations) {
-			Location location = locationDAO.read(m.getLocation());
-			convertedManifestations.add(new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getStartTime(), m.getEndTime(), m.getTicketPrice(),
-					m.getStatus(), location , m.getImage(), m.getIsDeleted()));
+		for(Manifestation manifestation : manifestations) {
+			convertedManifestations.add(convertToManifestationWithLocationDTO(manifestation));
 		}
 		return convertedManifestations;
+	}
+
+	public ManifestationWithLocationDTO convertToManifestationWithLocationDTO(Manifestation m) {
+		Location location = locationDAO.read(m.getLocation());
+		return new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getStartTime(), m.getEndTime(), m.getTicketPrice(),
+				m.getStatus(), location , m.getImage(), m.getIsDeleted());
 	}
 }

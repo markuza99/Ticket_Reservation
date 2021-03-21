@@ -84,7 +84,6 @@ module.exports = {
 				endTime:"",
 				numberOfSeats: 0,
 				type: "CONCERT",
-				status: "NONACTIVE",
 				ticketPrice : 0,
 				location: "",
 				imageName: "",
@@ -109,13 +108,10 @@ module.exports = {
     methods: {
         createManifestation() {
 
-			console.log("?");
-			this.new_manifestation.location = this.$refs.locationId.value;
+			this.removeClass();
 			
-			// this.new_manifestation.numberOfSeats = parseInt(this.new_manifestation.numberOfSeats);
-			// this.new_manifestation.ticketPrice = parseInt(this.new_manifestation.ticketPrice);
-			// this.setErrorsToFalse();
-			// this.removeClass();
+			this.new_manifestation.location = this.$refs.locationId.value;
+
 			manifestation_to_check = {
 				id: this.new_manifestation.id,
 				name: this.new_manifestation.name,
@@ -133,18 +129,15 @@ module.exports = {
             }
 			
 			if(!isNumberInRange(1, 100000, parseInt(this.new_manifestation.numberOfSeats))) {
-				this.number_of_seats_error = true;
-				this.addClass("#inputNumOfSeats", "error");
+				$('#error').html("Pogresan unos broja mesta.");
                 return;
             }
 
             if(!isNumberInRange(1, 100000, parseInt(this.new_manifestation.ticketPrice))) {
-				this.price_error = true;
-				this.addClass("#inputPrice", "error");
+				$('#error').html("Pogresan unos cene karte.");
                 return;
 			}
 
-			//date range
 			if(!validateRange(this.new_manifestation.startTime, this.new_manifestation.endTime)) {
 				$('#error').html("Pogresan datum.");
 			 	return;
@@ -156,26 +149,27 @@ module.exports = {
 			}
 			
             this.formatDate();
-			console.log("sve kul");
 
-			// console.log(this.new_manifestation);
-			// axios
-			// 	.post("rest/manifestations/add", JSON.stringify(this.new_manifestation), {
-			// 		headers: {'content-type':'application/json'}
-			// 	})
-			// 	.then(response => {
-					// if(response.data != "") {
-                    //     this.$root.$emit('create-manifestation',response.data);
-					// 	$('#error').html("Manifestacija uspesno dodata!");
-					// 	$('#error').css("color","green");
-					// 	this.new_manifestation.date = "";
-					// 	this.new_manifestation.type = "Koncert";
+			console.log(this.new_manifestation);
+			axios
+				.post("rest/manifestations/add", JSON.stringify(this.new_manifestation), {
+					headers: {'content-type':'application/json'}
+				})
+				.then(response => {
+					if(response.data != "") {
+                        this.$root.$emit('create-manifestation',response.data);
+						$('#error').html("Manifestacija uspesno dodata!");
+						$('#error').css("color","green");
+						this.new_manifestation.startTime = "";
+						this.new_manifestation.endTime = "";
 						
-					// } else {
-					// 	$('#error').html("Manifestacija pod tim ID-jem vec postoji!");
-					// 	this.addClass("#inputId", "error");
-					// }
-				// })
+					} else {
+						$('#error').html("Pogresan unos.");
+						this.addClass("#inputId", "error");
+						this.new_manifestation.startTime = "";
+						this.new_manifestation.endTime = "";
+					}
+				})
         },
 		loadFile(event) {
 			var filename = document.getElementById('file').value;
@@ -195,14 +189,14 @@ module.exports = {
 		},
 
         formatDate() {
-            dateparams = this.new_manifestation.date.split("T");
-            dateparams[1] = dateparams[1] + ":00";
-            this.new_manifestation.date = dateparams.join(" ");
+            startTimeparams = this.new_manifestation.startTime.split("T");
+            startTimeparams[1] = startTimeparams[1] + ":00";
+            this.new_manifestation.startTime = startTimeparams.join(" ");
+
+			endTimeparams = this.new_manifestation.endTime.split("T");
+            endTimeparams[1] = endTimeparams[1] + ":00";
+            this.new_manifestation.endTime = endTimeparams.join(" ");
         },
-        setErrorsToFalse() {
-			this.number_of_seats_error = false;
-			
-		},
         removeClass() {
 			$('#inputNumOfSeats').removeClass("error");
 			$('#inputPrice').removeClass("error");
