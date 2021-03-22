@@ -58,15 +58,14 @@ public class ManifestationService {
 	}
 	
 	public List<Manifestation> searchAllManifestations(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		
 		LocalDateTime LdateFrom = null;
 		LocalDateTime LdateTo = null;
 		if(!dateFrom.equals("")) {
-			LdateFrom = LocalDateTime.parse(dateFrom, formatter);
+			LdateFrom = LocalDateTime.parse(dateFrom);
 		}
 		if(!dateTo.equals("")) {
-			LdateTo = LocalDateTime.parse(dateTo, formatter);
+			LdateTo = LocalDateTime.parse(dateTo);
 		}
 
 		return searchGivenManifestations(manifestationDAO.getAll(), name, LdateFrom, LdateTo, place, priceFrom, priceTo);

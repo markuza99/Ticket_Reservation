@@ -1,7 +1,6 @@
 package dto;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import beans.ManifestationType;
 
@@ -54,8 +53,7 @@ public class ManifestationDTO {
 	}
 
 	public void setStartTime(String startTime) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		this.startTime = LocalDateTime.parse(startTime, formatter);
+		this.startTime = LocalDateTime.parse(startTime);
 	}
 
 	public LocalDateTime getEndTime() {
@@ -63,8 +61,7 @@ public class ManifestationDTO {
 	}
 
 	public void setEndTime(String endTime) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		this.endTime = LocalDateTime.parse(endTime, formatter);
+		this.endTime = LocalDateTime.parse(endTime);
 	}
 	
 	public int getTicketPrice() {

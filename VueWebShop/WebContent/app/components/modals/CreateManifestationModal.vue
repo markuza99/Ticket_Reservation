@@ -34,16 +34,13 @@
 						<label>Datum kraja</label>
 						<input type="datetime-local" class="form-control" v-model="new_manifestation.endTime">
 					</div>
-					<small id="data-error" v-if="date_error" class="form-text">Postoji vec manifestacija na istoj lokaciji u isto vreme</small>
 					<div class="col-md-6">
 						<label>Broj mesta</label>
 						<input type="number" class="form-control" v-model="new_manifestation.numberOfSeats">
-						<small id="number-of-seats-error" v-if="number_of_seats_error" class="form-text data-error">Nevalidan unos preostalih mesta!</small>
 					</div>
 					<div class="col-md-6">
 						<label>Cena karte</label>
 						<input type="number" class="form-control" v-model="new_manifestation.ticketPrice">
-						<small id="data-error" v-if="price_error" class="form-text">Nevalidan unos!</small>
 					</div>
 					<div class="col-md-12">
 						<label>Lokacija</label>
@@ -75,7 +72,7 @@
 
 <script>
 module.exports = {
-    data() {
+	data() {
 		return {
 			new_manifestation : {
 				id: "",
@@ -90,87 +87,73 @@ module.exports = {
 				image64base:""
 			},
 			
-			img_url : null,
 			url : null,
-			locations : [],
-			date_error: false,
-			number_of_seats_error: false,
-			price_error: false
+			locations : []
 		}
 	},
-    mounted() {
-        axios
+	mounted() {
+		axios
 			.get("rest/locations/")
 			.then(response => {
 				this.locations = response.data;
 			});
+	},
+	methods: {
+		createManifestation() {
+		$('#error').html("");
+		this.new_manifestation.location = this.$refs.locationId.value;
+
+		manifestation_to_check = {
+			id: this.new_manifestation.id,
+			name: this.new_manifestation.name,
+			imageName : this.new_manifestation.imageName
+		}
+
+		if(areInputFieldsEmpty(this.new_manifestation)) {
+			$('#error').html("Sva polja su obavezna!");
+			return;
+		}
+
+		if(forbiddenSignInFields(manifestation_to_check)) {
+			$('#error').html("Ne mozete koristiti ; znak.");
+			return;
+		}
+		
+		if(!isNumberInRange(1, 100000, parseInt(this.new_manifestation.numberOfSeats))) {
+			$('#error').html("Pogresan unos broja mesta.");
+			return;
+		}
+
+		if(!isNumberInRange(1, 100000, parseInt(this.new_manifestation.ticketPrice))) {
+			$('#error').html("Pogresan unos cene karte.");
+			return;
+		}
+
+		if(!validateRange(this.new_manifestation.startTime, this.new_manifestation.endTime)) {
+			$('#error').html("Pogresan datum.");
+			return;
+		}
+
+		let date =  new Date();
+		if(!validateRange(date.toISOString(), this.new_manifestation.startTime)) {
+			$('#error').html("Odabran je pogresan datum.");
+			return;
+		}
+	
+		axios
+			.post("rest/manifestations/add", JSON.stringify(this.new_manifestation), {
+				headers: {'content-type':'application/json'}
+			})
+			.then(response => {
+				if(response.data != "") {
+					this.$root.$emit('create-manifestation',response.data);
+					document.getElementById('cancel-create-manifestation').click();
+					this.cleanModal();
+				} else {
+					$('#error').html("Pogresan unos.");
+				}
+			})
     },
-    methods: {
-        createManifestation() {
-
-			this.removeClass();
-			
-			this.new_manifestation.location = this.$refs.locationId.value;
-
-			manifestation_to_check = {
-				id: this.new_manifestation.id,
-				name: this.new_manifestation.name,
-				imageName : this.new_manifestation.imageName
-			}
-
-			if(areInputFieldsEmpty(this.new_manifestation)) {
-				$('#error').html("Sva polja su obavezna!");
-				return;
-			}
-
-			if(forbiddenSignInFields(manifestation_to_check)) {
-                $('#error').html("Ne mozete koristiti ; znak.");
-                return;
-            }
-			
-			if(!isNumberInRange(1, 100000, parseInt(this.new_manifestation.numberOfSeats))) {
-				$('#error').html("Pogresan unos broja mesta.");
-                return;
-            }
-
-            if(!isNumberInRange(1, 100000, parseInt(this.new_manifestation.ticketPrice))) {
-				$('#error').html("Pogresan unos cene karte.");
-                return;
-			}
-
-			if(!validateRange(this.new_manifestation.startTime, this.new_manifestation.endTime)) {
-				$('#error').html("Pogresan datum.");
-			 	return;
-			}
-			let date =  new Date();
-			if(!validateRange(date.toISOString(), this.new_manifestation.startTime)) {
-				$('#error').html("Odabran je pogresan datum.");
-			 	return;
-			}
-			
-            this.formatDate();
-
-			console.log(this.new_manifestation);
-			axios
-				.post("rest/manifestations/add", JSON.stringify(this.new_manifestation), {
-					headers: {'content-type':'application/json'}
-				})
-				.then(response => {
-					if(response.data != "") {
-                        this.$root.$emit('create-manifestation',response.data);
-						
-						this.new_manifestation.startTime = "";
-						this.new_manifestation.endTime = "";
-						document.getElementById('cancel-create-manifestation').click();
-						
-					} else {
-						$('#error').html("Pogresan unos.");
-						this.addClass("#inputId", "error");
-						this.new_manifestation.startTime = "";
-						this.new_manifestation.endTime = "";
-					}
-				})
-        },
 		loadFile(event) {
 			var filename = document.getElementById('file').value;
 			parts = filename.split("\\");
@@ -187,27 +170,25 @@ module.exports = {
 			}
 			reader.readAsDataURL(event.target.files[0]);
 		},
+		cleanModal() {
+			this.new_manifestation = {
+				id: "",
+				name: "",
+				startTime:"",
+				endTime:"",
+				numberOfSeats: 0,
+				type: "CONCERT",
+				ticketPrice : 0,
+				location: "",
+				imageName: "",
+				image64base:""
+			}
 
-        formatDate() {
-            startTimeparams = this.new_manifestation.startTime.split("T");
-            startTimeparams[1] = startTimeparams[1] + ":00";
-            this.new_manifestation.startTime = startTimeparams.join(" ");
-
-			endTimeparams = this.new_manifestation.endTime.split("T");
-            endTimeparams[1] = endTimeparams[1] + ":00";
-            this.new_manifestation.endTime = endTimeparams.join(" ");
-        },
-        removeClass() {
-			$('#inputNumOfSeats').removeClass("error");
-			$('#inputPrice').removeClass("error");
-			$('#inputId').removeClass("error");
-			$('#error').css("color","red");
-			$('#error').html("");
-		},
-		addClass(id, className) {
-			$(id).addClass(className);
+			output.src = "";
+			this.$refs.locationId.value = "";
+			this.$refs.file.value = "";
 		}
-    }
+	}
 }
 </script>
 

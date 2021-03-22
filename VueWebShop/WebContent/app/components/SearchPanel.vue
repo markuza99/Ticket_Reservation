@@ -10,10 +10,10 @@
 						<input v-model="name" type="text" class="form-control" placeholder="Naziv manifestacije..." id="nazivMan"/>
 					</li>
 					<li class="nav-item">
-						<input v-model="dateFrom" class="form-control" type="date" id="datumOdMan"/>
+						<input v-model="dateFrom" class="form-control" type="datetime-local" id="datumOdMan"/>
 					</li>
 					<li class="nav-item">
-						<input v-model="dateTo" class="form-control" type="date" id="datumDoMan"/>
+						<input v-model="dateTo" class="form-control" type="datetime-local" id="datumDoMan"/>
 					</li>
 					<li class="nav-item">
 						<input v-model="priceFrom" class="form-control" type="number" placeholder="Cena od" id="cenaOdMan"/>
@@ -52,22 +52,13 @@ module.exports = {
 				$('.nav').addClass("error");
 				return;
 			}
-
-			dateFrom = this.dateFrom;
-			dateTo = this.dateTo;
-			if(this.dateFrom != "") {
-				dateFrom = this.dateFrom.trim() + " 00:00:00";
-			}
-			if(this.dateTo != "") {
-				dateTo = this.dateTo.trim() + " 00:00:00";
-			}
 			
 			axios
 			.get("rest/manifestations/search", {
 				params: {
 					"name" : this.name,
-					"dateFrom":dateFrom,
-					"dateTo":dateTo,
+					"dateFrom":this.dateFrom,
+					"dateTo":this.dateTo,
 					"place":this.place,
 					"priceFrom":this.priceFrom,
 					"priceTo":this.priceTo

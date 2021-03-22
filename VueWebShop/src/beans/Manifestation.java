@@ -72,8 +72,7 @@ public class Manifestation {
 	}
 
 	public void setStartTime(String startTime) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		this.startTime = LocalDateTime.parse(startTime, formatter);
+		this.startTime = LocalDateTime.parse(startTime);
 	}
 
 	public LocalDateTime getEndTime() {
@@ -81,8 +80,7 @@ public class Manifestation {
 	}
 
 	public void setEndTime(String endTime) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		this.endTime = LocalDateTime.parse(endTime, formatter);
+		this.endTime = LocalDateTime.parse(endTime);
 	}
 
 	public int getTicketPrice() {
