@@ -65,7 +65,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazivanje</button>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancel-create-manifestation">Otkazivanje</button>
 				<button type="button" class="btn btn-primary" v-on:click="createManifestation()">Potvrda</button>
 			</div>
 			</div>
@@ -158,10 +158,10 @@ module.exports = {
 				.then(response => {
 					if(response.data != "") {
                         this.$root.$emit('create-manifestation',response.data);
-						$('#error').html("Manifestacija uspesno dodata!");
-						$('#error').css("color","green");
+						
 						this.new_manifestation.startTime = "";
 						this.new_manifestation.endTime = "";
+						document.getElementById('cancel-create-manifestation').click();
 						
 					} else {
 						$('#error').html("Pogresan unos.");
