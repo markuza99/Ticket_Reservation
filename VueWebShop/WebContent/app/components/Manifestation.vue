@@ -307,10 +307,11 @@ module.exports = {
 			.then(response => {
 				this.manifestation = response.data;
 				makeDate(this.manifestation);
+				formatType(this.manifestation);
 				
-				this.manifestation_date = getManifestationDateInMilliseconds(this.manifestation.date.dayOfMonth,
-										this.manifestation.date.monthValue -1,this.manifestation.date.year); 
-				if(!validateRange(Date.now(), this.manifestation_date)) {
+				// this.manifestation_date = getManifestationDateInMilliseconds(this.manifestation.date.dayOfMonth,
+				// 						this.manifestation.date.monthValue -1,this.manifestation.date.year); 
+				if(!validateRange(Date.now().toISOString(), this.manifestation.endTime)) {
 					this.manifestation_passed = true;
 				}
 			});
@@ -322,10 +323,10 @@ module.exports = {
 			});
 
 		axios
-			.get("rest/comments/comment-params/" + manifestationId)
+			.get("rest/comments/commenting-conditions/manifestation/" + manifestationId)
 			.then(response => {
-				this.commentParams = response.data;
-				console.log(this.commentParams);
+				this.comment_conditions = response.data;
+				console.log(this.comment_conditions);
 			});
 
 	}
