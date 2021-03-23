@@ -2,25 +2,15 @@ package dto;
 
 import beans.CommentApproval;
 
-public class CommentingConditionsDTO {
-	private boolean manifestationPassed;	// ovo mi mozda i ne treba jer cu dobiti iz same manifestacije
+public class CommentingConditionsDTO {	// ovo mi mozda i ne treba jer cu dobiti iz same manifestacije
 	private boolean userAttended;
 	private CommentApproval commentApproval;
 	private int userRatingForManifestation;
 	
-	public CommentingConditionsDTO(boolean manifestationPassed, boolean userAttended, CommentApproval commentApproval, int userRatingForManifestation) {
-		this.manifestationPassed = manifestationPassed;
+	public CommentingConditionsDTO(boolean userAttended, CommentApproval commentApproval, int userRatingForManifestation) {
 		this.userAttended = userAttended;
 		this.commentApproval = commentApproval;
 		this.userRatingForManifestation = userRatingForManifestation;
-	}
-	
-	public boolean isManifestationPassed() {
-		return manifestationPassed;
-	}
-	
-	public void setManifestationPassed(boolean manifestationPassed) {
-		this.manifestationPassed = manifestationPassed;
 	}
 	
 	public boolean isUserAttended() {

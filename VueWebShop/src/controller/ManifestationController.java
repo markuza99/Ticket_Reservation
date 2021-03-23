@@ -1,6 +1,6 @@
 package controller;
 
-import java.io.IOException;
+import java.io.IOException; 
 import java.text.ParseException;
 import java.util.List;
 
@@ -19,7 +19,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import beans.Manifestation;
-import beans.Status;
 import beans.User;
 import dao.LocationDAO;
 import dao.ManifestationDAO;

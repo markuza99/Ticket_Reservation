@@ -1,43 +1,44 @@
 <template>
-	<div id="manifestation-page" class="container-fluid" v-if="manifestation">
+	<div id="manifestation-page"  v-if="manifestation">
+		<div  class="container-fluid">
 		<div class="row">
 			<div class="col-lg-6 col-md-6 col-sm-12">
-				<div class="image-holder">
-					<img class="fit-img" v-bind:class="{ gray : sold(manifestation) }" v-bind:src="'images/' + manifestation.image">
+				<div class="map-holder map" id="map" ref="map">
+					<div v-if="!mapShowed" v-on:click="displayMap">Pogledaj mapu</div>
 				</div>
 			</div>
 			<div class="col-lg-6 col-md-6 col-sm-12">
-				<div class="manifestation-info">
-					
-					<h1>{{manifestation.name}}</h1>
-					<div class="manifestation-description">
-						<h3 class="text-info">{{manifestation.type}}</h3>
-						<div class="date">
-							<span>{{manifestation.date.dayOfMonth}}</span>
-							<span>{{manifestation.formattedMonth}}</span>
-							<span>{{manifestation.date.year}}</span>
-						</div>
-					
-					
+				<div class="manifestation">
+					<div class="image-holder">
+						<img class="fit-img" v-bind:class="{ gray : sold(manifestation) }" v-bind:src="'images/' + manifestation.image">
 					</div>
-				
-				
-					<div class="ticket-price text-danger text-white" v-if="!sold(manifestation)">{{manifestation.ticketPrice}},00 RSD</div>
-					<div class="ticket-price text-danger text-white" v-if="sold(manifestation)">RASPRODATO</div>
-					<div class="text-success">{{manifestation.status}}</div>
-					<div class="average_rating" v-if="manifestation_passed">
-						<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(1) }"></span>
-						<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(2) }"></span>
-						<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(3) }"></span>
-						<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(4) }"></span>
-						<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(5) }"></span>
+					<div class="manifestation-information">
+						<div class="mb-2 mt-4 font-weight-bold">{{manifestation.type}}</div>
+						<h1>{{manifestation.name}}</h1>
+						<div class="startTime">
+							<span>{{manifestation.startTime.dayOfMonth}}</span>
+							<span>{{manifestation.formattedMonth}}</span>
+							<span>{{manifestation.startTime.year}}</span>
+						</div>
+						-
+						<div class="endTime">
+							<span>{{manifestation.endTime.dayOfMonth}}</span>
+							<span>{{manifestation.formattedMonth}}</span>
+							<span>{{manifestation.endTime.year}}</span>
+						</div>
+
+						<div class="ticket-price text-danger text-white" v-if="!sold(manifestation)">{{manifestation.ticketPrice}},00 RSD</div>
+						<div class="ticket-price text-danger text-white" v-if="sold(manifestation)">RASPRODATO</div>
+						<!-- <div class="text-success">{{manifestation.status}}</div> -->
+						<div class="average_rating" v-if="manifestation_passed">
+							<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(1) }"></span>
+							<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(2) }"></span>
+							<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(3) }"></span>
+							<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(4) }"></span>
+							<span class="fa fa-star" v-bind:class="{ checked : isCountedInAverageRating(5) }"></span>
+						</div>
 					</div>
 				</div>
-					
-					
-					<div class="manifestation-location map" id="map" ref="map">
-						<div v-if="!mapShowed" v-on:click="displayMap">Pogledaj mapu</div>
-					</div>
 				</div>
 		</div>
 
@@ -51,123 +52,17 @@
 			</button>
 
 			<!-- Modal -->
-			<div class="modal fade" id="reservationModal" tabindex="-1" role="dialog" aria-labelledby="reservationModalLabel" aria-hidden="true">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="reservationModalLabel">Rezervacija karte</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<label class="form-label">Broj karata</label> 
-							<input type="number" min="1" max="5" v-model="number_of_tickets" class="form-control" id="username"/>
-							<small id="remaining_number_error" v-if="remaining_number_error" class="form-text">Broj preostalih karata je {{manifestation.remainingNumberOfSeats}}</small>
-						</div>
-						<div class="form-group">
-							<div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" v-model="ticket_type" name="inlineRadioOptions" id="inlineRadio1" value="REGULAR">
-                            <label class="form-check-label" for="inlineRadio1">Regular</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" v-model="ticket_type" name="inlineRadioOptions" id="inlineRadio2" value="FAN_PIT">
-                            <label class="form-check-label" for="inlineRadio2">Fan pit</label>
-							</div>
-							<div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" v-model="ticket_type" name="inlineRadioOptions" id="inlineRadio2" value="VIP">
-                            <label class="form-check-label" for="inlineRadio2">Vip</label>
-							</div>
-							<small id="remaining_number_error" class="form-text">Cena Fan Pit karte je dva puta veca od regularne cene, a cena Vip karte je cetiri puta veca od regularne cene.</small>
-						</div>
-						<div class="form-group">
-							<button type="button" class="btn btn-primary" v-on:click="countPrice">Izracunaj ukupnu cenu</button>
-						</div>
-						<div class="form-group">
-							<label class="form-label">Ukupna cena</label>
-							<input class="form-control total-price" type="text" placeholder="Readonly input here…" readonly>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazite</button>
-						<button type="button" class="btn btn-primary reserve-button" 
-						 data-dismiss="modal" data-toggle="modal" data-target="#areYouSureModal">Izvrsite rezervaciju</button>
-					</div>
-					</div>
-				</div>
-			</div>
+			<reservation-modal></reservation-modal>
 
-			<div class="modal fade" id="areYouSureModal" tabindex="-1" role="dialog" aria-labelledby="areYouSureModalLabel" aria-hidden="true">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="areYouSureModalLabel">Potvrda rezervacije</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body">
-						Da li ste sigurni?
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazite</button>
-						<button type="button" class="btn btn-primary" v-on:click="reserve" data-dismiss="modal">Potvrdite rezervaciju</button>
-					</div>
-					</div>
-				</div>
-			</div>
+			<are-you-sure-modal></are-you-sure-modal>
 
+		<!-- </div> -->
+
+		<!-- <div class="row"> -->
+			<comment-section></comment-section>
+			
 		</div>
-
-		<div class="row">
-			<div class="comment-section">
-				<h3 v-if="comments.length > 0">Komentari</h3>
-				<h3 v-if="comments.length == 0">Nema komentara</h3>
-				<div class="comment" v-for="comment in comments" :key="comment.id">
-					<ul class="comment-info bg-light d-flex justify-content-between">
-						<li class="text-secondary comment-username">{{comment.user}}</li>
-						<!-- <li class="comment-date">20 Oktobar 2020</li> -->
-						<li>
-							<span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
-							<span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
-							<span class="fa fa-star" v-bind:class="{ checked : isCounted(3, comment) }"></span>
-							<span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
-							<span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
-						</li>
-					</ul>
-					<div class="comment-description">
-						<p>{{comment.description}}</p>
-					</div>
-				</div>
-				<div class="logged-user-comment" v-if="correspondsCommentPermision()">
-					<div class="input-group mb-3">
-						<div class="input-group-prepend">
-							<button class="btn btn-outline-secondary" type="button" v-on:click="comment">Komentarisi</button>
-						</div>
-						<input type="text" class="form-control comment-holder" placeholder="" aria-label="" aria-describedby="basic-addon1">
-						<div class="rating">
-						<span class="fa fa-star five-stars" v-on:click="clickedStar('five-stars')"></span>
-						<span class="fa fa-star four-stars" v-on:click="clickedStar('four-stars')"></span>
-						<span class="fa fa-star three-stars" v-on:click="clickedStar('three-stars')"></span>
-						<span class="fa fa-star two-stars" v-on:click="clickedStar('two-stars')"></span>
-						<span class="fa fa-star one-star" v-on:click="clickedStar('one-star')"></span>
-						</div>
-					</div>
-					
-				</div>
-
-				<div v-if="commentParams.commentSuccess">
-					<div class="comment-success">
-						<input type="text" class="form-control comment-holder " placeholder="Vas komentar je uspesno poslat! Ceka se odobrenje."
-				 		aria-label="" aria-describedby="basic-addon1" readonly>
-					</div>
-					
-				</div>
-					
-			</div>
 		</div>
-
 	</div>
 </template>
 
@@ -190,6 +85,11 @@ module.exports = {
 			remaining_number_error: false,
 			new_price: 0
 		}
+	},
+	components: {
+		'reservation-modal':httpVueLoader('./modals/ReservationModal.vue'),
+		'are-you-sure-modal':httpVueLoader('./modals/AreYouSureModal.vue'),
+		'comment-section':httpVueLoader('./CommentSection.vue')
 	},
 	methods: {
 		goToEditManifestation(id) {
@@ -311,7 +211,8 @@ module.exports = {
 				
 				// this.manifestation_date = getManifestationDateInMilliseconds(this.manifestation.date.dayOfMonth,
 				// 						this.manifestation.date.monthValue -1,this.manifestation.date.year); 
-				if(!validateRange(Date.now().toISOString(), this.manifestation.endTime)) {
+				let date = new Date();
+				if(!validateRange(date.toISOString(), this.manifestation.endTime)) {
 					this.manifestation_passed = true;
 				}
 			});
@@ -336,9 +237,21 @@ module.exports = {
 
 <style scoped>
 
-#manifestation-page {
-	margin-top: 2em;
-	padding: 2em;
+#manifestation-page .container-fluid {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+#manifestation-page .row {
+	margin-right: 0;
+	margin-left: 0;
+}
+
+#manifestation-page .col-md-6, 
+#manifestation-page .col-sm-12, 
+#manifestation-page .col-lg-6 {
+	padding-left: 0;
+	padding-right: 0;
 }
 
 #manifestation-page .image-holder {
