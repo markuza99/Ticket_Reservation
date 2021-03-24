@@ -1,4 +1,5 @@
 <template>
+    <div>
     <div class="modal fade" id="reservationModal" tabindex="-1" role="dialog" aria-labelledby="reservationModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -12,7 +13,6 @@
                 <div class="form-group">
                     <label class="form-label">Broj karata</label> 
                     <input type="number" min="1" max="5" v-model="number_of_tickets" class="form-control" id="username"/>
-                    <small id="remaining_number_error" v-if="remaining_number_error" class="form-text">Broj preostalih karata je {{manifestation.remainingNumberOfSeats}}</small>
                 </div>
                 <div class="form-group">
                     <div class="form-check form-check-inline">
@@ -30,7 +30,7 @@
                     <small id="remaining_number_error" class="form-text">Cena Fan Pit karte je dva puta veca od regularne cene, a cena Vip karte je cetiri puta veca od regularne cene.</small>
                 </div>
                 <div class="form-group">
-                    <button type="button" class="btn btn-primary" v-on:click="countPrice">Izracunaj ukupnu cenu</button>
+                    <button type="button" class="btn btn-primary" v-on:click="countPrice()">Izracunaj ukupnu cenu</button>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Ukupna cena</label>
@@ -45,4 +45,34 @@
             </div>
         </div>
     </div>
+    <are-you-sure-modal></are-you-sure-modal>
+    </div>
 </template>
+
+<script>
+module.exports = ({
+    data() {
+        return {
+            ticket_type : "REGULAR",
+            number_of_tickets: 0
+        }
+    },
+    methods: {
+        countPrice() {
+            console.log("price")
+        },
+        reserve() {
+            console.log('reserve')
+        }
+    },
+    components: {
+        'are-you-sure-modal':httpVueLoader('./AreYouSureModal.vue'),
+    },
+    mounted() {
+        this.$root.$on("reserve-ticket-modal", (areYouSure) => {
+            if(areYouSure)
+                this.reserve();
+        });
+    }
+})
+</script>

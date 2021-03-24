@@ -54,7 +54,7 @@
 			<!-- Modal -->
 			<reservation-modal></reservation-modal>
 
-			<are-you-sure-modal></are-you-sure-modal>
+			
 
 		<!-- </div> -->
 
@@ -73,22 +73,22 @@ module.exports = {
 		return {
 			manifestation: null,
 			mapShowed : false,
-			comments : [],
-			user_rating : 0,
-			number_of_tickets : 0,
-			ticket_price : 0,
-			ticket_type: "REGULAR",
-			customer : {},
-			manifestation_date : 0,
+			// comments : [],
+			// user_rating : 0,
+			// number_of_tickets : 0,
+			// ticket_price : 0,
+			// ticket_type: "REGULAR",
+			// customer : {},
+			// manifestation_date : 0,
 			manifestation_passed : false,
-			commentParams : {},
-			remaining_number_error: false,
-			new_price: 0
+			// commentParams : {},
+			// remaining_number_error: false,
+			// new_price: 0
 		}
 	},
 	components: {
 		'reservation-modal':httpVueLoader('./modals/ReservationModal.vue'),
-		'are-you-sure-modal':httpVueLoader('./modals/AreYouSureModal.vue'),
+		
 		'comment-section':httpVueLoader('./CommentSection.vue')
 	},
 	methods: {
@@ -96,111 +96,113 @@ module.exports = {
 			location.replace("#/manifestation/edit/" + id);
 		},
 		countPrice() {
-			this.remaining_number_error = false;
-			$('.reserve-button').attr("disabled", false);
-			if(!validateNumberRange(1,5,this.number_of_tickets)) {
-				$('.total-price').attr("placeholder", "Mozete rezervisati od 0 do 5 karata u jednoj rezervaciji.");
-				$('.total-price').addClass("error");
-				$('.reserve-button').attr("disabled", true);
-				return;
-			}
+			// this.remaining_number_error = false;
+			// $('.reserve-button').attr("disabled", false);
+			// if(!validateNumberRange(1,5,this.number_of_tickets)) {
+			// 	$('.total-price').attr("placeholder", "Mozete rezervisati od 0 do 5 karata u jednoj rezervaciji.");
+			// 	$('.total-price').addClass("error");
+			// 	$('.reserve-button').attr("disabled", true);
+			// 	return;
+			// }
 
-			if(this.number_of_tickets > this.manifestation.remainingNumberOfSeats) {
-				this.remaining_number_error = true;
-				return;
-			}
+			// if(this.number_of_tickets > this.manifestation.remainingNumberOfSeats) {
+			// 	this.remaining_number_error = true;
+			// 	return;
+			// }
 
-			if(this.ticket_type == "FAN_PIT") {
-				this.new_price = this.manifestation.ticketPrice * 2;
-			} else if(this.ticket_type == "VIP"){
-				this.new_price = this.manifestation.ticketPrice * 4;
-			} else {
-				this.new_price = this.manifestation.ticketPrice;
-			}
+			// if(this.ticket_type == "FAN_PIT") {
+			// 	this.new_price = this.manifestation.ticketPrice * 2;
+			// } else if(this.ticket_type == "VIP"){
+			// 	this.new_price = this.manifestation.ticketPrice * 4;
+			// } else {
+			// 	this.new_price = this.manifestation.ticketPrice;
+			// }
 
-			axios
-				.get("rest/customerservice/get-customer")
-				.then(response => {
-					this.customer = response.data;
-					if(this.customer.customerType.discount == 1) {
-						this.ticket_price = this.number_of_tickets * this.new_price;
-					} else {
-						this.ticket_price = this.number_of_tickets * (this.new_price * (1-this.customer.customerType.discount));
-					}
-					$('.total-price').attr("placeholder", this.ticket_price + ",00 RSD");
-					$('.total-price').removeClass("error");
-				});
+			// axios
+			// 	.get("rest/customerservice/get-customer")
+			// 	.then(response => {
+			// 		this.customer = response.data;
+			// 		if(this.customer.customerType.discount == 1) {
+			// 			this.ticket_price = this.number_of_tickets * this.new_price;
+			// 		} else {
+			// 			this.ticket_price = this.number_of_tickets * (this.new_price * (1-this.customer.customerType.discount));
+			// 		}
+			// 		$('.total-price').attr("placeholder", this.ticket_price + ",00 RSD");
+			// 		$('.total-price').removeClass("error");
+			// 	});
 		},
 		reserve() {
 			
-			let points = this.ticket_price/1000 * 133;
-			axios
-				.post("rest/customerservice/reserve-ticket", 
-				{
-					"points" : points,
-					"manifestation" : this.manifestation.id,
-					"numberOfTickets" : this.number_of_tickets,
-					"user" : this.commentParams.user,
-					"ticketPrice" : this.ticket_price
-				})
-				.then(response => {
-					alert("Rezervacija uspesno izvrsena!");
-				});
+			// let points = this.ticket_price/1000 * 133;
+			// axios
+			// 	.post("rest/customerservice/reserve-ticket", 
+			// 	{
+			// 		"points" : points,
+			// 		"manifestation" : this.manifestation.id,
+			// 		"numberOfTickets" : this.number_of_tickets,
+			// 		"user" : this.commentParams.user,
+			// 		"ticketPrice" : this.ticket_price
+			// 	})
+			// 	.then(response => {
+			// 		alert("Rezervacija uspesno izvrsena!");
+			// 	});
 		},
-		correspondsCommentPermision() {
-			console.log(this.commentParams);
-			return (this.commentParams.user && !this.commentParams.commentSuccess 
-							  && validateRange(this.manifestation_date, Date.now())
-							  && this.commentParams.userAttended && this.manifestation_passed);
+	// 	correspondsCommentPermision() {
+	// 		console.log(this.commentParams);
+	// 		return (this.commentParams.user && !this.commentParams.commentSuccess 
+	// 						  && validateRange(this.manifestation_date, Date.now())
+	// 						  && this.commentParams.userAttended && this.manifestation_passed);
 			
-		},
-		clickedStar(whichstar) {
-			this.user_rating = userRating(this.user_rating);
-		},
-		comment() {
-			let description = $('.comment-holder').val();
-			if(this.user_rating == 0 || description.trim() == "") {
-				$('.logged-user-comment input').addClass("error");
-				return;
-			}
+	// 	},
+	// 	clickedStar(whichstar) {
+	// 		this.user_rating = userRating(this.user_rating);
+	// 	},
+	// 	comment() {
+	// 		let description = $('.comment-holder').val();
+	// 		if(this.user_rating == 0 || description.trim() == "") {
+	// 			$('.logged-user-comment input').addClass("error");
+	// 			return;
+	// 		}
 			
-			comment = { user : "",
-						manifestation : this.manifestation.id,
-						description : description,
-						rating : this.user_rating,
-						commentStatus : "NONACTIVE",
-						approval: "NOT_CHECKED" 
-						};
-			axios
-				.post("rest/commentservice/post-comment",JSON.stringify(comment),{
-					headers: {'content-type':'application/json'}
-				})
-				.then(response => {
-					$('.logged-user-comment input').removeClass("error");
-					this.commentParams.commentSuccess = true;
-				});
-		},
-		sold(manifestation) {
-			return manifestation.remainingNumberOfSeats > 0 ? false : true;
-		},
-		isCounted(num, comment) {
-			return !(num > comment.rating);
-		},
-		isCountedInAverageRating(num) {
-			return !(num > this.commentParams.manifestationRating);
-		},
-		displayMap() {
-			if(this.mapShowed)
-				return;
-			displayMap();
-			this.mapShowed = true;
-		}
-	},
+	// 		comment = { user : "",
+	// 					manifestation : this.manifestation.id,
+	// 					description : description,
+	// 					rating : this.user_rating,
+	// 					commentStatus : "NONACTIVE",
+	// 					approval: "NOT_CHECKED" 
+	// 					};
+	// 		axios
+	// 			.post("rest/commentservice/post-comment",JSON.stringify(comment),{
+	// 				headers: {'content-type':'application/json'}
+	// 			})
+	// 			.then(response => {
+	// 				$('.logged-user-comment input').removeClass("error");
+	// 				this.commentParams.commentSuccess = true;
+	// 			});
+	// 	},
+	// 	sold(manifestation) {
+	// 		return manifestation.remainingNumberOfSeats > 0 ? false : true;
+	// 	},
+	// 	isCounted(num, comment) {
+	// 		return !(num > comment.rating);
+	// 	},
+	// 	isCountedInAverageRating(num) {
+	// 		return !(num > this.commentParams.manifestationRating);
+	// 	},
+	// 	displayMap() {
+	// 		if(this.mapShowed)
+	// 			return;
+	// 		displayMap();
+	// 		this.mapShowed = true;
+	// 	}
+	// },
 	mounted() {
 
 		let path = window.location.href;
 		let pathparams = path.split("//")[1];
 		let manifestationId = pathparams.split("/")[4];
+
+		//ovo zameniti sa this.route
 
 		axios
 			.get("rest/manifestations/" + manifestationId)

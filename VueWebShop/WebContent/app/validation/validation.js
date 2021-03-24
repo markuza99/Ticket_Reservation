@@ -16,12 +16,11 @@ const isNumberInRange = (from, to, number) => {
     return (number >= from && number <= to);
 }
 
-const validateRange = (from, to) => {
+function validateRange(from, to) {
     if(!from || !to) {
         return true;
     }
-    console.log(!(to < from));
-	return !(to < from);
+	return to > from;
 }
 
 

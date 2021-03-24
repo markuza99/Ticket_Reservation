@@ -13,7 +13,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazite</button>
-                <button type="button" class="btn btn-primary" v-on:click="reserve" data-dismiss="modal">Potvrdite rezervaciju</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Potvrdite rezervaciju</button>
             </div>
             </div>
         </div>

@@ -1,56 +1,13 @@
-
 .error {
-    outline: none !important;
-    border:1px solid red;
-    box-shadow: 0 0 10px #f40b0b;
+  outline: none !important;
+  border: 1px solid red;
+  box-shadow: 0 0 10px #f40b0b;
 }
 
 .success {
-    outline: none !important;
-    border:1px solid green;
-    box-shadow: 0 0 10px green;
-}
-
-
-.comment-section {
-	margin-top:1em;
-	width:100%;
-}
-
-.comment-section h3 {
-	font-family: 'Quicksand', sans-serif;
-	padding-left: 1em;
-}
-
-.comment {
-	border: 1px solid #bebebe;
-	margin-top: 1em;
-	/* font-family: 'Quicksand', sans-serif; */
-}
-
-.comment-info {
-	margin:0;
-	padding: 0;
-	/* background-color: cornflowerblue; */
-	padding: 1em;
-}
-
-.comment-date {
-	color:#747474;
-}
-
-.comment-description {
-	padding: 1em;
-}
-
-.comment-username {
-	margin-right: 1em;
-	font-family: 'Quicksand', sans-serif;
-}
-
-.comment-info li{
-	/* display: inline; */
-	list-style: none;
+  outline: none !important;
+  border: 1px solid green;
+  box-shadow: 0 0 10px green;
 }
 
 .checked {
@@ -58,23 +15,23 @@
 }
 
 .map {
-	height: 200px;
-	width: 100%;
+  height: 200px;
+  width: 100%;
 }
 
 .logged-user-comment {
-	/* border: 1px solid #bebebe; */
-	margin: 1em 2em;
-	/* font-family: 'Quicksand', sans-serif; */
+  /* border: 1px solid #bebebe; */
+  margin: 1em 2em;
+  /* font-family: 'Quicksand', sans-serif; */
 }
 
 .comment-success {
-	padding: 2em;
+  padding: 2em;
 }
 
 .comment-success input {
-	border: 1px solid  rgb(40,167,69);
-	box-shadow: 0 0 10px rgb(40,167,69);
-	padding: 2em;
-	color: rgb(40,167,69);
+  border: 1px solid rgb(40, 167, 69);
+  box-shadow: 0 0 10px rgb(40, 167, 69);
+  padding: 2em;
+  color: rgb(40, 167, 69);
 }
