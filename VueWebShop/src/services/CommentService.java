@@ -46,13 +46,13 @@ public class CommentService {
 	}
 	
 	public Comment postComment(String username, CommentDTO commentDTO) {
-		return commentDAO.create(new Comment(commentDTO.getUser(), commentDTO.getManifestation(), commentDTO.getDescription(),
+		return commentDAO.create(new Comment(username, commentDTO.getManifestation(), commentDTO.getDescription(),
 				commentDTO.getRating(), CommentApproval.NOT_CHECKED, false));
 	}
 
 	public Comment approveComment(String username, CommentDTO commentDTO) {
 		for(Comment c : commentDAO.getAll()) {
-			if(c.getUser().equals(commentDTO.getUser()) && c.getManifestation().equals(commentDTO.getManifestation())) {
+			if(c.getUser().equals(username) && c.getManifestation().equals(commentDTO.getManifestation())) {
 				c.setApproval("ACCEPTED");
 				return commentDAO.update(c);
 			}
@@ -62,7 +62,7 @@ public class CommentService {
 	
 	public Comment declineComment(String username, CommentDTO commentDTO) {
 		for(Comment c : commentDAO.getAll()) {
-			if(c.getUser().equals(commentDTO.getUser()) && c.getManifestation().equals(commentDTO.getManifestation())) {
+			if(c.getUser().equals(username) && c.getManifestation().equals(commentDTO.getManifestation())) {
 				c.setApproval("DENIED");
 				return commentDAO.update(c);
 			}
@@ -76,7 +76,7 @@ public class CommentService {
 		if(manifestation.getEndTime().isBefore(LocalDateTime.now())) {
 			
 			for (Ticket t : ticketDAO.getAll()) {
-				if(t.getUser() == username && t.getManifestationId() == id) {
+				if(t.getUser().equals(username) && t.getManifestationId().equals(id)) {
 					ccDTO.setUserAttended(true);
 					break;
 				}
@@ -97,7 +97,7 @@ public class CommentService {
 		int n = 0;
 		for(Comment comment : commentDAO.getAll()) {
 			if(comment.getManifestation().equals(manifestationId)
-					&& comment.getIsDeleted() == true && comment.getApproval() == CommentApproval.ACCEPTED) {
+					&& comment.getIsDeleted() == false && comment.getApproval() == CommentApproval.ACCEPTED) {
 				sumOfRatings += comment.getRating();
 				n++;
 			}

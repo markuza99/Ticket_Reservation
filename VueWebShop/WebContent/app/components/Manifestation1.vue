@@ -45,7 +45,7 @@
                 <h3 class="text-uppercase p-3">{{ manifestation.name }}</h3>
               </div>
             </div>
-            <comment-section></comment-section>
+            <comment-section v-bind:commenting_conditions="comment_conditions"></comment-section>
           </div>
         </div>
         <div class="col-lg-3 col-md-3">
@@ -162,7 +162,7 @@ module.exports = {
       manifestation: null,
       manifestation_passed: false,
       manifestation_sold: false,
-      comment_conditions: [],
+      comment_conditions: {},
     };
   },
   components: {
@@ -188,11 +188,15 @@ module.exports = {
       )
       .then((response) => {
         this.comment_conditions = response.data;
-        this.$root.$emit("commenting-conditions", response.data);
+        console.log('ovde ',typeof(this.comment_conditions))
+        // this.comment_conditions= {mika : "mikic"};
+        console.log("KOMENTARI!!!!!!!!!!");
+        console.log(this.comment_conditions)
       });
   },
   methods: {
     isCountedInAverageRating(num) {
+      console.log('rating: ',this.comment_conditions.manifestationRating)
       return !(num > this.comment_conditions.manifestationRating);
     },
     validateAndFormatDate() {

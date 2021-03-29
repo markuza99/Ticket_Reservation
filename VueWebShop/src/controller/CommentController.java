@@ -84,7 +84,7 @@ public class CommentController {
 		if(user != null) {
 			return commentService.getCommentingConditions(user.getUsername(), id);
 		}
-		return null;
+		return new CommentingConditionsDTO(false, null, commentService.getManifestationRatingFromComments(id));
 	}
 //	
 //	@GET

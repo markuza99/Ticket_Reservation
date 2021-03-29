@@ -29,17 +29,17 @@
       </div>
 
       <div class="p-3">
-        <textarea class="form-control comment-form" rows="3"></textarea>
+        <textarea class="form-control comment-form" rows="3" v-model="description"></textarea>
       </div>
       <div class="text-right pr-3">
-        <button class="btn-pink manifestation-button comment-button">
+        <button class="btn-pink manifestation-button comment-button" v-on:click="comment()">
           Postavi komentar
         </button>
       </div>
     </div>
-    <div class="comment m-3" v-for="comment in comments" :key="comment.id">
+    <div class="comment" v-for="comment in comments" :key="comment.id">
       <ul class="comment-info d-flex justify-content-between">
-        <li class="text-secondary comment-username">{{ comment.user }}</li>
+        <li class="comment-username">{{ comment.user }}</li>
         <li>
           <span
             class="fa fa-star"
@@ -63,12 +63,12 @@
           ></span>
         </li>
       </ul>
-      <div class="comment-description">
+      <div class="comment-description shadow-sm">
         <p>{{ comment.description }}</p>
       </div>
     </div>
 
-    <!-- <div v-if="commentParams.commentSuccess">
+    <div v-if="commenting_conditions.commentApproval == 'NOT_CHECKED'">
       <div class="comment-success">
         <input
           type="text"
@@ -79,7 +79,7 @@
           readonly
         />
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -88,41 +88,33 @@ module.exports = {
   data() {
     return {
       comments: [],
-      comment_conditions: [],
       user_rating: 0,
+      description: "",
+      manifestation_id: ""
     };
   },
+  props: ['commenting_conditions']
+  ,
   created() {
-    const manifestationId = this.$route.params.id;
+    this.manifestation_id = this.$route.params.id;
     axios
-      .get("rest/comments/manifestation/" + manifestationId)
+      .get("rest/comments/manifestation/" + this.manifestation_id)
       .then((response) => {
         this.comments = response.data;
         console.log(this.comments);
       });
 
-    axios
-      .get(
-        "rest/comments/commenting-conditions/manifestation/" + manifestationId
-      )
-      .then((response) => {
-        this.comment_conditions = response.data;
-        console.log(this.comment_conditions);
-      });
   },
   mounted() {
-    this.$root.$on("commenting-conditions", (conditions) => {
-      this.comment_conditions = conditions;
-      console.log("juhu", this.comment_conditions);
-    });
+    console.log("raaadiii ", this.commenting_conditions);
+    console.log(typeof(this.commenting_conditions))
   },
   methods: {
     correspondsCommentPermision() {
-      console.log(this.commentParams);
       return (
-        (this.comment_conditions.commentApproval == "DENIED" ||
-          this.comment_conditions.commentApproval == null) &&
-        this.comment_conditions.userAttended
+        (this.commenting_conditions.commentApproval == "DENIED" ||
+          this.commenting_conditions.commentApproval == null) &&
+        this.commenting_conditions.userAttended
       );
     },
     isCounted(num, comment) {
@@ -132,13 +124,40 @@ module.exports = {
       this.user_rating = userRating(whichstar);
       console.log(this.user_rating);
     },
+    comment() {
+      console.log(this.user_rating);
+      if(this.user_rating == 0 || this.description.trim() == "") {
+				// $('.logged-user-comment input').addClass("error");
+				return;
+			}
+
+      commentDTO = {
+        manifestation : this.manifestation_id,
+        description : this.description,
+        rating : this.user_rating
+        // commentStatus : "NONACTIVE",
+        // approval: "NOT_CHECKED" 
+      };
+      
+      console.log(commentDTO);
+      axios
+				.post("rest/comments",JSON.stringify(commentDTO),{
+					headers: {'content-type':'application/json'}
+				})
+				.then(response => {
+          alert("ekstra")
+					// $('.logged-user-comment input').removeClass("error");
+					// this.commentParams.commentSuccess = true;
+				});
+      
+    }
   },
 };
 </script>
 
 <style scoped>
 .comment-section {
-  border: 1px solid pink;
+  /* border: 1px solid pink; */
 }
 
 .rating {
@@ -155,7 +174,6 @@ module.exports = {
 
 .comment-form:focus {
   outline: none !important;
-  /* border: 1px solid rgb(255, 2, 102); */
   border: none;
   box-shadow: 0 0 10px rgb(255, 2, 102);
 }
@@ -165,20 +183,16 @@ module.exports = {
 }
 
 .comment {
-  border: 1px solid #e6eaed;
   margin-top: 1em;
   border-radius: 10px;
-  /* font-family: 'Quicksand', sans-serif; */
 }
 
 .comment-info {
   margin: 0;
   padding: 0;
-  background-color: #e6eaed;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  /* border-bottom: 1px solid #bebebe; */
+  background-color: #ffe5f0;
   padding: 1em;
+  border-bottom: 1px solid rgb(255, 2, 102);
 }
 
 .comment-date {
@@ -191,11 +205,10 @@ module.exports = {
 
 .comment-username {
   margin-right: 1em;
-  font-family: "Quicksand", sans-serif;
+  /* border-bottom: 2px solid rgb(255, 2, 102); */
 }
 
 .comment-info li {
-  /* display: inline; */
   list-style: none;
 }
 </style>
