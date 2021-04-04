@@ -45,7 +45,9 @@
                 <h3 class="text-uppercase p-3">{{ manifestation.name }}</h3>
               </div>
             </div>
-            <comment-section v-bind:commenting_conditions="comment_conditions"></comment-section>
+            <comment-section
+              v-bind:commenting_conditions="comment_conditions"
+            ></comment-section>
           </div>
         </div>
         <div class="col-lg-3 col-md-3">
@@ -76,11 +78,8 @@
                 <i class="fa fa-location-arrow pt-3 pb-3 pr-3 pink"></i>
                 <div>
                   <div>Lokacija</div>
-                  <small class="text-uppercase fw-light text-muted">
-                    {{ manifestation.location.street }}
-                    {{ manifestation.location.number }},
-                    {{ manifestation.location.city }},
-                    {{ manifestation.location.state }}
+                  <small class="text-uppercase fw-light text-muted" v-if="manifestation">
+                    {{locationString}}
                   </small>
                 </div>
               </li>
@@ -163,6 +162,8 @@ module.exports = {
       manifestation_passed: false,
       manifestation_sold: false,
       comment_conditions: {},
+      location: null,
+      locationString: ""
     };
   },
   components: {
@@ -188,15 +189,22 @@ module.exports = {
       )
       .then((response) => {
         this.comment_conditions = response.data;
-        console.log('ovde ',typeof(this.comment_conditions))
-        // this.comment_conditions= {mika : "mikic"};
-        console.log("KOMENTARI!!!!!!!!!!");
-        console.log(this.comment_conditions)
+        this.comment_conditions.manifestation_passed = this.manifestation_passed;
+        axios
+          .get("rest/locations/" + this.manifestation.location)
+          .then(response => {
+            this.location = response.data;
+            console.log(this.location);
+            this.locationString = this.location.street + " " + this.location.number + ", " + this.location.city;
+            console.log(this.manifestation.locationString)
+          })
       });
+
+    
   },
   methods: {
     isCountedInAverageRating(num) {
-      console.log('rating: ',this.comment_conditions.manifestationRating)
+      console.log("rating: ", this.comment_conditions.manifestationRating);
       return !(num > this.comment_conditions.manifestationRating);
     },
     validateAndFormatDate() {

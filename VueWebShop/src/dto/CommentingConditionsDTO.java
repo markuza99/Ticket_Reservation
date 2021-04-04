@@ -2,15 +2,15 @@ package dto;
 
 import beans.CommentApproval;
 
-public class CommentingConditionsDTO {	// ovo mi mozda i ne treba jer cu dobiti iz same manifestacije
+public class CommentingConditionsDTO {
 	private boolean userAttended;
 	private CommentApproval commentApproval;
-	private int userRatingForManifestation;
+	private int manifestationRating;
 	
-	public CommentingConditionsDTO(boolean userAttended, CommentApproval commentApproval, int userRatingForManifestation) {
+	public CommentingConditionsDTO(boolean userAttended, CommentApproval commentApproval, int manifestationRating) {
 		this.userAttended = userAttended;
 		this.commentApproval = commentApproval;
-		this.userRatingForManifestation = userRatingForManifestation;
+		this.manifestationRating = manifestationRating;
 	}
 	
 	public boolean isUserAttended() {
@@ -29,12 +29,12 @@ public class CommentingConditionsDTO {	// ovo mi mozda i ne treba jer cu dobiti 
 		this.commentApproval = commentApproval;
 	}
 
-	public int getUserRatingForManifestation() {
-		return userRatingForManifestation;
+	public int getManifestationRating() {
+		return manifestationRating;
 	}
 	
-	public void setUserRatingForManifestation(int userRatingForManifestation) {
-		this.userRatingForManifestation = userRatingForManifestation;
+	public void setManifestationRating(int manifestationRating) {
+		this.manifestationRating = manifestationRating;
 	}
 	
 }

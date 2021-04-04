@@ -1,7 +1,7 @@
 <template>
   <div class="comment-section pb-4 mt-5 mb-5">
     <h3 v-if="comments.length == 0" class="p-4">Nema komentara</h3>
-    <div v-if="correspondsCommentPermision()">
+    <div v-if="correspondsCommentPermission()">
       <div class="d-flex justify-content-between">
         <div class="font-weight-bold pt-4 pl-4 pr-4">Komentarisi</div>
         <div class="rating mt-3 mr-3">
@@ -29,12 +29,15 @@
       </div>
 
       <div class="p-3">
-        <textarea class="form-control comment-form" rows="3" v-model="description"></textarea>
+        <textarea
+          class="form-control comment-form"
+          rows="3"
+          v-model="description"
+        ></textarea>
       </div>
-      <div class="text-right pr-3">
-        <button class="btn-pink manifestation-button comment-button" v-on:click="comment()">
-          Postavi komentar
-        </button>
+      <div class="d-flex justify-content-between pr-3">
+        <p id="comment-error" class="ml-4"></p>
+        <button class="btn-pink manifestation-button comment-button" v-on:click="comment()">Postavi komentar</button>
       </div>
     </div>
     <div class="comment" v-for="comment in comments" :key="comment.id">
@@ -90,31 +93,29 @@ module.exports = {
       comments: [],
       user_rating: 0,
       description: "",
-      manifestation_id: ""
+      manifestation_id: "",
+      comment_error: false
     };
   },
-  props: ['commenting_conditions']
-  ,
+  props: ["commenting_conditions"],
   created() {
     this.manifestation_id = this.$route.params.id;
     axios
       .get("rest/comments/manifestation/" + this.manifestation_id)
       .then((response) => {
         this.comments = response.data;
-        console.log(this.comments);
       });
-
   },
   mounted() {
-    console.log("raaadiii ", this.commenting_conditions);
-    console.log(typeof(this.commenting_conditions))
+    console.log(this.commenting_conditions);
   },
   methods: {
-    correspondsCommentPermision() {
+    correspondsCommentPermission() {
       return (
-        (this.commenting_conditions.commentApproval == "DENIED" ||
-          this.commenting_conditions.commentApproval == null) &&
-        this.commenting_conditions.userAttended
+        this.commenting_conditions.userAttended &&
+        this.commenting_conditions.manifestation_passed &&
+        this.commenting_conditions.commentApproval != "ACCEPTED" && 
+        this.commenting_conditions.commentApproval != "NOT_CHECKED"
       );
     },
     isCounted(num, comment) {
@@ -126,31 +127,27 @@ module.exports = {
     },
     comment() {
       console.log(this.user_rating);
-      if(this.user_rating == 0 || this.description.trim() == "") {
-				// $('.logged-user-comment input').addClass("error");
-				return;
-			}
+      if (this.user_rating == 0 || this.description.trim() == "") {
+        $('#comment-error').html('Morate oceniti manifestaciju da biste postavili komentar!');
+        return;
+      }
 
       commentDTO = {
-        manifestation : this.manifestation_id,
-        description : this.description,
-        rating : this.user_rating
-        // commentStatus : "NONACTIVE",
-        // approval: "NOT_CHECKED" 
+        manifestation: this.manifestation_id,
+        description: this.description,
+        rating: this.user_rating,
       };
-      
+
       console.log(commentDTO);
       axios
-				.post("rest/comments",JSON.stringify(commentDTO),{
-					headers: {'content-type':'application/json'}
-				})
-				.then(response => {
-          alert("ekstra")
-					// $('.logged-user-comment input').removeClass("error");
-					// this.commentParams.commentSuccess = true;
-				});
-      
-    }
+        .post("rest/comments", JSON.stringify(commentDTO), {
+          headers: { "content-type": "application/json" },
+        })
+        .then((response) => {
+          $('#comment-error').html('');
+          this.commenting_conditions.commentApproval = "NOT_CHECKED";
+        });
+    },
   },
 };
 </script>

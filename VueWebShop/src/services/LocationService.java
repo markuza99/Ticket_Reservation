@@ -17,4 +17,8 @@ public class LocationService {
 	public List<Location> getLocations() {
 		return locationDAO.getAll();
 	}
+	
+	public Location getLocation(String id) {
+		return locationDAO.read(id);
+	}
 }

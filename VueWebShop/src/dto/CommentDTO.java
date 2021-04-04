@@ -1,15 +1,17 @@
 package dto;
 
 public class CommentDTO {
-	private String manifestation;
-	private String description;
-	private int rating;
+	public String manifestation;
+	public String description;
+	public int rating;
 	
 	public CommentDTO(String manifestation, String description, int rating) {
 		this.manifestation = manifestation;
 		this.description = description;
 		this.rating = rating;
 	}
+	
+	public CommentDTO() {}
 	
 	public String getManifestation() {
 		return manifestation;

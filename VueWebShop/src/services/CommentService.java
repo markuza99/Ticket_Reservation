@@ -85,7 +85,7 @@ public class CommentService {
 			Comment comment = commentDAO.read(username + id);
 			if(comment != null) {
 				ccDTO.setCommentApproval(comment.getApproval());
-				ccDTO.setUserRatingForManifestation(comment.getRating());
+				ccDTO.setManifestationRating(comment.getRating());
 			} 
 			
 		}
