@@ -4,7 +4,6 @@ public class ReservationDTO {
 	public int points;
 	public String manifestationId;
 	public int numberOfTickets;
-	public double ticketPrice;
 	public String ticketType;
 
 	public int getPoints() {
@@ -38,14 +37,5 @@ public class ReservationDTO {
 	public void setNumberOfTickets(int numberOfTickets) {
 		this.numberOfTickets = numberOfTickets;
 	}
-
-	public double getTicketPrice() {
-		return ticketPrice;
-	}
-
-	public void setTicketPrice(double ticketPrice) {
-		this.ticketPrice = ticketPrice;
-	}
-	
 	
 }

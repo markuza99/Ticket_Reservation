@@ -1,6 +1,6 @@
 package services;
 
-import java.time.LocalDateTime;
+import java.time.LocalDateTime; 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,8 +69,9 @@ public class TicketService {
 		while(ticketDAO.read(ticketId) != null) {
 			ticketId = generateRandomId();
 		}
+		double ticketPrice = getTicketTotalPrice(username, reservationDTO.numberOfTickets, reservationDTO.ticketType, reservationDTO.manifestationId);
 		return ticketDAO.create(
-				new Ticket(ticketId,reservationDTO.manifestationId,LocalDateTime.now(),reservationDTO.ticketPrice,
+				new Ticket(ticketId,reservationDTO.manifestationId,LocalDateTime.now(),ticketPrice,
 				username,TicketStatus.RESERVED,TicketType.valueOf(reservationDTO.ticketType), reservationDTO.numberOfTickets, false));
 	}
 	
@@ -129,6 +130,27 @@ public class TicketService {
 	    } 
 	
 	    return sb.toString(); 
+	}
+
+	public double getTicketTotalPrice(String username, int numberOfTickets, String ticketType, String manifestationId) {
+		// TODO Auto-generated method stub
+		
+		Customer customer = customerDAO.read(username);
+		double discount = 0;
+		if(customer != null) {
+			discount = customer.getCustomerType().getDiscount();
+		}
+		double originalPrice = manifestationDAO.read(manifestationId).getTicketPrice();
+		
+		double ticketPrice = (originalPrice - originalPrice * discount) * numberOfTickets; 
+		
+		if(ticketType.equals("FAN_PIT")) {
+			ticketPrice = ticketPrice * 2;
+		} else if(ticketType.equals("VIP")){
+			ticketPrice = ticketPrice * 4;
+		}
+		
+		return ticketPrice;
 	}
 	
 }

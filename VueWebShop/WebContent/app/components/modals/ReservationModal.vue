@@ -54,24 +54,59 @@ module.exports = ({
     data() {
         return {
             ticket_type : "REGULAR",
-            number_of_tickets: 0
+            number_of_tickets: 0,
+            ticket_price: 0
         }
     },
+    props:['manifestationId'],
     methods: {
         countPrice() {
-            console.log("price")
+            console.log(this.ticket_type, this.number_of_tickets)
+            if(!isNumberInRange(1,5,this.number_of_tickets)) {
+				$('.total-price').attr("placeholder", "Mozete rezervisati od 0 do 5 karata u jednoj rezervaciji.");
+				$('.total-price').addClass("error");
+				$('.reserve-button').attr("disabled", true);
+				return;
+			}
+            
+            axios
+				.get("rest/tickets/total-price", {
+					params: {
+                        "numberOfTickets":this.number_of_tickets,
+                        "ticketType":this.ticket_type,
+                        "manifestationId":this.manifestationId
+                    }
+				})
+				.then(response => {
+					this.ticket_price = response.data
+                    $('.total-price').attr("placeholder", this.ticket_price);
+				});
+            
         },
         reserve() {
-            console.log('reserve')
+            let points = this.ticket_price/1000 * 133;
+            const reservationDTO = {
+                "points" : points,
+                "manifestationId" : this.manifestationId,
+                "numberOfTickets" : this.number_of_tickets,
+                "ticketType" : this.ticket_type
+            }
+            console.log(reservationDTO)
+			axios
+				.post("rest/tickets/reserve-ticket", JSON.stringify(reservationDTO), {
+					headers: {'content-type':'application/json'}
+				})
+				.then(() => {
+					alert("Rezervacija uspesno izvrsena!");
+				});
         }
     },
     components: {
         'are-you-sure-modal':httpVueLoader('./AreYouSureModal.vue'),
     },
     mounted() {
-        this.$root.$on("reserve-ticket-modal", (areYouSure) => {
-            if(areYouSure)
-                this.reserve();
+        this.$root.$on("reserve-ticket-modal", () => {
+            this.reserve();
         });
     }
 })

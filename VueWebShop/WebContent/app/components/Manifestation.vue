@@ -88,7 +88,6 @@ module.exports = {
 	},
 	components: {
 		'reservation-modal':httpVueLoader('./modals/ReservationModal.vue'),
-		
 		'comment-section':httpVueLoader('./CommentSection.vue')
 	},
 	methods: {

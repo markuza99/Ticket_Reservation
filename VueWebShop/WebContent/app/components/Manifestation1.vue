@@ -36,7 +36,7 @@
                       v-bind:class="{ yellow: isCountedInAverageRating(5) }"
                     ></span>
                   </div>
-                  <button class="btn-pink manifestation-button">
+                  <button v-if="!manifestation_passed" class="btn-pink manifestation-button" data-toggle="modal" data-target="#reservationModal">
                     Rezervacija karata
                   </button>
                 </div>
@@ -44,6 +44,7 @@
               <div class="col text-right">
                 <h3 class="text-uppercase p-3">{{ manifestation.name }}</h3>
               </div>
+              <reservation-modal v-if="manifestation" :manifestation-id="manifestation.id"></reservation-modal>
             </div>
             <comment-section
               v-bind:commenting_conditions="comment_conditions"
@@ -168,6 +169,7 @@ module.exports = {
   },
   components: {
     "comment-section": httpVueLoader("./CommentSection.vue"),
+    'reservation-modal':httpVueLoader('./modals/ReservationModal.vue')
   },
   created() {
     const manifestationId = this.$route.params.id;
