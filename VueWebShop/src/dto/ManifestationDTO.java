@@ -13,7 +13,6 @@ public class ManifestationDTO {
 	private LocalDateTime endTime;
 	private int ticketPrice;
 	private String location;
-	private String imageName;
 	private String image64base;
 	
 	public String getId() {
@@ -78,14 +77,6 @@ public class ManifestationDTO {
 	
 	public void setLocation(String location) {
 		this.location = location;
-	}
-	
-	public String getImageName() {
-		return imageName;
-	}
-	
-	public void setImageName(String imageName) {
-		this.imageName = imageName;
 	}
 	
 	public String getImage64base() {

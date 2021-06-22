@@ -172,19 +172,12 @@ public class ManifestationService {
 		
 		Manifestation manifestation = new Manifestation(manifestationDTO.getId(), manifestationDTO.getName(), manifestationDTO.getType(),
 				numberOfSeats,numberOfSeats,manifestationDTO.getStartTime(), manifestationDTO.getEndTime(), manifestationDTO.getTicketPrice(), Status.ACTIVE,
-				manifestationDTO.getLocation(), manifestationDTO.getImageName(), false);
+				manifestationDTO.getLocation(), manifestationDTO.getImage64base(), false);
 		manifestationDAO.create(manifestation);
 		
-		addImageToFolder(manifestationDTO.getImage64base(), manifestationDTO.getImageName());
 		return manifestation;
 	}
 	
-	private void addImageToFolder(String image64base, String imageName) {
-		String base64Image = image64base.split(",")[1];
-		byte[] imageBytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(base64Image);
-
-		manifestationDAO.saveImage(imageBytes, imageName);
-	}
 
 	public Manifestation addManifestation(ManifestationDTO manifestationDTO, String username) throws IOException {
 		

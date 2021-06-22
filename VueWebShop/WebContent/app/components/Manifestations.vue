@@ -13,7 +13,7 @@
           <div class="col-lg-6 col-xl-4 col-md-6 col-sm-6" v-for="m in manifestations" :key="m.id">
             <div class="card mb-4 box-shadow manifestation" v-on:click="goToManifestation(m.id)">
               <div class="image-holder">
-                <img class="card-img-top" v-bind:src="'images/' + m.image" alt="Card image cap">
+                <img class="card-img-top" v-bind:src="m.image" alt="Card image cap">
               </div>
               <div class="card-body">
                 <h5 class="card-title">{{ m.name }}</h5>

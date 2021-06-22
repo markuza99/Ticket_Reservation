@@ -83,7 +83,6 @@ module.exports = {
 				type: "CONCERT",
 				ticketPrice : 0,
 				location: "",
-				imageName: "",
 				image64base:""
 			},
 			
@@ -105,8 +104,7 @@ module.exports = {
 
 		manifestation_to_check = {
 			id: this.new_manifestation.id,
-			name: this.new_manifestation.name,
-			imageName : this.new_manifestation.imageName
+			name: this.new_manifestation.name
 		}
 
 		if(areInputFieldsEmpty(this.new_manifestation)) {
@@ -139,7 +137,7 @@ module.exports = {
 			$('#error').html("Odabran je pogresan datum.");
 			return;
 		}
-	
+		console.log(this.new_manifestation)
 		axios
 			.post("rest/manifestations/add", JSON.stringify(this.new_manifestation), {
 				headers: {'content-type':'application/json'}
@@ -157,7 +155,6 @@ module.exports = {
 		loadFile(event) {
 			var filename = document.getElementById('file').value;
 			parts = filename.split("\\");
-			this.new_manifestation.imageName = parts[parts.length-1];
 
 			var reader = new FileReader();
 			let vueComponent = this;
@@ -180,7 +177,6 @@ module.exports = {
 				type: "CONCERT",
 				ticketPrice : 0,
 				location: "",
-				imageName: "",
 				image64base:""
 			}
 

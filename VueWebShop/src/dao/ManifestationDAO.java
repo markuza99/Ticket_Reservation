@@ -14,8 +14,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
 import beans.Manifestation;
@@ -25,10 +27,12 @@ import dao.interfaces.IManifestationDAO;
 
 public class ManifestationDAO implements IManifestationDAO {
 	private Map<String, Manifestation> manifestations = new HashMap<>();
+	private Map<String, String> images = new HashMap<>();
 	private String contextPath;
 	
 	public ManifestationDAO(String contextPath) {
 		this.contextPath = contextPath;
+		loadImages();
 		loadManifestations();
 	}
 
@@ -36,6 +40,7 @@ public class ManifestationDAO implements IManifestationDAO {
 	public Manifestation create(Manifestation manifestation) {
 		manifestations.put(manifestation.getId(), manifestation);
 		appendToFile(manifestationCSVRepresentation(manifestation));
+		appendImageToFile(imageCSVRepresentation(manifestation.getId(), manifestation.getImage()));
 		return manifestation;
 	}
 
@@ -48,6 +53,7 @@ public class ManifestationDAO implements IManifestationDAO {
 	public Manifestation update(Manifestation manifestation) {
 		manifestations.put(manifestation.getId(), manifestation);
 		writeToFile();
+		writeImagesToFile();
 		return manifestation;
 	}
 
@@ -87,7 +93,7 @@ public class ManifestationDAO implements IManifestationDAO {
 			manifestationString.append("0;");
 		}
 		manifestationString.append(manifestation.getLocation() + ";"
-				+ manifestation.getImage() + ";" + manifestation.getIsDeleted());
+				 + manifestation.getIsDeleted());
         return manifestationString.toString();
 	}
 	
@@ -138,7 +144,7 @@ public class ManifestationDAO implements IManifestationDAO {
 					Status status = (Integer.parseInt(st.nextToken().trim())) == 1 ? 
 							Status.ACTIVE : Status.INACTIVE;
 					String location = st.nextToken().trim();
-					String imagePath = st.nextToken().trim();
+					String imagePath = images.get(id);
 					String deleted = st.nextToken().trim();
 					Boolean isDeleted = false;
 					if(deleted.equals("1")) {
@@ -162,6 +168,36 @@ public class ManifestationDAO implements IManifestationDAO {
 		}
 		
 	}
+	
+	private void loadImages() {
+		BufferedReader reader = null;
+		try {
+			File file = new File(contextPath + "/repositories/images.txt");
+			reader = new BufferedReader(new FileReader(file));
+			String line;
+			StringTokenizer st;
+			while((line = reader.readLine()) != null) {
+				line = line.trim();
+				if(line.equals("") || line.indexOf('#') == 0)
+					continue;
+				st = new StringTokenizer(line, "|");
+				while(st.hasMoreTokens()) {
+					String id = st.nextToken().trim();
+					String image = st.nextToken().trim();
+					images.put(id, image);
+				}
+			}
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		} finally {
+			if(reader != null) {
+				try {
+					reader.close();
+				}
+				catch (Exception e) {}
+			}
+		}
+	}
 
 	public void appendToFile(String line) {
 		File file = new File(contextPath + "/repositories/manifestations.txt");
@@ -182,15 +218,54 @@ public class ManifestationDAO implements IManifestationDAO {
             }
         }
 	}
+	
+	public void appendImageToFile(String line) {
+		File file = new File(contextPath + "/repositories/images.txt");
 
-	@Override
-	public void saveImage(byte[] imageBytes, String imageName) {
-		 File file = new File(contextPath + "/images/" + imageName);
-        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file))) {
-            outputStream.write(imageBytes);
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            	pw.println(line);
+            
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
         }
+	}
+	
+	public void writeImagesToFile() {
+		File file = new File(contextPath + "/repositories/images.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
+            Iterator<Entry<String, String>> it = images.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, String> pair = (Map.Entry<String, String>)it.next();
+                pw.println(imageCSVRepresentation(pair.getKey(), pair.getValue()));
+                it.remove(); // avoids a ConcurrentModificationException
+            }
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+	}
+
+	private String imageCSVRepresentation(String manifestationId, String image64base) {
+        return manifestationId + "|" + image64base;
 	}
 
 }

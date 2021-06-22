@@ -7,7 +7,7 @@
             <img
               class="fit-img"
               v-bind:class="{ gray: manifestation_sold }"
-              v-bind:src="'images/' + manifestation.image"
+              v-bind:src="manifestation.image"
             />
           </div>
           <div>

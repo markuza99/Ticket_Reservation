@@ -8,5 +8,5 @@ import beans.Manifestation;
 public interface IManifestationDAO extends CRUD<Manifestation, String> {
 	List<Manifestation> getAll();
 	Manifestation retrieve(String id);
-	void saveImage(byte[] imageBytes, String imageName);
+	void appendImageToFile(String string);
 }
