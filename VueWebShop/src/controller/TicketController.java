@@ -1,6 +1,6 @@
 package controller;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.PostConstruct; 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -9,6 +9,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
@@ -69,5 +70,15 @@ public class TicketController {
 		User user = (User) request.getSession().getAttribute("user");
 		if(user == null) return null;
 		return ticketService.reserveTickets(reservationDTO, user.getUsername());
+	}
+	
+	@GET
+	@Path("/total-price")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public double getTicketTotalPrice(@Context HttpServletRequest request, @QueryParam("numberOfTickets") int numberOfTickets,
+	@QueryParam("ticketType") String ticketType, @QueryParam("manifestationId") String manifestationId) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return 0;
+		return ticketService.getTicketTotalPrice(user.getUsername(), numberOfTickets, ticketType, manifestationId);
 	}
 }
