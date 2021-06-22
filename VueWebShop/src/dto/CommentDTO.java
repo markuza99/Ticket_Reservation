@@ -1,18 +1,17 @@
 package dto;
 
 public class CommentDTO {
-	private String user;
-	private String manifestation;
-	private String description;
-	private int rating;
+	public String manifestation;
+	public String description;
+	public int rating;
 	
-	public String getUser() {
-		return user;
+	public CommentDTO(String manifestation, String description, int rating) {
+		this.manifestation = manifestation;
+		this.description = description;
+		this.rating = rating;
 	}
 	
-	public void setUser(String user) {
-		this.user = user;
-	}
+	public CommentDTO() {}
 	
 	public String getManifestation() {
 		return manifestation;

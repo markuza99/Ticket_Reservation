@@ -15,7 +15,7 @@ Vue.component("welcome-page", {
 		</div>
 	`,
 	methods: {
-
+		// TO DO -- obrisati ovaj fajl, napraviti Vue komponentu
 	},
 	components: {
 		"manifestations" : manifestations,

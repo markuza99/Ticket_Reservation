@@ -1,0 +1,211 @@
+<template>
+  <div class="comment-section pb-4 mt-5 mb-5">
+    <h3 v-if="comments.length == 0" class="p-4">Nema komentara</h3>
+    <div v-if="correspondsCommentPermission()">
+      <div class="d-flex justify-content-between">
+        <div class="font-weight-bold pt-4 pl-4 pr-4">Komentarisi</div>
+        <div class="rating mt-3 mr-3">
+          <span
+            class="fa fa-star five-stars"
+            v-on:click="clickedStar('five-stars')"
+          ></span>
+          <span
+            class="fa fa-star four-stars"
+            v-on:click="clickedStar('four-stars')"
+          ></span>
+          <span
+            class="fa fa-star three-stars"
+            v-on:click="clickedStar('three-stars')"
+          ></span>
+          <span
+            class="fa fa-star two-stars"
+            v-on:click="clickedStar('two-stars')"
+          ></span>
+          <span
+            class="fa fa-star one-star"
+            v-on:click="clickedStar('one-star')"
+          ></span>
+        </div>
+      </div>
+
+      <div class="p-3">
+        <textarea
+          class="form-control comment-form"
+          rows="3"
+          v-model="description"
+        ></textarea>
+      </div>
+      <div class="d-flex justify-content-between pr-3">
+        <p id="comment-error" class="ml-4"></p>
+        <button class="btn-pink manifestation-button comment-button" v-on:click="comment()">Postavi komentar</button>
+      </div>
+    </div>
+    <div class="comment" v-for="comment in comments" :key="comment.id">
+      <ul class="comment-info d-flex justify-content-between">
+        <li class="comment-username">{{ comment.user }}</li>
+        <li>
+          <span
+            class="fa fa-star"
+            v-bind:class="{ yellow: isCounted(1, comment) }"
+          ></span>
+          <span
+            class="fa fa-star"
+            v-bind:class="{ yellow: isCounted(2, comment) }"
+          ></span>
+          <span
+            class="fa fa-star"
+            v-bind:class="{ yellow: isCounted(3, comment) }"
+          ></span>
+          <span
+            class="fa fa-star"
+            v-bind:class="{ yellow: isCounted(4, comment) }"
+          ></span>
+          <span
+            class="fa fa-star"
+            v-bind:class="{ yellow: isCounted(5, comment) }"
+          ></span>
+        </li>
+      </ul>
+      <div class="comment-description shadow-sm">
+        <p>{{ comment.description }}</p>
+      </div>
+    </div>
+
+    <div v-if="commenting_conditions.commentApproval == 'NOT_CHECKED'">
+      <div class="comment-success">
+        <input
+          type="text"
+          class="form-control comment-holder"
+          placeholder="Vas komentar je uspesno poslat! Ceka se odobrenje."
+          aria-label=""
+          aria-describedby="basic-addon1"
+          readonly
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+module.exports = {
+  data() {
+    return {
+      comments: [],
+      user_rating: 0,
+      description: "",
+      manifestation_id: "",
+      comment_error: false
+    };
+  },
+  props: ["commenting_conditions"],
+  created() {
+    this.manifestation_id = this.$route.params.id;
+    axios
+      .get("rest/comments/manifestation/" + this.manifestation_id)
+      .then((response) => {
+        this.comments = response.data;
+      });
+  },
+  mounted() {
+    console.log(this.commenting_conditions);
+  },
+  methods: {
+    correspondsCommentPermission() {
+      return (
+        this.commenting_conditions.userAttended &&
+        this.commenting_conditions.manifestation_passed &&
+        this.commenting_conditions.commentApproval != "ACCEPTED" && 
+        this.commenting_conditions.commentApproval != "NOT_CHECKED"
+      );
+    },
+    isCounted(num, comment) {
+      return !(num > comment.rating);
+    },
+    clickedStar(whichstar) {
+      this.user_rating = userRating(whichstar);
+      console.log(this.user_rating);
+    },
+    comment() {
+      console.log(this.user_rating);
+      if (this.user_rating == 0 || this.description.trim() == "") {
+        $('#comment-error').html('Morate oceniti manifestaciju da biste postavili komentar!');
+        return;
+      }
+
+      commentDTO = {
+        manifestation: this.manifestation_id,
+        description: this.description,
+        rating: this.user_rating,
+      };
+
+      console.log(commentDTO);
+      axios
+        .post("rest/comments", JSON.stringify(commentDTO), {
+          headers: { "content-type": "application/json" },
+        })
+        .then((response) => {
+          $('#comment-error').html('');
+          this.commenting_conditions.commentApproval = "NOT_CHECKED";
+        });
+    },
+  },
+};
+</script>
+
+<style scoped>
+.comment-section {
+  /* border: 1px solid pink; */
+}
+
+.rating {
+  /* position: absolute; */
+  /* right:5em; */
+  direction: rtl;
+  unicode-bidi: bidi-override;
+}
+
+.rating > span:hover:before,
+.rating > span:hover ~ span:before {
+  color: rgb(255, 222, 3);
+}
+
+.comment-form:focus {
+  outline: none !important;
+  border: none;
+  box-shadow: 0 0 10px rgb(255, 2, 102);
+}
+
+.comment-button {
+  border-radius: 0.25rem;
+}
+
+.comment {
+  margin-top: 1em;
+  border-radius: 10px;
+}
+
+.comment-info {
+  margin: 0;
+  padding: 0;
+  background-color: #ffe5f0;
+  padding: 1em;
+  border-bottom: 1px solid rgb(255, 2, 102);
+}
+
+.comment-date {
+  color: #747474;
+}
+
+.comment-description {
+  padding: 1em;
+}
+
+.comment-username {
+  margin-right: 1em;
+  /* border-bottom: 2px solid rgb(255, 2, 102); */
+}
+
+.comment-info li {
+  list-style: none;
+}
+</style>

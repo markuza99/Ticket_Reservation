@@ -1,53 +1,56 @@
 
 
-const userRating = (user_rating) => {
-  $('.one-star').removeClass("checked");
-      $('.two-stars').removeClass("checked");
-      $('.three-stars').removeClass("checked");
-      $('.four-stars').removeClass("checked");
-      $('.five-stars').removeClass("checked");
+const userRating = (whichstar) => {
+  console.log('koja ',whichstar);
+  $('.one-star').removeClass("yellow");
+  $('.two-stars').removeClass("yellow");
+  $('.three-stars').removeClass("yellow");
+  $('.four-stars').removeClass("yellow");
+  $('.five-stars').removeClass("yellow");
 
-      switch(whichstar) {
-          case "one-star":
-              console.log("jedna");
-              user_rating = 1;
+  switch(whichstar) {
+    case "one-star":
+        console.log("jedna");
 
-              $('.one-star').addClass("checked");
-              break;
-          case "two-stars":
-              user_rating = 2;
+        $('.one-star').addClass("yellow");
+        return 1;
 
-              $('.one-star').addClass("checked");
-              $('.two-stars').addClass("checked");
-              break;
-          case "three-stars":
-              user_rating = 3;
+    case "two-stars":
+        user_rating = 2;
+        console.log("dve");
+        $('.one-star').addClass("yellow");
+        $('.two-stars').addClass("yellow");
+        return 2;
 
-              $('.one-star').addClass("checked");
-              $('.two-stars').addClass("checked");
-              $('.three-stars').addClass("checked");
-              break;
-          case "four-stars":
-              user_rating = 4;
+    case "three-stars":
+        user_rating = 3;
+        console.log("tri");
+        $('.one-star').addClass("yellow");
+        $('.two-stars').addClass("yellow");
+        $('.three-stars').addClass("yellow");
+        return 3;
 
-              $('.one-star').addClass("checked");
-              $('.two-stars').addClass("checked");
-              $('.three-stars').addClass("checked");
-              $('.four-stars').addClass("checked");
-              break;
-          case "five-stars":
-              user_rating = 5;
+    case "four-stars":
+        user_rating = 4;
+        console.log("cetiri");
+        $('.one-star').addClass("yellow");
+        $('.two-stars').addClass("yellow");
+        $('.three-stars').addClass("yellow");
+        $('.four-stars').addClass("yellow");
+        return 4;
 
-              $('.one-star').addClass("checked");
-              $('.two-stars').addClass("checked");
-              $('.three-stars').addClass("checked");
-              $('.four-stars').addClass("checked");
-              $('.five-stars').addClass("checked");
-              break;
-          default:
-              user_rating = 0;
-      }
-  return user_rating;
+    case "five-stars":
+        user_rating = 5;
+
+        $('.one-star').addClass("yellow");
+        $('.two-stars').addClass("yellow");
+        $('.three-stars').addClass("yellow");
+        $('.four-stars').addClass("yellow");
+        $('.five-stars').addClass("yellow");
+        return 5;
+    default:
+        return 0;
+  }
 }
 
 const getManifestationDateInMilliseconds = (day, month, year) => {
@@ -85,47 +88,35 @@ function displayMap() {
  }
  
 
- const makeDate = (manifestation) => {
-  switch(manifestation.startTime.month) {
+function formatMonth(month) {
+  switch(month) {
 				
     case "JANUARY":
-      manifestation.formattedMonth = "januar";
-      break;
+      return "januar";
     case "FEBRUARY":
-      manifestation.formattedMonth = "februar";
-      break;
+      return "februar";
     case "MARCH":
-      manifestation.formattedMonth = "mart";
-      break;
+      return "mart";
     case "APRIL":
-      manifestation.formattedMonth = "april";
-      break;
+      return "april";
     case "MAY":
-      manifestation.formattedMonth = "maj";
-      break;
+      return "maj";
     case "JUNE":
-      manifestation.formattedMonth = "jun";
-      break;
+      return "jun";
     case "JULY":
-      manifestation.formattedMonth = "jul";
-      break;
+      return "jul";
     case "AUGUST":
-      manifestation.formattedMonth = "avgust";
-      break;
+      return "avgust";
     case "SEPTEMBER":
-      manifestation.formattedMonth = "septembar";
-      break;
+      return "septembar";
     case "OCTOBER":
-      manifestation.formattedMonth = "oktobar";
-      break;
+      return "oktobar";
     case "NOVEMBER":
-      manifestation.formattedMonth = "novembar";
-      break;
+      return "novembar";
     case "DECEMBER":
-      manifestation.formattedMonth = "decembar";
-      break;
+      return "decembar";
     default:
-      console.log("nista");
+      return null;
   }
  }
 
