@@ -50,24 +50,16 @@ public class CommentService {
 				commentDTO.getRating(), CommentApproval.NOT_CHECKED, false));
 	}
 
-	public Comment approveComment(String username, CommentDTO commentDTO) {
-		for(Comment c : commentDAO.getAll()) {
-			if(c.getUser().equals(username) && c.getManifestation().equals(commentDTO.getManifestation())) {
-				c.setApproval("ACCEPTED");
-				return commentDAO.update(c);
-			}
-		}
-		return null;
+	public Comment approveComment(Comment comment) {
+		Comment c = commentDAO.read(comment.getUser() + comment.getManifestation());
+		c.setApproval("ACCEPTED");
+		return commentDAO.update(c);
 	}
 	
-	public Comment declineComment(String username, CommentDTO commentDTO) {
-		for(Comment c : commentDAO.getAll()) {
-			if(c.getUser().equals(username) && c.getManifestation().equals(commentDTO.getManifestation())) {
-				c.setApproval("DENIED");
-				return commentDAO.update(c);
-			}
-		}
-		return null;
+	public Comment declineComment(Comment comment) {
+		Comment c = commentDAO.read(comment.getUser() + comment.getManifestation());
+		c.setApproval("DENIED");
+		return commentDAO.update(c);
 	}
 
 	public CommentingConditionsDTO getCommentingConditions(String username, String id) {
@@ -122,5 +114,9 @@ public class CommentService {
 		}
 
 		return sellersComments;
+	}
+	
+	public List<Comment> getAllComments() {
+		return null;
 	}
 }

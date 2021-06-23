@@ -1,47 +1,33 @@
 <template>
     <div class="container-fluid" id="comments-panel">
-        <!-- <div class="wrapper-scroll"> -->
-            <div class="comment" v-for="comment in comments" :key="comment.id">
-                <div class="row">
-                    <div class="col-lg-10 col-md-10">
-                        <ul class="comment-info d-flex justify-content-between" v-bind:class="{denied: comment.approval == 'DENIED',
-                                                                        accepted: comment.approval == 'ACCEPTED',
-                                                                        not_checked: comment.approval == 'NOT_CHECKED' }">
-                            <li class="text-secondary comment-username">{{comment.user}}</li>
-                            <li>Manifestacija: {{comment.manifestation}}</li>
-                            <li>
-                                <span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
-                                <span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
-                                <span class="fa fa-star" v-bind:class="{ checked : isCounted(3, comment) }"></span>
-                                <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
-                                <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
-                            </li>
-                        </ul>
-                        <div class="comment-description">
-                            <p>{{comment.description}}</p>
-                        </div>
+        <ul class="list-group m-5">
+            <li class="list-group-item" v-for="comment in comments" :key="comment.id">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    Manifestacija: {{comment.manifestation}}
+                    <span class="text-secondary">{{comment.user}}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    {{comment.description}}
+                    <div v-if="comment.approval =='NOT_CHECKED' && role == 'SELLER'">
+                    <div class="mb-2">
+                        <span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
+                        <span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
+                        <span class="fa fa-star" v-bind:class="{ checked : isCounted(3, comment) }"></span>
+                        <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
+                        <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
                     </div>
-                    <div class="col-lg-2 col-md-2">
-                        <div class="mt-5" v-if="comment.approval =='NOT_CHECKED' && role == 'SELLER'">
-                            <button class="btn btn-success" v-on:click="approve(comment)">
-                                Odobri:   <i class="fa fa-check"></i>
-                            </button>
-                            <button class="btn btn-danger" v-on:click="decline(comment)">
-                                <i class="fa fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="mt-5">
-                            <div class="btn btn-outline-danger" v-if="comment.approval == 'DENIED'" disabled>NEODOBREN</div>
-                            <div class="btn btn-outline-success" v-if="comment.approval == 'ACCEPTED'" disabled>ODOBREN</div>
-                        </div>
+                    <button class="btn btn-success" v-on:click="approve(comment)">
+                        Odobri:   <i class="fa fa-check"></i>
+                    </button>
+                    <button class="btn btn-danger" v-on:click="decline(comment)">
+                        <i class="fa fa-times"></i>
+                    </button>
                     </div>
-				</div>
-
-
-
-                
-            </div>
-        <!-- </div> -->
+                    <div class="btn btn-outline-danger" v-if="comment.approval == 'DENIED'" disabled>NEODOBREN</div>
+                    <div class="btn btn-outline-success" v-if="comment.approval == 'ACCEPTED'" disabled>ODOBREN</div>
+                </div>
+            </li>
+        </ul>
     </div>
 </template>
 
@@ -54,12 +40,10 @@ module.exports = {
         }
     },
     mounted() {
-
         axios
-            .get("rest/comments/")
+            .get("rest/comments")
             .then(response => {
                 this.comments = response.data;
-                console.log(this.comments);
             });
 
         axios
@@ -73,10 +57,8 @@ module.exports = {
 			return !(num > comment.rating);
         },
         approve(comment) {
-            //mogu samo poslati ceo komentar
-            console.log(comment);
             axios
-                .put("rest/comments/approve-comment",JSON.stringify(comment), {
+                .put("rest/comments/approve",JSON.stringify(comment), {
                     headers: {"content-type":"application/json"}
                 })
                 .then(response => {
@@ -87,7 +69,7 @@ module.exports = {
         },
         decline(comment) {
             axios
-                .put("rest/comments/decline-comment",JSON.stringify(comment), {
+                .put("rest/comments/decline",JSON.stringify(comment), {
                     headers: {"content-type":"application/json"}
                 })
                 .then(response => {
@@ -100,11 +82,6 @@ module.exports = {
 </script>
 
 <style scoped>
-.wrapper-scroll {
-    height: 30em !important;
-    overflow: scroll;
-}
-
 .denied {
     background-color: #f5c6cb;
 }
