@@ -1,12 +1,13 @@
 package controller;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -14,6 +15,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import beans.Role;
 import beans.Ticket;
 import beans.User;
 import dao.CustomerDAO;
@@ -21,6 +23,7 @@ import dao.LocationDAO;
 import dao.ManifestationDAO;
 import dao.TicketDAO;
 import dto.ReservationDTO;
+import dto.SearchTicketsDTO;
 import services.TicketService;
 
 @Path("/tickets")
@@ -81,5 +84,23 @@ public class TicketController {
 		User user = (User) request.getSession().getAttribute("user");
 		if(user == null) return 0;
 		return ticketService.getTicketTotalPrice(user.getUsername(), numberOfTickets, ticketType, manifestationId);
+	}
+	
+	@GET
+	@Path("/")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public List<Ticket> getTickets(@Context HttpServletRequest request, @QueryParam("manifestationName") String manifestationName, 
+			@QueryParam("priceFrom") double priceFrom, @QueryParam("priceTo") double priceTo, @QueryParam("dateFrom") String dateFrom,
+			@QueryParam("dateTo") String dateTo, @QueryParam("sortBy") String sortBy, @QueryParam("ticketType") String ticketType,
+			@QueryParam("ticketStatus") String ticketStatus) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		if(user.getRole() == Role.CUSTOMER) {
+			return ticketService.getCustomerTickets(user.getUsername(), new SearchTicketsDTO(manifestationName, priceFrom, priceTo, dateFrom, dateTo, sortBy, ticketType, ticketStatus));
+		} else if(user.getRole() == Role.SELLER) {
+			return null;
+		} else {
+			return null;
+		}
 	}
 }
