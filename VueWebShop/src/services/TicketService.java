@@ -7,12 +7,11 @@ import java.util.List;
 
 import beans.Customer;
 import beans.CustomerType;
-import beans.Location;
 import beans.Manifestation;
-import beans.ManifestationType;
 import beans.Ticket;
 import beans.TicketStatus;
 import beans.TicketType;
+import beans.User;
 import beans.value_objects.SortManifestations;
 import beans.value_objects.SortTickets;
 import dao.interfaces.ICustomerDAO;
@@ -20,6 +19,7 @@ import dao.interfaces.IManifestationDAO;
 import dao.interfaces.ITicketDAO;
 import dto.ReservationDTO;
 import dto.SearchTicketsDTO;
+import dto.TicketRepresentationDTO;
 
 
 public class TicketService {
@@ -217,11 +217,13 @@ public class TicketService {
 		List<Ticket> searchedTickets = new ArrayList<Ticket>();
 		LocalDateTime dateFrom = null;
 		LocalDateTime dateTo = null;
-		if(!searchTicketsDTO.dateFrom.equals("")) {
-			dateFrom = LocalDateTime.parse(searchTicketsDTO.dateFrom);
+		if(searchTicketsDTO.dateFrom != null) {
+			if(!searchTicketsDTO.dateFrom.equals(""))
+				dateFrom = LocalDateTime.parse(searchTicketsDTO.dateFrom);
 		}
-		if(!searchTicketsDTO.dateTo.equals("")) {
-			dateTo = LocalDateTime.parse(searchTicketsDTO.dateTo);
+		if(searchTicketsDTO.dateTo != null) {
+			if(!searchTicketsDTO.dateTo.equals(""))
+				dateTo = LocalDateTime.parse(searchTicketsDTO.dateTo);
 		}
 		
 		for(Ticket t : tickets) {
@@ -236,15 +238,21 @@ public class TicketService {
 	
 	private boolean correspondsSearch(Ticket ticket, String name,  LocalDateTime dateFrom, LocalDateTime dateTo, double priceFrom, double priceTo) {
 		Manifestation manifestation = manifestationDAO.read(ticket.getManifestationId());
-		boolean bname = manifestation.getName().toLowerCase().contains(name);
+		boolean bname = name == null ? true : manifestation.getName().toLowerCase().contains(name);
 		boolean bdateFrom = dateFrom == null ? true : manifestation.getStartTime().isAfter(dateFrom);
 		boolean bdateTo = dateTo == null ? true : manifestation.getEndTime().isBefore(dateTo);
 		boolean bpriceFrom = priceFrom == 0 ? true : (ticket.getPrice() >= priceFrom);
 		boolean bpriceTo = priceTo == 0 ? true : (ticket.getPrice() <= priceTo);
 		return bname && bdateFrom && bdateTo && bpriceFrom && bpriceTo;
 	}
+	
+	private boolean correspondsFilter(Ticket ticket, String ticketType, String ticketStatus) {
+		boolean btype = ticketType.equals("all") || ticketType.equals("")  ? true : ticket.getTicketType().equals(TicketType.valueOf(ticketType));
+		boolean bstatus = ticketStatus.equals("all") || ticketStatus.equals("") ? true : ticket.getTicketStatus().equals(TicketStatus.valueOf(ticketStatus));
+		return btype && bstatus;
+	}
 
-	public List<Ticket> getCustomerTickets(String username, SearchTicketsDTO searchTicketsDTO) {
+	public List<TicketRepresentationDTO> getCustomerTickets(String username, SearchTicketsDTO searchTicketsDTO) {
 		Customer customer = customerDAO.read(username);
 		
 		List<Ticket> customerTickets = new ArrayList<Ticket>();
@@ -257,17 +265,22 @@ public class TicketService {
 		
 		List<Manifestation> manifestations = getManifestationsByTickets(searchedTickets);
 		
-		searchedTickets = sortTickets(searchedTickets, manifestations, searchTicketsDTO.sortBy);
+		if(searchTicketsDTO.sortBy == null) searchTicketsDTO.sortBy = "";
+		if(searchTicketsDTO.ticketType == null) searchTicketsDTO.ticketType = "";
+		if(searchTicketsDTO.ticketStatus == null) searchTicketsDTO.ticketStatus = "";
+		
+		searchedTickets =  sortTickets(searchedTickets, manifestations, searchTicketsDTO.sortBy);
 		
 		List<Ticket> filteredTickets = filterTickets(searchedTickets, searchTicketsDTO.ticketType, searchTicketsDTO.ticketStatus);
 		
-		return filteredTickets;
+		List<TicketRepresentationDTO> ticketsDTO = new ArrayList<TicketRepresentationDTO>();
+		for(Ticket t : filteredTickets) {
+			Manifestation manifestation = manifestationDAO.read(t.getManifestationId());
+			ticketsDTO.add(new TicketRepresentationDTO(t, manifestation, customer.getUsername()));
+		}
+		
+		return ticketsDTO;
 	}
 
-	private boolean correspondsFilter(Ticket ticket, String ticketType, String ticketStatus) {
-		boolean btype = ticketType.equals("all") || ticketType.equals("") ? true : ticket.getTicketType().equals(TicketType.valueOf(ticketType));
-		boolean bstatus = ticketStatus.equals("all") || ticketStatus.equals("") ? true : ticket.getTicketStatus().equals(TicketStatus.valueOf(ticketStatus));
-		return btype && bstatus;
-	}
 	
 }

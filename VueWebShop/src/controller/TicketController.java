@@ -24,6 +24,7 @@ import dao.ManifestationDAO;
 import dao.TicketDAO;
 import dto.ReservationDTO;
 import dto.SearchTicketsDTO;
+import dto.TicketRepresentationDTO;
 import services.TicketService;
 
 @Path("/tickets")
@@ -89,7 +90,7 @@ public class TicketController {
 	@GET
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public List<Ticket> getTickets(@Context HttpServletRequest request, @QueryParam("manifestationName") String manifestationName, 
+	public List<TicketRepresentationDTO> getTickets(@Context HttpServletRequest request, @QueryParam("manifestationName") String manifestationName, 
 			@QueryParam("priceFrom") double priceFrom, @QueryParam("priceTo") double priceTo, @QueryParam("dateFrom") String dateFrom,
 			@QueryParam("dateTo") String dateTo, @QueryParam("sortBy") String sortBy, @QueryParam("ticketType") String ticketType,
 			@QueryParam("ticketStatus") String ticketStatus) {
