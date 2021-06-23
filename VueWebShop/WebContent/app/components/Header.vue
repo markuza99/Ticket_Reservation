@@ -6,7 +6,7 @@
 		<form class="form-inline" v-if="isLoggedIn">
 			<a class="text-white p-2" v-on:click="profileSettings()">Profil</a>
 			<a class="text-white p-2">Karte</a>
-			<a class="text-white p-2" v-if="role != 'CUSTOMER'">Manifestacije</a>
+			<a class="text-white p-2" v-if="role != 'CUSTOMER'" v-on:click="goToManifestations()">Moje manifestacije</a>
 			<a class="text-white p-2" v-if="role != 'CUSTOMER'">Komentari</a>
 			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" v-on:click="signOut()">Odjava</button>
 		</form>
@@ -40,9 +40,13 @@ module.exports = {
 		},
 		profileSettings: function() {
 			window.location.replace("#/profile");
+		},
+		goToManifestations () {
+			this.$router.push('manifestations')
 		}
 	},
 	mounted() {
+		console.log(this.$router)
 		axios
 			.get("rest/users/role")
 			.then(response => {

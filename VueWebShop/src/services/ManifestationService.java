@@ -3,20 +3,24 @@ package services;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import beans.Customer;
 import beans.Location;
 import beans.Manifestation;
 import beans.ManifestationType;
 import beans.Seller;
 import beans.Status;
+import beans.Ticket;
 import beans.value_objects.SortManifestations;
+import dao.interfaces.ICustomerDAO;
 import dao.interfaces.ILocationDAO;
 import dao.interfaces.IManifestationDAO;
 import dao.interfaces.ISellerDAO;
+import dao.interfaces.ITicketDAO;
 import dto.ManifestationDTO;
+import dto.ManifestationForGridViewDTO;
 import dto.ManifestationWithLocationDTO;
 
 
@@ -24,11 +28,16 @@ public class ManifestationService {
 	private IManifestationDAO manifestationDAO;
 	private ILocationDAO locationDAO;
 	private ISellerDAO sellerDAO;
+	private ICustomerDAO customerDAO;
+	private ITicketDAO ticketDAO;
 	
-	public ManifestationService(IManifestationDAO manifestationDAO, ILocationDAO locationDAO, ISellerDAO sellerDAO) {
+	public ManifestationService(IManifestationDAO manifestationDAO, ILocationDAO locationDAO, ISellerDAO sellerDAO, ICustomerDAO customerDAO,
+			ITicketDAO ticketDAO) {
 		this.manifestationDAO = manifestationDAO;
 		this.locationDAO = locationDAO;
 		this.sellerDAO = sellerDAO;
+		this.customerDAO = customerDAO;
+		this.ticketDAO = ticketDAO;
 	}
 	
 	public List<Manifestation> getActiveManifestations() {
@@ -43,6 +52,14 @@ public class ManifestationService {
 			}
 		}
 		return activeManifestations;
+	}
+	
+	public List<Manifestation> getAllManifestations() {
+		SortManifestations sort = new SortManifestations();
+		List<Manifestation> sortedManifestations = manifestationDAO.getAll();
+		sort.sortByDate(true, sortedManifestations);
+
+		return sortedManifestations;
 	}
 	
 	public Manifestation getManifestation(String id) {
@@ -249,5 +266,56 @@ public class ManifestationService {
 		Location location = locationDAO.read(m.getLocation());
 		return new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getStartTime(), m.getEndTime(), m.getTicketPrice(),
 				m.getStatus(), location , m.getImage(), m.getIsDeleted());
+	}
+
+	public List<ManifestationForGridViewDTO> getSellerManifestations(String username) {
+		List<ManifestationForGridViewDTO> manifestations = new ArrayList<ManifestationForGridViewDTO>();
+		Seller seller = sellerDAO.read(username);
+		
+		for(Manifestation m : getAllManifestations()) {
+			if(!seller.getManifestations().contains(m.getId())) {
+				continue;
+			}
+			Location location = locationDAO.read(m.getLocation());
+			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m);
+			manifestation.setLocation(location);
+			manifestations.add(manifestation);
+		}
+		return manifestations;
+	}
+	
+	public List<ManifestationForGridViewDTO> getAllManifestationsWithLocationDTO() {
+		List<ManifestationForGridViewDTO> manifestations = new ArrayList<ManifestationForGridViewDTO>();
+		
+		for(Manifestation m : getAllManifestations()) {
+			Location location = locationDAO.read(m.getLocation());
+			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m);
+			manifestation.setLocation(location);
+			manifestations.add(manifestation);
+		}
+		return manifestations;
+	}
+
+	public List<ManifestationForGridViewDTO> getUserManifestations(String username) {
+		List<Manifestation> manifestations = new ArrayList<Manifestation>();
+		Customer customer = customerDAO.read(username);
+		for(String ticketId : customer.getTickets()) {
+			Ticket ticket = ticketDAO.read(ticketId);
+			Manifestation manifestation = manifestationDAO.read(ticket.getManifestationId());
+			if(!manifestations.contains(manifestation)) {
+				manifestations.add(manifestation);
+			}
+		}
+		
+		List<ManifestationForGridViewDTO> manifestationsWithLocation = new ArrayList<ManifestationForGridViewDTO>();
+		
+		for(Manifestation m : manifestations) {
+			Location location = locationDAO.read(m.getLocation());
+			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m);
+			manifestation.setLocation(location);
+			manifestationsWithLocation.add(manifestation);
+		}
+		return manifestationsWithLocation;
+		
 	}
 }

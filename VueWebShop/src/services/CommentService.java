@@ -23,7 +23,7 @@ public class CommentService {
 	private IManifestationDAO manifestationDAO;
 	private ISellerDAO sellerDAO;
 	
-	public CommentService(ICommentDAO commentDAO, TicketDAO ticketDAO, IManifestationDAO manifestationDAO, ISellerDAO sellerDAO) {
+	public CommentService(ICommentDAO commentDAO, ITicketDAO ticketDAO, IManifestationDAO manifestationDAO, ISellerDAO sellerDAO) {
 		this.commentDAO = commentDAO;
 		this.ticketDAO = ticketDAO;
 		this.manifestationDAO = manifestationDAO;

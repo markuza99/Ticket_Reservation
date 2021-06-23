@@ -1,6 +1,6 @@
 package controller;
 
-import java.io.IOException; 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -19,11 +19,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import beans.Manifestation;
+import beans.Role;
 import beans.User;
+import dao.CustomerDAO;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
+import dao.SellerDAO;
+import dao.TicketDAO;
 import dao.interfaces.ISellerDAO;
 import dto.ManifestationDTO;
+import dto.ManifestationForGridViewDTO;
 import dto.ManifestationWithLocationDTO;
 import services.ManifestationService;
 
@@ -43,9 +48,23 @@ public class ManifestationController {
 			System.out.println(contextPath);
 			ctx.setAttribute("ManifestationDAO", new ManifestationDAO(contextPath));
 		}
+		if(ctx.getAttribute("SellerDAO") == null) {
+			System.out.println(contextPath);
+			ctx.setAttribute("SellerDAO", new SellerDAO(contextPath));
+		}
+		if(ctx.getAttribute("CustomerDAO") == null) {
+			System.out.println(contextPath);
+			ctx.setAttribute("CustomerDAO", new CustomerDAO(contextPath));
+		}
+		if(ctx.getAttribute("TicketDAO") == null) {
+			System.out.println(contextPath);
+			ctx.setAttribute("TicketDAO", new TicketDAO(contextPath));
+		}
 		manifestationService = new ManifestationService((ManifestationDAO) ctx.getAttribute("ManifestationDAO"),
-														(LocationDAO) ctx.getAttribute("LocationDAO"),
-														(ISellerDAO) ctx.getAttribute("SellerDAO"));
+			(LocationDAO) ctx.getAttribute("LocationDAO"),
+			(SellerDAO) ctx.getAttribute("SellerDAO"),
+			(CustomerDAO) ctx.getAttribute("CustomerDAO"),
+			(TicketDAO) ctx.getAttribute("TicketDAO"));
 
 	}
 	
@@ -53,11 +72,23 @@ public class ManifestationController {
 	@Path("/active")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<ManifestationWithLocationDTO> getActiveManifestations() {
-//		return manifestationService.getActiveManifestations();
 		return manifestationService.getActiveManifestationsWithLocation();
 	}
 	
-	
+	@GET
+	@Path("/mine")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<ManifestationForGridViewDTO> getMyManifestations(@Context HttpServletRequest request) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		if(user.getRole() == Role.ADMIN) {
+			return manifestationService.getAllManifestationsWithLocationDTO();
+		} else if(user.getRole() == Role.SELLER) {
+			return manifestationService.getSellerManifestations(user.getUsername());
+		} else {
+			return manifestationService.getUserManifestations(user.getUsername());
+		}
+	}
 	
 	@GET
 	@Path("/{id}")
