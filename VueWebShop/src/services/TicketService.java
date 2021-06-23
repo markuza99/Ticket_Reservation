@@ -264,12 +264,11 @@ public class TicketService {
 			customerTickets.add(ticket);
 		}
 		
-		return searchSortFilterTickets(customerTickets, searchTicketsDTO, customer.getUsername());
+		return searchSortFilterTickets(customerTickets, searchTicketsDTO);
 		
 	}
 
 	public List<TicketRepresentationDTO> getSellerTickets(String username, SearchTicketsDTO searchTicketsDTO) {
-		// TODO Auto-generated method stub
 		Seller seller = sellerDAO.read(username);
 		List<Ticket> sellerTickets = new ArrayList<Ticket>();
 		for(Ticket ticket : ticketDAO.getAll()) {
@@ -280,11 +279,11 @@ public class TicketService {
 			}
 		}
 		
-		return searchSortFilterTickets(sellerTickets, searchTicketsDTO, seller.getUsername());
+		return searchSortFilterTickets(sellerTickets, searchTicketsDTO);
 	}
 
 	private List<TicketRepresentationDTO> searchSortFilterTickets(List<Ticket> tickets,
-			SearchTicketsDTO searchTicketsDTO, String username) {
+			SearchTicketsDTO searchTicketsDTO) {
 		List<Ticket> searchedTickets = searchTickets(tickets, searchTicketsDTO);
 		
 		List<Manifestation> manifestations = getManifestationsByTickets(searchedTickets);
@@ -300,10 +299,15 @@ public class TicketService {
 		List<TicketRepresentationDTO> ticketsDTO = new ArrayList<TicketRepresentationDTO>();
 		for(Ticket t : filteredTickets) {
 			Manifestation manifestation = manifestationDAO.read(t.getManifestationId());
-			ticketsDTO.add(new TicketRepresentationDTO(t, manifestation, username));
+			ticketsDTO.add(new TicketRepresentationDTO(t, manifestation, t.getUser()));
 		}
 		
 		return ticketsDTO;
+	}
+
+	public List<TicketRepresentationDTO> getAllTickets(SearchTicketsDTO searchTicketsDTO) {
+		List<Ticket> tickets = ticketDAO.getAll();
+		return searchSortFilterTickets(tickets, searchTicketsDTO);
 	}
 
 	

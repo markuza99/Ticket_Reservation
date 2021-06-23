@@ -107,7 +107,7 @@ public class TicketController {
 		} else if(user.getRole() == Role.SELLER) {
 			return ticketService.getSellerTickets(user.getUsername(), new SearchTicketsDTO(manifestationName, priceFrom, priceTo, dateFrom, dateTo, sortBy, ticketType, ticketStatus));
 		} else {
-			return null;
+			return ticketService.getAllTickets(new SearchTicketsDTO(manifestationName, priceFrom, priceTo, dateFrom, dateTo, sortBy, ticketType, ticketStatus));
 		}
 	}
 }
