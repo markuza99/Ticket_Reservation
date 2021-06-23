@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="col-lg-12 col-md-12">
-      <div id="manifestations" class="row">
+      <div id="manifestations" class="row mt-5">
         <div class="col-lg-6 col-xl-4 col-md-6 col-sm-6" v-for="m in manifestations" :key="m.id">
           <div class="card mb-4 box-shadow manifestation" v-on:click="goToManifestation(m.id)">
             <div class="image-holder">
@@ -44,7 +44,7 @@ module.exports = {
       })
   },
   methods: {
-    goToManifestation(id) {
+    goToManifestation (id) {
       this.$router.push('/manifestation/' + id);
     }
   }

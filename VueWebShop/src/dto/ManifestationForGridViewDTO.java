@@ -1,5 +1,6 @@
 package dto;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import beans.Location;
@@ -14,6 +15,7 @@ public class ManifestationForGridViewDTO {
 	public String date;
 	public String location;
 	public String image;
+	public boolean manifestationPassed;
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 	
 	public ManifestationForGridViewDTO() {}
@@ -25,12 +27,21 @@ public class ManifestationForGridViewDTO {
 		this.price = manifestation.getTicketPrice();
 		this.date = formatter.format(manifestation.getStartTime());
 		this.image = manifestation.getImage();
+		this.manifestationPassed = manifestation.getStartTime().isBefore(LocalDateTime.now());
 	}
 	
 	private String getType(Manifestation manifestation) {
 		if(manifestation.getType() == ManifestationType.CONCERT) return "Koncert";
 		else if(manifestation.getType() == ManifestationType.FESTIVAL) return "Festival";
 		else return "Pozoriste";
+	}
+
+	public boolean getManifestationPassed() {
+		return manifestationPassed;
+	}
+
+	public void setManifestationPassed(boolean manifestationPassed) {
+		this.manifestationPassed = manifestationPassed;
 	}
 
 	public String getId() {
