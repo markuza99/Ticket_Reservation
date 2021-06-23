@@ -16,6 +16,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import beans.Comment;
+import beans.Role;
 import beans.User;
 import dao.CommentDAO;
 import dao.LocationDAO;
@@ -86,30 +87,34 @@ public class CommentController {
 		}
 		return new CommentingConditionsDTO(false, null, commentService.getManifestationRatingFromComments(id));
 	}
-//	
-//	@GET
-//	@Path("/")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public List<Comment> getAllComments(@Context HttpServletRequest request) {
-//		User user = (User) request.getSession().getAttribute("user");
-//		return commentService.getAllComments(user);
-//	}
-//
+	
+	@GET
+	@Path("/")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Comment> getCommentsForSeller(@Context HttpServletRequest request) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		if(user.getRole() == Role.SELLER)
+			return commentService.getCommentsForSeller(user.getUsername());
+		else
+			return commentService.getAllComments();
+	}
+
 	@PUT
 	@Path("/approve")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Comment approveComment(@Context HttpServletRequest request, CommentDTO commentDTO) {
+	public Comment approveComment(@Context HttpServletRequest request, Comment comment) {
 		User user = (User) request.getSession().getAttribute("user");
 		if(user == null) return null;
-		return commentService.approveComment(user.getUsername(), commentDTO);
+		return commentService.approveComment(comment);
 	}
 	
 	@PUT
 	@Path("/decline")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Comment declineComment(@Context HttpServletRequest request, CommentDTO commentDTO) {
+	public Comment declineComment(@Context HttpServletRequest request, Comment comment) {
 		User user = (User) request.getSession().getAttribute("user");
 		if(user == null) return null;
-		return commentService.declineComment(user.getUsername(), commentDTO);
+		return commentService.declineComment(comment);
 	}
 }
