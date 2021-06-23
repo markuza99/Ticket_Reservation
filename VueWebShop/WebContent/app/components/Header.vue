@@ -1,12 +1,12 @@
 <template>
  <div class="header-section">
 	<nav class="navbar navbar-light bg-primary justify-content-between navbar-fixed-top">
-		<a class="navbar-brand text-white">Ulaznice.rs</a>
+		<a class="navbar-brand text-white" v-on:click="goToWelcomePage()">Ulaznice.rs</a>
 		
 		<form class="form-inline" v-if="isLoggedIn">
 			<a class="text-white p-2" v-on:click="profileSettings()">Profil</a>
 			<a class="text-white p-2">Karte</a>
-			<a class="text-white p-2" v-if="role != 'CUSTOMER'">Manifestacije</a>
+			<a class="text-white p-2" v-on:click="goToManifestations()">Manifestacije</a>
 			<a class="text-white p-2" v-if="role != 'CUSTOMER'">Komentari</a>
 			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" v-on:click="signOut()">Odjava</button>
 		</form>
@@ -32,17 +32,24 @@ module.exports = {
 			.post("rest/users/logout")
 			.then(function() {
 				this.isLoggedIn = false;
-				window.location.reload();
+				this.$router.push('/login')
 			});
 		},
 		signIn: function() {
-			window.location.replace("#/login");
+			this.$router.push('/login')
 		},
 		profileSettings: function() {
-			window.location.replace("#/profile");
+			this.$router.push('/profile')
+		},
+		goToManifestations () {
+			this.$router.push('/manifestations')
+		},
+		goToWelcomePage () {
+			this.$router.push('/')
 		}
 	},
 	mounted() {
+		console.log(this.$router)
 		axios
 			.get("rest/users/role")
 			.then(response => {
