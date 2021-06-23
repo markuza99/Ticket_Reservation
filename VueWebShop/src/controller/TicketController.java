@@ -21,6 +21,7 @@ import beans.User;
 import dao.CustomerDAO;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
+import dao.SellerDAO;
 import dao.TicketDAO;
 import dto.ReservationDTO;
 import dto.SearchTicketsDTO;
@@ -53,9 +54,14 @@ public class TicketController {
 			CustomerDAO customerDAO = new CustomerDAO(contextPath);
 			ctx.setAttribute("CustomerDAO", customerDAO);
 		}
+		if(ctx.getAttribute("SellerDAO") == null) {
+			SellerDAO sellerDAO = new SellerDAO(contextPath);
+			ctx.setAttribute("SellerDAO", sellerDAO);
+		}
 		ticketService = new TicketService((TicketDAO) ctx.getAttribute("TicketDAO"),
 										(ManifestationDAO) ctx.getAttribute("ManifestationDAO"),
-										(CustomerDAO) ctx.getAttribute("CustomerDAO"));
+										(CustomerDAO) ctx.getAttribute("CustomerDAO"),
+										(SellerDAO) ctx.getAttribute("SellerDAO"));
 	}
 	
 	@GET
@@ -99,7 +105,7 @@ public class TicketController {
 		if(user.getRole() == Role.CUSTOMER) {
 			return ticketService.getCustomerTickets(user.getUsername(), new SearchTicketsDTO(manifestationName, priceFrom, priceTo, dateFrom, dateTo, sortBy, ticketType, ticketStatus));
 		} else if(user.getRole() == Role.SELLER) {
-			return null;
+			return ticketService.getSellerTickets(user.getUsername(), new SearchTicketsDTO(manifestationName, priceFrom, priceTo, dateFrom, dateTo, sortBy, ticketType, ticketStatus));
 		} else {
 			return null;
 		}

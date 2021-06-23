@@ -8,14 +8,15 @@ import java.util.List;
 import beans.Customer;
 import beans.CustomerType;
 import beans.Manifestation;
+import beans.Seller;
 import beans.Ticket;
 import beans.TicketStatus;
 import beans.TicketType;
-import beans.User;
 import beans.value_objects.SortManifestations;
 import beans.value_objects.SortTickets;
 import dao.interfaces.ICustomerDAO;
 import dao.interfaces.IManifestationDAO;
+import dao.interfaces.ISellerDAO;
 import dao.interfaces.ITicketDAO;
 import dto.ReservationDTO;
 import dto.SearchTicketsDTO;
@@ -26,11 +27,13 @@ public class TicketService {
 	private ITicketDAO ticketDAO;
 	private IManifestationDAO manifestationDAO;
 	private ICustomerDAO customerDAO;
+	private ISellerDAO sellerDAO;
 	
-	public TicketService(ITicketDAO ticketDAO, IManifestationDAO manifestationDAO, ICustomerDAO customerDAO) {
+	public TicketService(ITicketDAO ticketDAO, IManifestationDAO manifestationDAO, ICustomerDAO customerDAO, ISellerDAO sellerDAO) {
 		this.ticketDAO = ticketDAO;
 		this.manifestationDAO = manifestationDAO;
 		this.customerDAO = customerDAO;
+		this.sellerDAO = sellerDAO;
 	}
 	
 	public Boolean userAttended(String username, String manifestationId) {
@@ -261,7 +264,28 @@ public class TicketService {
 			customerTickets.add(ticket);
 		}
 		
-		List<Ticket> searchedTickets = searchTickets(customerTickets, searchTicketsDTO);
+		return searchSortFilterTickets(customerTickets, searchTicketsDTO, customer.getUsername());
+		
+	}
+
+	public List<TicketRepresentationDTO> getSellerTickets(String username, SearchTicketsDTO searchTicketsDTO) {
+		// TODO Auto-generated method stub
+		Seller seller = sellerDAO.read(username);
+		List<Ticket> sellerTickets = new ArrayList<Ticket>();
+		for(Ticket ticket : ticketDAO.getAll()) {
+			for(String manifestation : seller.getManifestations()) {
+				if(ticket.getManifestationId().equals(manifestation)) {
+					sellerTickets.add(ticket);
+				}
+			}
+		}
+		
+		return searchSortFilterTickets(sellerTickets, searchTicketsDTO, seller.getUsername());
+	}
+
+	private List<TicketRepresentationDTO> searchSortFilterTickets(List<Ticket> tickets,
+			SearchTicketsDTO searchTicketsDTO, String username) {
+		List<Ticket> searchedTickets = searchTickets(tickets, searchTicketsDTO);
 		
 		List<Manifestation> manifestations = getManifestationsByTickets(searchedTickets);
 		
@@ -276,7 +300,7 @@ public class TicketService {
 		List<TicketRepresentationDTO> ticketsDTO = new ArrayList<TicketRepresentationDTO>();
 		for(Ticket t : filteredTickets) {
 			Manifestation manifestation = manifestationDAO.read(t.getManifestationId());
-			ticketsDTO.add(new TicketRepresentationDTO(t, manifestation, customer.getUsername()));
+			ticketsDTO.add(new TicketRepresentationDTO(t, manifestation, username));
 		}
 		
 		return ticketsDTO;

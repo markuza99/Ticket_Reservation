@@ -30,7 +30,7 @@ module.exports = {
 		signOut: function() {
 			axios
 			.post("rest/users/logout")
-			.then(function() {
+			.then(() => {
 				this.isLoggedIn = false;
 				this.$router.push('/login')
 			});
