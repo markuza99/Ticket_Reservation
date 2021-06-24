@@ -257,7 +257,7 @@ module.exports = {
   height: 30em;
   overflow: hidden;
   border-radius: 10px;
-  background: pink;
+  border:1px solid rgb(255, 2, 102);
 }
 
 .manifestation-details ul {

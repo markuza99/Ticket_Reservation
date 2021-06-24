@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -81,6 +82,16 @@ public class TicketController {
 		User user = (User) request.getSession().getAttribute("user");
 		if(user == null) return null;
 		return ticketService.reserveTickets(reservationDTO, user.getUsername());
+	}
+	
+	@PUT
+	@Path("/cancel-reservation/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Ticket reserveTickets(@Context HttpServletRequest request, @PathParam("id") String ticketId) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		if(user.getRole() != Role.CUSTOMER) return null;
+		return ticketService.cancelReservation(ticketId);
 	}
 	
 	@GET

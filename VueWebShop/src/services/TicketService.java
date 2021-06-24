@@ -310,5 +310,15 @@ public class TicketService {
 		return searchSortFilterTickets(tickets, searchTicketsDTO);
 	}
 
+	public Ticket cancelReservation(String ticketId) {
+		Ticket ticket = ticketDAO.read(ticketId);
+		Manifestation manifestation = manifestationDAO.read(ticket.getManifestationId());
+		if(manifestation.getStartTime().isBefore(LocalDateTime.now()) || ticket.getTicketStatus() == TicketStatus.CANCELED) {
+			return null;
+		}
+		ticket.setTicketStatus(TicketStatus.CANCELED);
+		return ticketDAO.update(ticket);
+	}
+
 	
 }

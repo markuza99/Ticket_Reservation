@@ -1,5 +1,6 @@
 package dto;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import beans.Manifestation;
@@ -20,6 +21,7 @@ public class TicketRepresentationDTO {
 	private String status;
 	private String type;
 	private int numberOfTickets;
+	private boolean manifestationPassed;
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 	
 	public TicketRepresentationDTO() {}
@@ -34,6 +36,7 @@ public class TicketRepresentationDTO {
 		this.status = getTicketStatus(ticket.getTicketStatus());
 		this.type = getTicketType(ticket.getTicketType());
 		this.numberOfTickets = ticket.getNumberOfTickets();
+		this.manifestationPassed = manifestation.getStartTime().isBefore(LocalDateTime.now());
 	}
 	
 	private String getTicketStatus(TicketStatus status) {
@@ -47,6 +50,14 @@ public class TicketRepresentationDTO {
 		return "Fan pit";
 	}
 	
+	public boolean isManifestationPassed() {
+		return manifestationPassed;
+	}
+
+	public void setManifestationPassed(boolean manifestationPassed) {
+		this.manifestationPassed = manifestationPassed;
+	}
+
 	public String getId() {
 		return id;
 	}
