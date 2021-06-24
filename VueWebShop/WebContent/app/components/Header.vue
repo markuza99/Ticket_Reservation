@@ -5,7 +5,7 @@
 		
 		<form class="form-inline" v-if="isLoggedIn">
 			<a class="text-white p-2" v-on:click="profileSettings()">Profil</a>
-			<a class="text-white p-2">Karte</a>
+			<a class="text-white p-2" v-on:click="goToTickets()">Karte</a>
 			<a class="text-white p-2" v-on:click="goToManifestations()">Manifestacije</a>
 			<a class="text-white p-2" v-if="role != 'CUSTOMER'">Komentari</a>
 			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" v-on:click="signOut()">Odjava</button>
@@ -30,7 +30,7 @@ module.exports = {
 		signOut: function() {
 			axios
 			.post("rest/users/logout")
-			.then(function() {
+			.then(() => {
 				this.isLoggedIn = false;
 				this.$router.push('/login')
 			});
@@ -46,6 +46,9 @@ module.exports = {
 		},
 		goToWelcomePage () {
 			this.$router.push('/')
+		},
+		goToTickets () {
+			this.$router.push('/tickets')
 		}
 	},
 	mounted() {

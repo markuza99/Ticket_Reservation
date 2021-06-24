@@ -10,6 +10,7 @@ const Unauthorized = httpVueLoader("./app/components/Unauthorized.vue");
 const Users = httpVueLoader("./app/components/Users.vue");
 const Comments = httpVueLoader("./app/components/Comments.vue");
 const Manifestations = httpVueLoader('./app/components/UserManifestations.vue')
+const Tickets = httpVueLoader('./app/components/Tickets.vue')
 
 const router = new VueRouter({
     mode: 'hash',
@@ -23,7 +24,8 @@ const router = new VueRouter({
         { path: '/unauthorized', component: Unauthorized},
         { path: '/users', component: Users},
         { path: '/comments', component: Comments},
-        { path: '/manifestations', component: Manifestations}
+        { path: '/manifestations', component: Manifestations},
+        { path: '/tickets', component: Tickets}
     ]
 });
 
