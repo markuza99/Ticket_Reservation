@@ -60,7 +60,28 @@
             <td>{{t.status}}</td>
             <td>{{t.type}}</td>
             <td>{{t.numberOfTickets}}</td>
-            <td><button class="btn text-primary">otkazi</button></td>
+            <td v-on:click="setTicketId(t.id)">
+              <button v-if="t.status == 'Rezervisano' && t.manifestationPassed == false && role == 'CUSTOMER'" class="btn text-primary" data-toggle="modal" data-target="#cancelReservationModal">otkazi</button>
+              <div class="modal fade" id="cancelReservationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Cancel reservation</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      Are you sure you want to cancel reservation?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                      <button type="button" class="btn btn-primary" data-dismiss="modal" v-on:click="cancelReservation()">Yes</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -82,17 +103,32 @@ module.exports = {
       priceTo: 0,
       dateFrom: '',
       dateTo: '',
-      sortOrder: 'Asc'
+      sortOrder: 'Asc',
+      ticketId: '',
+      role: ''
     }
   },
   created () {
+    this.getTickets()
     axios
+			.get("rest/users/role")
+			.then(response => {
+				if(!isEmpty(response.data)) {
+          this.role = response.data;
+        }
+			});
+  },
+  methods: {
+    setTicketId (id) {
+      this.ticketId = id
+    },
+    getTickets () {
+      axios
       .get('rest/tickets')
       .then(response => {
         this.tickets = response.data
       })
-  },
-  methods: {
+    },
     searchTickets () {
       let dateFrom = ''
       let dateTo = ''
@@ -121,6 +157,16 @@ module.exports = {
         })
         .then(response => {
           this.tickets = response.data
+        })
+    },
+    cancelReservation () {
+      axios
+        .put('rest/tickets/cancel-reservation/' + this.ticketId)
+        .then(response => {
+          if(response.data != "") {
+            alert('Rezervacija otkazana')
+            this.getTickets()
+          }
         })
     }
   }
