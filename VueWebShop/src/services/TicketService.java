@@ -241,7 +241,7 @@ public class TicketService {
 	
 	private boolean correspondsSearch(Ticket ticket, String name,  LocalDateTime dateFrom, LocalDateTime dateTo, double priceFrom, double priceTo) {
 		Manifestation manifestation = manifestationDAO.read(ticket.getManifestationId());
-		boolean bname = name == null ? true : manifestation.getName().toLowerCase().contains(name);
+		boolean bname = name == null ? true : manifestation.getName().toLowerCase().contains(name.toLowerCase());
 		boolean bdateFrom = dateFrom == null ? true : manifestation.getStartTime().isAfter(dateFrom);
 		boolean bdateTo = dateTo == null ? true : manifestation.getEndTime().isBefore(dateTo);
 		boolean bpriceFrom = priceFrom == 0 ? true : (ticket.getPrice() >= priceFrom);
