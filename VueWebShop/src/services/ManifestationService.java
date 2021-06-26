@@ -21,6 +21,7 @@ import dao.interfaces.ISellerDAO;
 import dao.interfaces.ITicketDAO;
 import dto.ManifestationDTO;
 import dto.ManifestationForGridViewDTO;
+import dto.ManifestationForViewDTO;
 import dto.ManifestationWithLocationDTO;
 
 
@@ -62,8 +63,9 @@ public class ManifestationService {
 		return sortedManifestations;
 	}
 	
-	public Manifestation getManifestation(String id) {
-		return manifestationDAO.read(id);
+	public ManifestationForViewDTO getManifestation(String id) {
+		if(manifestationDAO.read(id) == null) return null;
+		return new ManifestationForViewDTO(manifestationDAO.read(id));
 	}
 
 
