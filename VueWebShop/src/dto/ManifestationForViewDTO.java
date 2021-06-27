@@ -31,6 +31,8 @@ public class ManifestationForViewDTO {
 		this.image = image;
 	}
 	
+	public ManifestationForViewDTO() {}
+	
 	public ManifestationForViewDTO(Manifestation manifestation) {
 		this.id = manifestation.getId();
 		this.name = manifestation.getName();

@@ -127,7 +127,7 @@ public class ManifestationController {
 	@PUT
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Manifestation updateManifestation(Manifestation manifestation) {
+	public Manifestation updateManifestation(ManifestationForViewDTO manifestation) {
 		return manifestationService.updateManifestation(manifestation);
 	}
 

@@ -39,6 +39,7 @@ public class ManifestationDAO implements IManifestationDAO {
 	@Override
 	public Manifestation create(Manifestation manifestation) {
 		manifestations.put(manifestation.getId(), manifestation);
+		images.put(manifestation.getId(), manifestation.getImage());
 		appendToFile(manifestationCSVRepresentation(manifestation));
 		appendImageToFile(imageCSVRepresentation(manifestation.getId(), manifestation.getImage()));
 		return manifestation;
@@ -52,6 +53,7 @@ public class ManifestationDAO implements IManifestationDAO {
 	@Override
 	public Manifestation update(Manifestation manifestation) {
 		manifestations.put(manifestation.getId(), manifestation);
+		images.put(manifestation.getId(), manifestation.getImage());
 		writeToFile();
 		writeImagesToFile();
 		return manifestation;

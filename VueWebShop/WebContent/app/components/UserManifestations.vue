@@ -69,6 +69,9 @@
                           <input type="file" ref="file" id="file" class="form-control-file" v-on:change="loadFile">
                         </div>
                       </form>
+                      <div class="image-holder-file">
+                        <img id="output">
+                      </div>
                     </div>
                     <div class="modal-footer">
                       <button type="button" id="closeEditManifestationButton" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -141,7 +144,7 @@ module.exports = {
 				var output = document.getElementById('output');
 				output.src = reader.result;
 				
-				vueComponent.manifestation.image64base = reader.result;
+				vueComponent.manifestation.image = reader.result;
 			}
 			reader.readAsDataURL(event.target.files[0]);
 		},
@@ -182,11 +185,22 @@ module.exports = {
       .put('rest/manifestations', JSON.stringify(this.manifestation), {
         headers: {"content-type":"application/json"}
       })
-      .then(response => {
-       // this.manifestation = response.data
-        document.getElementById('closeEditManifestationButton').click()
+      .then(() => {
+        this.$router.go()
       })
     }
   }
 }
 </script>
+
+<style scoped>
+.image-holder-file {
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.image-holder-file img {
+  max-width: 100%;
+}
+</style>
