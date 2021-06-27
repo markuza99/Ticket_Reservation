@@ -29,6 +29,7 @@ import dao.TicketDAO;
 import dto.ManifestationDTO;
 import dto.ManifestationForGridViewDTO;
 import dto.ManifestationForViewDTO;
+import dto.ManifestationParamsDTO;
 import dto.ManifestationWithLocationDTO;
 import services.ManifestationService;
 
@@ -150,6 +151,22 @@ public class ManifestationController {
 		List<Manifestation> sortedManifestations = manifestationService.sortGivenManifestations(searchedManifestations, sortBy);
 		List<Manifestation> filteredManifestations = manifestationService.filterManifestations(sortedManifestations, manifestationType, ticketCondition);
 		return manifestationService.convertToManifestationsWithLocationDTO(filteredManifestations);
+	}
+	
+	@GET
+	@Path("/list-mine")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public List<ManifestationForGridViewDTO> getMineManifestations(@Context HttpServletRequest request, @QueryParam("name") String name, @QueryParam("place") String place,
+			@QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("dateFrom") String dateFrom,
+			@QueryParam("dateTo") String dateTo, @QueryParam("sortBy") String sortBy, @QueryParam("type") String type,
+			@QueryParam("status") String status, @QueryParam("ticketCondition") String ticketCondition) throws ParseException {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		if(user.getRole() == Role.ADMIN) {
+			return manifestationService.listAllManifestations(new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
+			dateTo, sortBy, type, status, ticketCondition));
+		}
+		return null;
 	}
 
 	@PUT
