@@ -7,7 +7,7 @@
                 <input type="date" v-model="date_to" class="form-control mr-5"/>
             </div>
             <div class="form-group">
-                <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#createUserModal">Dodaj korisnika</button>
+                <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#createUserModal" v-if="role=='ADMIN'">Dodaj korisnika</button>
                 <input type="text" v-model="searchQuery" class="form-control mr-2"/>
                 <button type="submit" class="btn btn-primary">
                     <i class="fa fa-search"></i>
@@ -81,8 +81,8 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-2 col-md-2">
+        <div class="row"> 
+            <div class="col-lg-2 col-md-2" v-if="role=='ADMIN'">
                 <div class="mb-2 font-weight-bold">Tip korisnika</div>
                 <div class="list-group user_type" id="list-tab" role="tablist">
                     <a class="list-group-item list-group-item-action active" data-toggle="list" id="ALL" v-on:click="setUserType('ALL')">Svi</a>
@@ -110,7 +110,7 @@
                             <th scope="col">Gender</th>
                             <th scope="col">Role</th>
                             <th scope="col">Date</th>
-                            <th scope="col"><i class="fa fa-trash"></i></th>
+                            <th scope="col" v-if="role=='ADMIN'"><i class="fa fa-trash"></i></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -123,13 +123,13 @@
                                 <td>{{user.gender}}</td>
                                 <td>{{user.role}}</td>
                                 <td>{{user.dateString}}</td>
-                                <td v-if="user.isDeleted == 0">
+                                <td v-if="user.isDeleted == 0 && role=='ADMIN'">
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteUserModal"
                                     v-on:click="setSelectedUser(user.username)">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </td>
-                                <td v-if="user.isDeleted == 1" class="text-danger">
+                                <td v-if="user.isDeleted == 1 && role=='ADMIN'" class="text-danger">
                                     <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#retrieveUserModal"
                                     v-on:click="setSelectedUser(user.username)">
                                         <i class="fa fa-undo"></i>
@@ -199,6 +199,7 @@ module.exports = {
             date_to : "",
             user_type : "",
             user_status : "",
+            role : "",
             new_user : {
                 username : "",
                 password : "",
@@ -213,7 +214,12 @@ module.exports = {
     },
     mounted() {
         axios
-            .get("rest/users/")
+            .get("rest/users/me")
+            .then(response => {
+                this.role = response.data.role;
+            });
+        axios
+            .get("rest/users/usersList")
             .then(response => {
                 this.users = response.data;
                 this.users.forEach(user => makeDateString(user));

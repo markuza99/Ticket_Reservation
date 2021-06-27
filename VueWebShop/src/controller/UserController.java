@@ -55,7 +55,7 @@ public class UserController {
 		if(ctx.getAttribute("UserDAO") == null) {
 			ctx.setAttribute("UserDAO", new UserDAO(contextPath));
 		}
-		userService = new UserService((UserDAO) ctx.getAttribute("UserDAO"));
+		userService = new UserService((UserDAO) ctx.getAttribute("UserDAO"), (SellerDAO) ctx.getAttribute("SellerDAO"), (TicketDAO) ctx.getAttribute("TicketDAO"));
 	}
 	
 	@POST
@@ -118,6 +118,14 @@ public class UserController {
 		return userService.getAllUsers();
 	}
 	
+	@GET
+	@Path("/usersList")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<User> listUsers(@Context HttpServletRequest request) {
+		User u = (User) request.getSession().getAttribute("user");
+		return userService.getUsersForList(u);
+	}
+	
 	@DELETE
 	@Path("/{username}")
 	public User deleteUser(@PathParam("username") String username) {
@@ -126,22 +134,26 @@ public class UserController {
 	
 	@PUT
 	@Path("/retrieve/{username}")
-	public User retrieveUser(@PathParam("username") String username) {
+	public User retrieveUser(@Context HttpServletRequest request,@PathParam("username") String username) {
+		User u = (User) request.getSession().getAttribute("user");
 		return userService.retrieveUser(username);
 	}
 	
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<User> search(@QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo) {
-		return userService.search(searchQuery, dateFrom, dateTo);
+	public List<User> search(@Context HttpServletRequest request, @QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo) {
+		User u = (User) request.getSession().getAttribute("user");
+		return userService.search(u,searchQuery, dateFrom, dateTo);
+		
 	}
 	
 	@GET
 	@Path("/filter")
-	public List<User> filter(@QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom,
+	public List<User> filter(@Context HttpServletRequest request,@QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom,
 			@QueryParam("dateTo") String dateTo, @QueryParam("role") String role,
 			@QueryParam("userStatus") String userStatus) {
-		return userService.filter(searchQuery, dateFrom, dateTo, role, userStatus);
+		User u = (User) request.getSession().getAttribute("user");
+		return userService.filter(u,searchQuery, dateFrom, dateTo, role, userStatus);
 	}
 }
