@@ -97,6 +97,34 @@ public class ManifestationController {
 		return manifestationService.getManifestation(id);
 	}
 	
+	@PUT
+	@Path("/approve/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void approveManifestation(@PathParam("id") String id) {
+		manifestationService.approveManifestation(id);
+	}
+	
+	@PUT
+	@Path("/decline/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void declineManifestation(@PathParam("id") String id) {
+		manifestationService.declineManifestation(id);
+	}
+	
+	@PUT
+	@Path("/delete/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void deleteManifestation(@PathParam("id") String id) {
+		manifestationService.deleteManifestation(id);
+	}
+	
+	@PUT
+	@Path("/retrieve/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void retrieveManifestation(@PathParam("id") String id) {
+		manifestationService.retrieveManifestation(id);
+	}
+	
 	@GET
 	@Path("/search")
 	@Produces(MediaType.APPLICATION_JSON)

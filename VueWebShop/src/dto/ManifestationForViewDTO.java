@@ -15,6 +15,7 @@ public class ManifestationForViewDTO {
 	private String status;
 	private String location;
 	private String image;
+	private String seller;
 	
 	public ManifestationForViewDTO(String id, String name, String type, int numberOfSeats, int remainingNumberOfSeats,
 			String startTime, String endTime, int ticketPrice, String status, String location, String image) {
@@ -33,7 +34,7 @@ public class ManifestationForViewDTO {
 	
 	public ManifestationForViewDTO() {}
 	
-	public ManifestationForViewDTO(Manifestation manifestation) {
+	public ManifestationForViewDTO(Manifestation manifestation, String seller) {
 		this.id = manifestation.getId();
 		this.name = manifestation.getName();
 		this.type = manifestation.getType().toString();
@@ -45,6 +46,15 @@ public class ManifestationForViewDTO {
 		this.status = manifestation.getStatus().toString();
 		this.location = manifestation.getLocation();
 		this.image = manifestation.getImage();
+		this.seller = seller;
+	}
+
+	public String getSeller() {
+		return seller;
+	}
+
+	public void setSeller(String seller) {
+		this.seller = seller;
 	}
 
 	public String getId() {

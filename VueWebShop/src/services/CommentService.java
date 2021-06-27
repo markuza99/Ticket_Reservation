@@ -117,6 +117,6 @@ public class CommentService {
 	}
 	
 	public List<Comment> getAllComments() {
-		return null;
+		return commentDAO.getAll();
 	}
 }

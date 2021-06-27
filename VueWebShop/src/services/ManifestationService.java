@@ -65,7 +65,8 @@ public class ManifestationService {
 	
 	public ManifestationForViewDTO getManifestation(String id) {
 		if(manifestationDAO.read(id) == null) return null;
-		return new ManifestationForViewDTO(manifestationDAO.read(id));
+		Seller seller = sellerDAO.getSellerForManifestation(id);
+		return new ManifestationForViewDTO(manifestationDAO.read(id), seller.getUsername());
 	}
 
 
@@ -78,6 +79,7 @@ public class ManifestationService {
 		
 		Manifestation manifestation = convertManifestationDTOToManifestation(manifestationDTO);
 		
+		manifestationDAO.updateImage(manifestation);
 		return manifestationDAO.update(manifestation);
 	}
 	
@@ -210,8 +212,8 @@ public class ManifestationService {
 		int numberOfSeats = manifestationDTO.getNumberOfSeats();
 		
 		Manifestation manifestation = new Manifestation(manifestationDTO.getId(), manifestationDTO.getName(), manifestationDTO.getType(),
-				numberOfSeats,numberOfSeats,manifestationDTO.getStartTime(), manifestationDTO.getEndTime(), manifestationDTO.getTicketPrice(), Status.ACTIVE,
-				manifestationDTO.getLocation(), manifestationDTO.getImage64base(), false);
+				numberOfSeats,numberOfSeats,manifestationDTO.getStartTime(), manifestationDTO.getEndTime(), manifestationDTO.getTicketPrice(), Status.INACTIVE,
+				manifestationDTO.getLocation(), manifestationDTO.getImage64base(), false , false);
 		manifestationDAO.create(manifestation);
 		
 		return manifestation;
@@ -299,7 +301,7 @@ public class ManifestationService {
 				continue;
 			}
 			Location location = locationDAO.read(m.getLocation());
-			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m);
+			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m, username);
 			manifestation.setLocation(location);
 			manifestations.add(manifestation);
 		}
@@ -311,7 +313,8 @@ public class ManifestationService {
 		
 		for(Manifestation m : getAllManifestations()) {
 			Location location = locationDAO.read(m.getLocation());
-			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m);
+			Seller seller = sellerDAO.getSellerForManifestation(m.getId());
+			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m, seller.getUsername());
 			manifestation.setLocation(location);
 			manifestations.add(manifestation);
 		}
@@ -333,11 +336,37 @@ public class ManifestationService {
 		
 		for(Manifestation m : manifestations) {
 			Location location = locationDAO.read(m.getLocation());
-			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m);
+			Seller seller = sellerDAO.getSellerForManifestation(m.getId());
+			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m, seller.getUsername());
 			manifestation.setLocation(location);
 			manifestationsWithLocation.add(manifestation);
 		}
 		return manifestationsWithLocation;
 		
+	}
+
+	public void approveManifestation(String id) {
+		Manifestation manifestation = manifestationDAO.read(id);
+		manifestation.setStatus("ACTIVE");
+		manifestation.setChecked(true);
+		manifestationDAO.update(manifestation);
+	}
+
+	public void declineManifestation(String id) {
+		Manifestation manifestation = manifestationDAO.read(id);
+		manifestation.setChecked(true);
+		manifestationDAO.update(manifestation);
+	}
+	
+	public void deleteManifestation(String id) {
+		Manifestation manifestation = manifestationDAO.read(id);
+		manifestation.setIsDeleted("1");
+		manifestationDAO.update(manifestation);
+	}
+	
+	public void retrieveManifestation(String id) {
+		Manifestation manifestation = manifestationDAO.read(id);
+		manifestation.setIsDeleted("0");
+		manifestationDAO.update(manifestation);
 	}
 }

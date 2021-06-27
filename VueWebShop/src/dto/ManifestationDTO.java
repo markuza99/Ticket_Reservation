@@ -14,7 +14,16 @@ public class ManifestationDTO {
 	private int ticketPrice;
 	private String location;
 	private String image64base;
+	public boolean checked;
 	
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
+	}
+
 	public String getId() {
 		return id;
 	}
