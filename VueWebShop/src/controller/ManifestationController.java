@@ -26,9 +26,9 @@ import dao.LocationDAO;
 import dao.ManifestationDAO;
 import dao.SellerDAO;
 import dao.TicketDAO;
-import dao.interfaces.ISellerDAO;
 import dto.ManifestationDTO;
 import dto.ManifestationForGridViewDTO;
+import dto.ManifestationForViewDTO;
 import dto.ManifestationWithLocationDTO;
 import services.ManifestationService;
 
@@ -93,7 +93,7 @@ public class ManifestationController {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Manifestation getManifestation(@PathParam("id") String id) {
+	public ManifestationForViewDTO getManifestation(@PathParam("id") String id) {
 		return manifestationService.getManifestation(id);
 	}
 	
@@ -127,7 +127,7 @@ public class ManifestationController {
 	@PUT
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Manifestation updateManifestation(Manifestation manifestation) {
+	public Manifestation updateManifestation(ManifestationForViewDTO manifestation) {
 		return manifestationService.updateManifestation(manifestation);
 	}
 

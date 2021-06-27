@@ -21,6 +21,7 @@ import dao.interfaces.ISellerDAO;
 import dao.interfaces.ITicketDAO;
 import dto.ManifestationDTO;
 import dto.ManifestationForGridViewDTO;
+import dto.ManifestationForViewDTO;
 import dto.ManifestationWithLocationDTO;
 
 
@@ -62,16 +63,37 @@ public class ManifestationService {
 		return sortedManifestations;
 	}
 	
-	public Manifestation getManifestation(String id) {
-		return manifestationDAO.read(id);
+	public ManifestationForViewDTO getManifestation(String id) {
+		if(manifestationDAO.read(id) == null) return null;
+		return new ManifestationForViewDTO(manifestationDAO.read(id));
 	}
 
 
-	public Manifestation updateManifestation(Manifestation manifestation) {
-		if(!checkManifestationMaintainance(manifestation.getStartTime(), manifestation.getEndTime() ,manifestation.getLocation(), manifestation.getId())) {
+	public Manifestation updateManifestation(ManifestationForViewDTO manifestationDTO) {
+		LocalDateTime startTime = LocalDateTime.parse(manifestationDTO.getStartTime());
+		LocalDateTime endTime = LocalDateTime.parse(manifestationDTO.getEndTime());
+		if(!checkManifestationMaintainance(startTime, endTime ,manifestationDTO.getLocation(), manifestationDTO.getId())) {
 			return null;
 		}
+		
+		Manifestation manifestation = convertManifestationDTOToManifestation(manifestationDTO);
+		
 		return manifestationDAO.update(manifestation);
+	}
+	
+	private Manifestation convertManifestationDTOToManifestation(ManifestationForViewDTO manifestationDTO) {
+		Manifestation manifestation = manifestationDAO.read(manifestationDTO.getId());
+		manifestation.setName(manifestationDTO.getName());
+		manifestation.setType(manifestationDTO.getType());
+		manifestation.setNumberOfSeats(manifestationDTO.getNumberOfSeats());
+		manifestation.setRemainingNumberOfSeats(manifestationDTO.getNumberOfSeats());
+		manifestation.setStartTime(manifestationDTO.getStartTime());
+		manifestation.setEndTime(manifestationDTO.getEndTime());
+		manifestation.setTicketPrice(manifestationDTO.getTicketPrice());
+		manifestation.setLocation(manifestationDTO.getLocation());
+		manifestation.setImage(manifestationDTO.getImage());
+		
+		return manifestation;
 	}
 	
 	public List<Manifestation> searchAllManifestations(String name,  String dateFrom, String dateTo, String place, int priceFrom, int priceTo) {
