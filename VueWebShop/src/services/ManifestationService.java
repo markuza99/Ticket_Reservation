@@ -168,6 +168,8 @@ public class ManifestationService {
 	
 	public List<Manifestation> filterManifestations(List<Manifestation> manifestations, String manifestationType, String ticketCondition) throws ParseException {		
 		List<Manifestation> filteredManifestations = new ArrayList<Manifestation>();
+		if(manifestationType == null) manifestationType = "";
+		if(ticketCondition == null) ticketCondition = "";
 		for (Manifestation m : manifestations) {
 			if(correspondsFilter(m, manifestationType, ticketCondition)) {
 				filteredManifestations.add(m);
@@ -177,10 +179,10 @@ public class ManifestationService {
 	}
 	
 	private boolean correspondsSearch(Manifestation m,String name,  LocalDateTime dateFrom, LocalDateTime dateTo, String place, int priceFrom, int priceTo) {
-		boolean bname = m.getName().toLowerCase().contains(name.toLowerCase());
+		boolean bname = name == null ? true : m.getName().toLowerCase().contains(name.toLowerCase());
 		String locationId = m.getLocation();
 		Location location = locationDAO.read(locationId);
-		boolean bplace = location.getCity().toLowerCase().contains(place.toLowerCase());
+		boolean bplace = place == null ? true : location.getCity().toLowerCase().contains(place.toLowerCase());
 		boolean bdateFrom = dateFrom == null ? true : m.getStartTime().isAfter(dateFrom);
 		boolean bdateTo = dateTo == null ? true : m.getEndTime().isBefore(dateTo);
 		boolean bpriceFrom = priceFrom == 0 ? true : (m.getTicketPrice() >= priceFrom);
@@ -189,7 +191,7 @@ public class ManifestationService {
 	}
 
 	private boolean correspondsFilter(Manifestation manifestation, String manifestationType, String ticketCondition) {
-		boolean btype = manifestationType.equals("all") || manifestationType.equals("") ? true : manifestation.getType().equals(ManifestationType.valueOf(manifestationType));
+		boolean btype = manifestationType == null || manifestationType.equals("all") || manifestationType.equals("") ? true : manifestation.getType().equals(ManifestationType.valueOf(manifestationType));
 		boolean bnotSoldOut;
 		if(ticketCondition.equals("notSoldOut")) {
 			bnotSoldOut = manifestation.getRemainingNumberOfSeats() > 0 ? true : false;
@@ -295,59 +297,6 @@ public class ManifestationService {
 				m.getStatus(), location , m.getImage(), m.getIsDeleted());
 	}
 
-	public List<ManifestationForGridViewDTO> getSellerManifestations(String username) {
-		List<ManifestationForGridViewDTO> manifestations = new ArrayList<ManifestationForGridViewDTO>();
-		Seller seller = sellerDAO.read(username);
-		
-		for(Manifestation m : getAllManifestations()) {
-			if(!seller.getManifestations().contains(m.getId())) {
-				continue;
-			}
-			Location location = locationDAO.read(m.getLocation());
-			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m, username);
-			manifestation.setLocation(location);
-			manifestations.add(manifestation);
-		}
-		return manifestations;
-	}
-	
-	public List<ManifestationForGridViewDTO> getAllManifestationsWithLocationDTO() {
-		List<ManifestationForGridViewDTO> manifestations = new ArrayList<ManifestationForGridViewDTO>();
-		
-		for(Manifestation m : getAllManifestations()) {
-			Location location = locationDAO.read(m.getLocation());
-			Seller seller = sellerDAO.getSellerForManifestation(m.getId());
-			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m, seller.getUsername());
-			manifestation.setLocation(location);
-			manifestations.add(manifestation);
-		}
-		return manifestations;
-	}
-
-	public List<ManifestationForGridViewDTO> getUserManifestations(String username) {
-		List<Manifestation> manifestations = new ArrayList<Manifestation>();
-		Customer customer = customerDAO.read(username);
-		for(String ticketId : customer.getTickets()) {
-			Ticket ticket = ticketDAO.read(ticketId);
-			Manifestation manifestation = manifestationDAO.read(ticket.getManifestationId());
-			if(!manifestations.contains(manifestation)) {
-				manifestations.add(manifestation);
-			}
-		}
-		
-		List<ManifestationForGridViewDTO> manifestationsWithLocation = new ArrayList<ManifestationForGridViewDTO>();
-		
-		for(Manifestation m : manifestations) {
-			Location location = locationDAO.read(m.getLocation());
-			Seller seller = sellerDAO.getSellerForManifestation(m.getId());
-			ManifestationForGridViewDTO manifestation = new ManifestationForGridViewDTO(m, seller.getUsername());
-			manifestation.setLocation(location);
-			manifestationsWithLocation.add(manifestation);
-		}
-		return manifestationsWithLocation;
-		
-	}
-
 	public void approveManifestation(String id) {
 		Manifestation manifestation = manifestationDAO.read(id);
 		manifestation.setStatus("ACTIVE");
@@ -424,5 +373,29 @@ public class ManifestationService {
 		}
 		
 		return searchedManifestations;
+	}
+
+	public List<ManifestationForGridViewDTO> listSellerManifestations(String username,
+			ManifestationParamsDTO manifestationParamsDTO) throws ParseException {
+		Seller seller = sellerDAO.read(username);
+		List<Manifestation> manifestations = new ArrayList<Manifestation>();
+		for(String manifestationId : seller.getManifestations()) {
+			Manifestation manifestation = manifestationDAO.read(manifestationId);
+			manifestations.add(manifestation);
+		}
+		return searchSortFilterManifestations(manifestations, manifestationParamsDTO);
+	}
+
+	public List<ManifestationForGridViewDTO> listUserManifestations(String username, ManifestationParamsDTO manifestationParamsDTO) throws ParseException {
+		List<Manifestation> manifestations = new ArrayList<Manifestation>();
+		Customer customer = customerDAO.read(username);
+		for(String ticketId : customer.getTickets()) {
+			Ticket ticket = ticketDAO.read(ticketId);
+			Manifestation manifestation = manifestationDAO.read(ticket.getManifestationId());
+			if(!manifestations.contains(manifestation)) {
+				manifestations.add(manifestation);
+			}
+		}
+		return searchSortFilterManifestations(manifestations, manifestationParamsDTO);
 	}
 }

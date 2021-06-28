@@ -292,7 +292,7 @@ module.exports = {
   methods: {
     getMineManifestations () {
       axios
-      .get('rest/manifestations/mine')
+      .get('rest/manifestations/list-mine')
       .then(response => {
         this.manifestations = response.data
         console.log(this.manifestations)

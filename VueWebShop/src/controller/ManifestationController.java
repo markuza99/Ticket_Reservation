@@ -77,21 +77,6 @@ public class ManifestationController {
 	}
 	
 	@GET
-	@Path("/mine")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<ManifestationForGridViewDTO> getMyManifestations(@Context HttpServletRequest request) {
-		User user = (User) request.getSession().getAttribute("user");
-		if(user == null) return null;
-		if(user.getRole() == Role.ADMIN) {
-			return manifestationService.getAllManifestationsWithLocationDTO();
-		} else if(user.getRole() == Role.SELLER) {
-			return manifestationService.getSellerManifestations(user.getUsername());
-		} else {
-			return manifestationService.getUserManifestations(user.getUsername());
-		}
-	}
-	
-	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public ManifestationForViewDTO getManifestation(@PathParam("id") String id) {
@@ -165,8 +150,16 @@ public class ManifestationController {
 		if(user.getRole() == Role.ADMIN) {
 			return manifestationService.listAllManifestations(new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
 			dateTo, sortBy, type, status, ticketCondition));
+		} else if(user.getRole() == Role.SELLER) {
+			return manifestationService.listSellerManifestations(
+				user.getUsername(),
+				new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
+				dateTo, sortBy, type, status, ticketCondition));
+		} else {
+			return manifestationService.listUserManifestations(user.getUsername(), 
+				new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
+				dateTo, sortBy, type, status, ticketCondition));
 		}
-		return null;
 	}
 
 	@PUT
