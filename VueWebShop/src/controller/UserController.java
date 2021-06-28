@@ -25,6 +25,8 @@ import dao.ManifestationDAO;
 import dao.SellerDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
+import dto.SearchUsersDTO;
+import dto.UserForViewDTO;
 import services.UserService;
 
 @Path("/users")
@@ -55,7 +57,10 @@ public class UserController {
 		if(ctx.getAttribute("UserDAO") == null) {
 			ctx.setAttribute("UserDAO", new UserDAO(contextPath));
 		}
-		userService = new UserService((UserDAO) ctx.getAttribute("UserDAO"), (SellerDAO) ctx.getAttribute("SellerDAO"), (TicketDAO) ctx.getAttribute("TicketDAO"));
+		userService = new UserService((UserDAO) ctx.getAttribute("UserDAO"),
+				(SellerDAO) ctx.getAttribute("SellerDAO"),
+				(CustomerDAO) ctx.getAttribute("CustomerDAO"),
+				(TicketDAO) ctx.getAttribute("TicketDAO"));
 	}
 	
 	@POST
@@ -114,16 +119,18 @@ public class UserController {
 	@GET
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<User> allUsers() {
-		return userService.getAllUsers();
-	}
-	
-	@GET
-	@Path("/usersList")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<User> listUsers(@Context HttpServletRequest request) {
-		User u = (User) request.getSession().getAttribute("user");
-		return userService.getUsersForList(u);
+	public List<UserForViewDTO> listUsers(@Context HttpServletRequest request, @QueryParam("searchQuery") String searchQuery,
+			@QueryParam("role") String role,
+			@QueryParam("type") String type,
+			@QueryParam("sortBy") String sortBy) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		if(user.getRole() == Role.ADMIN) {
+			return userService.getAllUsers(new SearchUsersDTO(searchQuery, role, type, sortBy));
+		} else if (user.getRole() == Role.SELLER) {
+			return userService.getUsersForSeller(user.getUsername(), new SearchUsersDTO(searchQuery, role, type, sortBy));
+		}
+		return null;
 	}
 	
 	@DELETE
@@ -139,21 +146,21 @@ public class UserController {
 		return userService.retrieveUser(username);
 	}
 	
-	@GET
-	@Path("/search")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<User> search(@Context HttpServletRequest request, @QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo) {
-		User u = (User) request.getSession().getAttribute("user");
-		return userService.search(u,searchQuery, dateFrom, dateTo);
-		
-	}
-	
-	@GET
-	@Path("/filter")
-	public List<User> filter(@Context HttpServletRequest request,@QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom,
-			@QueryParam("dateTo") String dateTo, @QueryParam("role") String role,
-			@QueryParam("userStatus") String userStatus) {
-		User u = (User) request.getSession().getAttribute("user");
-		return userService.filter(u,searchQuery, dateFrom, dateTo, role, userStatus);
-	}
+//	@GET
+//	@Path("/search")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public List<User> search(@Context HttpServletRequest request, @QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo) {
+//		User u = (User) request.getSession().getAttribute("user");
+//		return userService.search(u,searchQuery, dateFrom, dateTo);
+//		
+//	}
+//	
+//	@GET
+//	@Path("/filter")
+//	public List<User> filter(@Context HttpServletRequest request,@QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom,
+//			@QueryParam("dateTo") String dateTo, @QueryParam("role") String role,
+//			@QueryParam("userStatus") String userStatus) {
+//		User u = (User) request.getSession().getAttribute("user");
+//		return userService.filter(u,searchQuery, dateFrom, dateTo, role, userStatus);
+//	}
 }

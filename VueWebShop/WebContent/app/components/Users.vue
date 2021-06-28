@@ -1,19 +1,51 @@
 <template>
-    <div class="container-fluid" id="users-panel">
-        <form class="form-inline justify-content-between" @submit.prevent="search">
-            <div class="form-group">
-                <label class="mr-2 text-uppercase">Datum rodjenja:</label>
-                <input type="date" v-model="date_from" class="form-control mr-2"/>
-                <input type="date" v-model="date_to" class="form-control mr-5"/>
+    <div id="users-panel">
+        <div class="container">
+            <div class="row">
+                <div class="col-2">
+                    <label>Uloga</label>
+                    <select class="form-control" v-model="roleForFilter">
+                    <option value="all">Sve</option>
+                    <option value="SELLER">Prodavac</option>
+                    <option value="CUSTOMER">Kupac</option>
+                    <option value="ADMIN">Admin</option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <!-- sa v for kroz customertypes -->
+                    <label>Tip kupca</label>
+                    <select class="form-control" v-model="type">
+                    <option value="all">Sve</option>
+                    <option value="zlatni">Zlatni</option>
+                    <option value="bronzani">Bronzani</option>
+                    <option value="srebrni">Srebrni</option>
+                    <option value="regularni">Regularni</option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <label>Sortiraj po</label>
+                    <select class="form-control" v-model="sortBy">
+                    <option value="firstName">Ime</option>
+                    <option value="lastName">Prezime</option>
+                    <option value="username">Korisnicko ime</option>
+                    <option value="points">Broj bodova</option>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <input type="radio" id="one" value="Asc" v-model="sortOrder" class="mt-5">
+                    <label for="one" class="mr-2">Rastuce</label>
+                    <input type="radio" id="two" value="Desc" v-model="sortOrder" class="mt-5">
+                    <label for="two">Opadajuce</label>
+                </div>
+                <div class="col-12 mb-3">
+                    <div class="d-flex">
+                        <input type="text"  v-model="searchQuery" class="mt-3 mr-3 form-control">
+                        <button type="submit" class="btn btn-primary mt-2" v-on:click="searchUsers">Submit</button>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#createUserModal" v-if="role=='ADMIN'">Dodaj korisnika</button>
-                <input type="text" v-model="searchQuery" class="form-control mr-2"/>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa fa-search"></i>
-                </button>
-            </div>
-        </form>
+        </div>
+        
 
         <div class="modal fade" id="createUserModal" tabindex="-1" role="dialog" aria-labelledby="createUserModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -81,55 +113,39 @@
             </div>
         </div>
 
-        <div class="row"> 
-            <div class="col-lg-2 col-md-2" v-if="role=='ADMIN'">
-                <div class="mb-2 font-weight-bold">Tip korisnika</div>
-                <div class="list-group user_type" id="list-tab" role="tablist">
-                    <a class="list-group-item list-group-item-action active" data-toggle="list" id="ALL" v-on:click="setUserType('ALL')">Svi</a>
-                    <a class="list-group-item list-group-item-action" data-toggle="list" id="CUSTOMER" v-on:click="setUserType('CUSTOMER')">Kupci</a>
-                    <a class="list-group-item list-group-item-action" data-toggle="list" id="SELLER" v-on:click="setUserType('SELLER')">Prodavci</a>
-                </div>
-
-                <div class="mb-2 mt-5 font-weight-bold">Status korisnika</div>
-                <div class="list-group user_status" id="list-tab" role="tablist">
-                    <a class="list-group-item user-status list-group-item-action" data-toggle="list" id="ALL" v-on:click="setUserStatus('ALL')">Svi</a>
-                    <a class="list-group-item user-status list-group-item-action active" data-toggle="list" id="ACTIVE" v-on:click="setUserStatus('ACTIVE')">Aktivni</a>
-                    <a class="list-group-item user-status list-group-item-action" data-toggle="list" id="DELETED" v-on:click="setUserStatus('DELETED')">Obrisani</a>
-                </div>
-                <button type="submit" class="btn btn-primary" v-on:click="filter">Filtriraj</button>
-            </div>
-            <div class="col-lg-10 col-md-10">
-                <div class="table-wrapper-scroll">
+        <div class="container"> 
+            <div class="row">
+                <div class="col-12">
                     <table class="table table-hover" v-if="users">
                         <thead>
                             <tr>
-                            <th scope="col">Username</th>
-                            <th scope="col">First Name</th>
-                            <th scope="col">Last Name</th>
-                            <th scope="col">Password</th>
-                            <th scope="col">Gender</th>
-                            <th scope="col">Role</th>
-                            <th scope="col">Date</th>
+                            <th scope="col">Korisnicko ime</th>
+                            <th scope="col">Ime</th>
+                            <th scope="col">Prezime</th>
+                            <th scope="col">Pol</th>
+                            <th scope="col">Uloga</th>
+                            <th scope="col">Broj bodova</th>
+                            <th scope="col">Tip kupca</th>
                             <th scope="col" v-if="role=='ADMIN'"><i class="fa fa-trash"></i></th>
                             </tr>
                         </thead>
                         <tbody>
                             
-                            <tr v-for="user in users" v-bind:key="user.username" v-bind:class="{ table_warning : user.isDeleted == 1}">
+                            <tr v-for="user in users" v-bind:key="user.username" v-bind:class="{ table_warning : user.deleted == 1}">
                                 <th scope="row">{{user.username}}</th>
                                 <td>{{user.firstName}}</td>
                                 <td>{{user.lastName}}</td>
-                                <td>{{user.password}}</td>
                                 <td>{{user.gender}}</td>
                                 <td>{{user.role}}</td>
-                                <td>{{user.dateString}}</td>
-                                <td v-if="user.isDeleted == 0 && role=='ADMIN'">
+                                <td>{{user.points}}</td>
+                                <td>{{user.type}}</td>
+                                <td v-if="user.deleted == 0 && role=='ADMIN'">
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteUserModal"
                                     v-on:click="setSelectedUser(user.username)">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </td>
-                                <td v-if="user.isDeleted == 1 && role=='ADMIN'" class="text-danger">
+                                <td v-if="user.deleted == 1 && role=='ADMIN'" class="text-danger">
                                     <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#retrieveUserModal"
                                     v-on:click="setSelectedUser(user.username)">
                                         <i class="fa fa-undo"></i>
@@ -140,7 +156,6 @@
                         </tbody>
                     </table>
                 </div>
-                
             </div>
         </div>
         
@@ -195,11 +210,8 @@ module.exports = {
             selected_user : "",
             filtered_users : "SVI",
             searchQuery : "",
-            date_from : "",
-            date_to : "",
-            user_type : "",
-            user_status : "",
-            role : "",
+            type : "all",
+            roleForFilter : "all",
             new_user : {
                 username : "",
                 password : "",
@@ -209,7 +221,9 @@ module.exports = {
                 gender : "",
                 role : "Kupac",
                 is_deleted : "0"
-            }
+            },
+            sortOrder: 'Asc',
+            sortBy: 'username'
         }
     },
     mounted() {
@@ -219,7 +233,7 @@ module.exports = {
                 this.role = response.data.role;
             });
         axios
-            .get("rest/users/usersList")
+            .get("rest/users")
             .then(response => {
                 this.users = response.data;
                 this.users.forEach(user => makeDateString(user));
@@ -244,67 +258,20 @@ module.exports = {
                     this.users = response.data;
                 });
         },
-        search() {
+        searchUsers() {
+            const sortBy = this.sortBy + this.sortOrder
             axios
-                .get("rest/users/search", {
+                .get("rest/users", {
                     params: {
                         "searchQuery": this.searchQuery,
-                        "dateFrom" : this.date_from,
-                        "dateTo" : this.date_to
+                        "role" : this.roleForFilter,
+                        "type" : this.type,
+                        "sortBy": sortBy
                     }
                 })
                 .then(response => {
                     this.users = response.data;
                 })
-        },
-        filter() {
-            let id_type = $(".user_type .active").attr("id");
-            let id_status = $(".user_status .active").attr("id");
-            this.setUserType(id_type);
-            this.setUserStatus(id_status);
-            axios
-                .get("rest/users/filter", {
-                    params: {
-                        "searchQuery": this.searchQuery,
-                        "dateFrom" : this.date_from,
-                        "dateTo" : this.date_to,
-                        "role" : this.user_type,
-                        "userStatus" : this.user_status
-                    }
-                })
-                .then(response => {
-                    this.users = response.data;
-                })
-        },
-        setUserType(type) {
-            switch(type) {
-                case "ALL" : 
-                    this.user_type = "Svi";
-                    break;
-                case "CUSTOMER" :
-                    this.user_type = "CUSTOMER";
-                    break;
-                case "SELLER" :
-                    this.user_type = "SELLER";
-                    break;
-                default :
-                    break;
-            }
-        },
-        setUserStatus(status) {
-            switch(status) {
-                case "ALL" :
-                    this.user_status = "Svi";
-                    break;
-                case "ACTIVE" : 
-                    this.user_status = "0";
-                    break;
-                case "DELETED" :
-                    this.user_status = "1";
-                    break;
-                default :
-                    break;
-            }
         },
         createUser() {
             if(areInputFieldsEmpty(this.new_user)) {
@@ -380,11 +347,6 @@ module.exports = {
 .form-inline {
     margin-bottom:2em;
     padding: 0px 3em;
-}
-
-.table-wrapper-scroll {
-    height: 30em !important;
-    overflow: scroll;
 }
 
 </style>
