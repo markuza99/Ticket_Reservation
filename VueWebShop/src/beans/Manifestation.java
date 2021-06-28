@@ -16,9 +16,10 @@ public class Manifestation {
 	private String location;
 	private String image;
 	private boolean isDeleted;
+	private boolean checked;
 	
 	public Manifestation(String id, String name, ManifestationType type, int numberOfSeats, int remainingNumberOfSeats, LocalDateTime startTime,
-			LocalDateTime endTime, int ticketPrice, Status status, String location, String image, boolean isDeleted) {
+			LocalDateTime endTime, int ticketPrice, Status status, String location, String image, boolean checked, boolean isDeleted) {
 		this.id = id;
 		this.name = name;
 		this.type = type;
@@ -30,10 +31,19 @@ public class Manifestation {
 		this.status = status;
 		this.location = location;
 		this.image = image;
+		this.checked = checked;
 		this.isDeleted = isDeleted;
 	}
 	
 	public Manifestation() {}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
+	}
 
 	public String getId() {
 		return id;

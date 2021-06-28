@@ -53,9 +53,7 @@ public class ManifestationDAO implements IManifestationDAO {
 	@Override
 	public Manifestation update(Manifestation manifestation) {
 		manifestations.put(manifestation.getId(), manifestation);
-		images.put(manifestation.getId(), manifestation.getImage());
 		writeToFile();
-		writeImagesToFile();
 		return manifestation;
 	}
 
@@ -95,6 +93,7 @@ public class ManifestationDAO implements IManifestationDAO {
 			manifestationString.append("0;");
 		}
 		manifestationString.append(manifestation.getLocation() + ";"
+				+ manifestation.isChecked() + ";"
 				 + manifestation.getIsDeleted());
         return manifestationString.toString();
 	}
@@ -147,15 +146,20 @@ public class ManifestationDAO implements IManifestationDAO {
 							Status.ACTIVE : Status.INACTIVE;
 					String location = st.nextToken().trim();
 					String imagePath = images.get(id);
+					String checked = st.nextToken().trim();
 					String deleted = st.nextToken().trim();
 					Boolean isDeleted = false;
+					boolean isChecked = false;
 					if(deleted.equals("1")) {
 						isDeleted = true;
+					}
+					if(checked.equals("1")) {
+						isChecked = true;
 					}
 					manifestations.put(id, new Manifestation(
 							id, name, type, numberOfSeats,
 							remainingNumberOfSeats, startTime, endTime, ticketPrice,
-							status, location, imagePath, isDeleted));
+							status, location, imagePath, isChecked, isDeleted));
 				}
 			}
 		} catch(Exception ex) {
@@ -247,12 +251,8 @@ public class ManifestationDAO implements IManifestationDAO {
         PrintWriter pw = null;
         try {
             pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-            Iterator<Entry<String, String>> it = images.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<String, String> pair = (Map.Entry<String, String>)it.next();
-                pw.println(imageCSVRepresentation(pair.getKey(), pair.getValue()));
-                it.remove(); // avoids a ConcurrentModificationException
-            }
+            for (Map.Entry<String,String> entry : images.entrySet())
+            	pw.println(imageCSVRepresentation(entry.getKey(), entry.getValue()));
             
         } catch (IOException e) {
             e.printStackTrace();
@@ -268,6 +268,12 @@ public class ManifestationDAO implements IManifestationDAO {
 
 	private String imageCSVRepresentation(String manifestationId, String image64base) {
         return manifestationId + "|" + image64base;
+	}
+
+	@Override
+	public void updateImage(Manifestation manifestation) {
+		images.put(manifestation.getId(), manifestation.getImage());
+		writeImagesToFile();
 	}
 
 }

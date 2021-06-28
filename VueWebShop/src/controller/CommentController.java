@@ -24,6 +24,7 @@ import dao.ManifestationDAO;
 import dao.SellerDAO;
 import dao.TicketDAO;
 import dto.CommentDTO;
+import dto.CommentForViewDTO;
 import dto.CommentingConditionsDTO;
 import services.CommentService;
 
@@ -91,7 +92,7 @@ public class CommentController {
 	@GET
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Comment> getCommentsForSeller(@Context HttpServletRequest request) {
+	public List<CommentForViewDTO> getCommentsForSeller(@Context HttpServletRequest request) {
 		User user = (User) request.getSession().getAttribute("user");
 		if(user == null) return null;
 		if(user.getRole() == Role.SELLER)
@@ -101,20 +102,20 @@ public class CommentController {
 	}
 
 	@PUT
-	@Path("/approve")
+	@Path("/approve/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Comment approveComment(@Context HttpServletRequest request, Comment comment) {
+	public void approveComment(@Context HttpServletRequest request, @PathParam("id") String id) {
 		User user = (User) request.getSession().getAttribute("user");
-		if(user == null) return null;
-		return commentService.approveComment(comment);
+		if(user == null) return;
+		commentService.approveComment(id);
 	}
 	
 	@PUT
-	@Path("/decline")
+	@Path("/decline/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Comment declineComment(@Context HttpServletRequest request, Comment comment) {
+	public void declineComment(@Context HttpServletRequest request, @PathParam("id") String id) {
 		User user = (User) request.getSession().getAttribute("user");
-		if(user == null) return null;
-		return commentService.declineComment(comment);
+		if(user == null) return;
+		commentService.declineComment(id);
 	}
 }

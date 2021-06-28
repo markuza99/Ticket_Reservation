@@ -29,6 +29,7 @@ import dao.TicketDAO;
 import dto.ManifestationDTO;
 import dto.ManifestationForGridViewDTO;
 import dto.ManifestationForViewDTO;
+import dto.ManifestationParamsDTO;
 import dto.ManifestationWithLocationDTO;
 import services.ManifestationService;
 
@@ -76,25 +77,38 @@ public class ManifestationController {
 	}
 	
 	@GET
-	@Path("/mine")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<ManifestationForGridViewDTO> getMyManifestations(@Context HttpServletRequest request) {
-		User user = (User) request.getSession().getAttribute("user");
-		if(user == null) return null;
-		if(user.getRole() == Role.ADMIN) {
-			return manifestationService.getAllManifestationsWithLocationDTO();
-		} else if(user.getRole() == Role.SELLER) {
-			return manifestationService.getSellerManifestations(user.getUsername());
-		} else {
-			return manifestationService.getUserManifestations(user.getUsername());
-		}
-	}
-	
-	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public ManifestationForViewDTO getManifestation(@PathParam("id") String id) {
 		return manifestationService.getManifestation(id);
+	}
+	
+	@PUT
+	@Path("/approve/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void approveManifestation(@PathParam("id") String id) {
+		manifestationService.approveManifestation(id);
+	}
+	
+	@PUT
+	@Path("/decline/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void declineManifestation(@PathParam("id") String id) {
+		manifestationService.declineManifestation(id);
+	}
+	
+	@PUT
+	@Path("/delete/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void deleteManifestation(@PathParam("id") String id) {
+		manifestationService.deleteManifestation(id);
+	}
+	
+	@PUT
+	@Path("/retrieve/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void retrieveManifestation(@PathParam("id") String id) {
+		manifestationService.retrieveManifestation(id);
 	}
 	
 	@GET
@@ -122,6 +136,30 @@ public class ManifestationController {
 		List<Manifestation> sortedManifestations = manifestationService.sortGivenManifestations(searchedManifestations, sortBy);
 		List<Manifestation> filteredManifestations = manifestationService.filterManifestations(sortedManifestations, manifestationType, ticketCondition);
 		return manifestationService.convertToManifestationsWithLocationDTO(filteredManifestations);
+	}
+	
+	@GET
+	@Path("/list-mine")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public List<ManifestationForGridViewDTO> getMineManifestations(@Context HttpServletRequest request, @QueryParam("name") String name, @QueryParam("place") String place,
+			@QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("dateFrom") String dateFrom,
+			@QueryParam("dateTo") String dateTo, @QueryParam("sortBy") String sortBy, @QueryParam("type") String type,
+			@QueryParam("status") String status, @QueryParam("ticketCondition") String ticketCondition) throws ParseException {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		if(user.getRole() == Role.ADMIN) {
+			return manifestationService.listAllManifestations(new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
+			dateTo, sortBy, type, status, ticketCondition));
+		} else if(user.getRole() == Role.SELLER) {
+			return manifestationService.listSellerManifestations(
+				user.getUsername(),
+				new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
+				dateTo, sortBy, type, status, ticketCondition));
+		} else {
+			return manifestationService.listUserManifestations(user.getUsername(), 
+				new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
+				dateTo, sortBy, type, status, ticketCondition));
+		}
 	}
 
 	@PUT

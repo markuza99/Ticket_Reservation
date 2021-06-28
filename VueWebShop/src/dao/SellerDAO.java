@@ -157,4 +157,13 @@ public class SellerDAO implements ISellerDAO {
 		}
         return sellerString.toString();
 	}
+
+	@Override
+	public Seller getSellerForManifestation(String id) {
+		// TODO Auto-generated method stub
+		for(Seller s : sellers.values()) {
+			if(s.getManifestations().contains(id)) return s;
+		}
+		return null;
+	}
 }

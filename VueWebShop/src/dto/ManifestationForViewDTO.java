@@ -1,7 +1,11 @@
 package dto;
 
+import java.time.LocalDateTime;
+
+import beans.Location;
 import beans.Manifestation;
 import beans.ManifestationType;
+import beans.Status;
 
 public class ManifestationForViewDTO {
 	private String id;
@@ -15,6 +19,8 @@ public class ManifestationForViewDTO {
 	private String status;
 	private String location;
 	private String image;
+	private String seller;
+	private boolean manifestationPassed;
 	
 	public ManifestationForViewDTO(String id, String name, String type, int numberOfSeats, int remainingNumberOfSeats,
 			String startTime, String endTime, int ticketPrice, String status, String location, String image) {
@@ -33,18 +39,51 @@ public class ManifestationForViewDTO {
 	
 	public ManifestationForViewDTO() {}
 	
-	public ManifestationForViewDTO(Manifestation manifestation) {
+	public ManifestationForViewDTO(Manifestation manifestation, String seller, Location location) {
 		this.id = manifestation.getId();
 		this.name = manifestation.getName();
-		this.type = manifestation.getType().toString();
+		this.type = getType(manifestation);
 		this.numberOfSeats = manifestation.getNumberOfSeats();
 		this.remainingNumberOfSeats = manifestation.getRemainingNumberOfSeats();
 		this.startTime = manifestation.getStartTime().toString();
 		this.endTime = manifestation.getEndTime().toString();
 		this.ticketPrice = manifestation.getTicketPrice();
-		this.status = manifestation.getStatus().toString();
-		this.location = manifestation.getLocation();
+		this.status = getStatus(manifestation);
 		this.image = manifestation.getImage();
+		this.seller = seller;
+		this.manifestationPassed = manifestation.getStartTime().isBefore(LocalDateTime.now());
+		setLocation(location);
+	}
+	
+	private void setLocation(Location location) {
+		this.location = location.getStreet() + " " + location.getNumber() + ", " + location.getCity() + ", " + location.getState();
+	}
+	
+	private String getStatus(Manifestation manifestation) {
+		if(manifestation.getStatus() == Status.ACTIVE) return "Aktivna";
+		else return "Neaktivna";
+	}
+
+	private String getType(Manifestation manifestation) {
+		if(manifestation.getType() == ManifestationType.CONCERT) return "Koncert";
+		else if(manifestation.getType() == ManifestationType.FESTIVAL) return "Festival";
+		else return "Pozoriste";
+	}
+
+	public String getSeller() {
+		return seller;
+	}
+
+	public boolean isManifestationPassed() {
+		return manifestationPassed;
+	}
+
+	public void setManifestationPassed(boolean manifestationPassed) {
+		this.manifestationPassed = manifestationPassed;
+	}
+
+	public void setSeller(String seller) {
+		this.seller = seller;
 	}
 
 	public String getId() {

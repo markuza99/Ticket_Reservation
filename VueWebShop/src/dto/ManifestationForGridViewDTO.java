@@ -6,21 +6,26 @@ import java.time.format.DateTimeFormatter;
 import beans.Location;
 import beans.Manifestation;
 import beans.ManifestationType;
+import beans.Status;
 
 public class ManifestationForGridViewDTO {
 	public String id;
 	public String name;
-	public String type;
+	public String status;
 	public double price;
 	public String date;
 	public String location;
 	public String image;
 	public boolean manifestationPassed;
+	public String seller;
+	public boolean checked;
+	public boolean deleted;
+	public String type;
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 	
 	public ManifestationForGridViewDTO() {}
 	
-	public ManifestationForGridViewDTO(Manifestation manifestation) {
+	public ManifestationForGridViewDTO(Manifestation manifestation, String seller) {
 		this.id = manifestation.getId();
 		this.name = manifestation.getName();
 		this.type = getType(manifestation);
@@ -28,12 +33,45 @@ public class ManifestationForGridViewDTO {
 		this.date = formatter.format(manifestation.getStartTime());
 		this.image = manifestation.getImage();
 		this.manifestationPassed = manifestation.getStartTime().isBefore(LocalDateTime.now());
+		this.seller = seller;
+		this.status = getStatus(manifestation);
+		this.deleted = manifestation.getIsDeleted();
+		this.checked = manifestation.isChecked();
 	}
 	
+	private String getStatus(Manifestation manifestation) {
+		if(manifestation.getStatus() == Status.ACTIVE) return "Aktivna";
+		else return "Neaktivna";
+	}
+
 	private String getType(Manifestation manifestation) {
 		if(manifestation.getType() == ManifestationType.CONCERT) return "Koncert";
 		else if(manifestation.getType() == ManifestationType.FESTIVAL) return "Festival";
 		else return "Pozoriste";
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public String getSeller() {
+		return seller;
+	}
+
+	public void setSeller(String seller) {
+		this.seller = seller;
+	}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
 	}
 
 	public boolean getManifestationPassed() {
@@ -42,6 +80,14 @@ public class ManifestationForGridViewDTO {
 
 	public void setManifestationPassed(boolean manifestationPassed) {
 		this.manifestationPassed = manifestationPassed;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public String getId() {
