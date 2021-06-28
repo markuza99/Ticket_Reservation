@@ -41,7 +41,7 @@ const checkInputFields = (fields) => {
 }
 
 const isFieldEmpty = (field) => {
-    if(field === 0) return false
+    if(field === 0 || field === false) return false
     return field == "" || field.toString() == "NaN" ? true : false;
 }
 

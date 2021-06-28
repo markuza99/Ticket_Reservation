@@ -12,7 +12,6 @@
                     </select>
                 </div>
                 <div class="col-2">
-                    <!-- sa v for kroz customertypes -->
                     <label>Tip kupca</label>
                     <select class="form-control" v-model="type">
                     <option value="all">Sve</option>
@@ -31,11 +30,14 @@
                     <option value="points">Broj bodova</option>
                     </select>
                 </div>
-                <div class="col-6">
+                <div class="col-4">
                     <input type="radio" id="one" value="Asc" v-model="sortOrder" class="mt-5">
                     <label for="one" class="mr-2">Rastuce</label>
                     <input type="radio" id="two" value="Desc" v-model="sortOrder" class="mt-5">
                     <label for="two">Opadajuce</label>
+                </div>
+                <div class="col-2 text-right">
+                    <button v-if="role == 'ADMIN'" class="btn btn-success" data-toggle="modal" data-target="#createUserModal">Dodaj korisnika</button>
                 </div>
                 <div class="col-12 mb-3">
                     <div class="d-flex">
@@ -69,13 +71,19 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-12">
                             <label>Korisnicko ime</label>
                             <input type="text" class="form-control" v-model="new_user.username" placeholder="Korisnicko ime">
                             </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group col-md-6">
                             <label>Lozinka</label>
                             <input type="text" class="form-control" v-model="new_user.password" placeholder="Lozinka">
+                            </div>
+                            <div class="form-group col-md-6">
+                            <label>Ponovite lozinku</label>
+                            <input type="text" class="form-control" v-model="new_user.repeat_password" placeholder="Ponovite lozinku">
                             </div>
                         </div>
                         <div class="form-group">
@@ -96,8 +104,8 @@
                             <div class="form-group col-md-6">
                             <label>Tip korisnika</label>
                             <select class="form-control" v-model="new_user.role">
-                                <option selected>Kupac</option>
-                                <option>Prodavac</option>
+                                <option value="CUSTOMER">Kupac</option>
+                                <option value="SELLER">Prodavac</option>
                             </select>
                             </div>
                         </div>
@@ -219,28 +227,32 @@ module.exports = {
                 first_name : "",
                 last_name : "",
                 gender : "",
-                role : "Kupac",
+                role : "SELLER",
                 is_deleted : "0"
             },
+            role: null,
             sortOrder: 'Asc',
             sortBy: 'username'
         }
     },
     mounted() {
+        this.getUsers()
         axios
             .get("rest/users/me")
             .then(response => {
                 this.role = response.data.role;
             });
-        axios
+        
+    },
+    methods : {
+        getUsers () {
+            axios
             .get("rest/users")
             .then(response => {
                 this.users = response.data;
-                this.users.forEach(user => makeDateString(user));
-                console.log(this.users);
-            });
-    },
-    methods : {
+                console.log(this.users)
+            })
+        },
         setSelectedUser(id) {
             this.selected_user = id;
         },
@@ -275,28 +287,18 @@ module.exports = {
         },
         createUser() {
             if(areInputFieldsEmpty(this.new_user)) {
-                $('#createUserModal input').addClass("error");
-                $('#createUserModal input').removeClass("success");
+                alert("Morate popuniti sva polja");
                 return;
             }
             if(forbiddenSignInFields(this.new_user)) {
                 alert("Ne mozete koristiti ; znak");
                 return;
             }
-            $('#createUserModal input').removeClass("error");
-            $('#createUserModal input').addClass("success");
-            
-            var role = "";
-            switch(this.new_user.role) {
-                case "Kupac":
-                    role = "CUSTOMER";
-                    break;
-                case "Prodavac":
-                    role = "SELLER";
-                    break;
-                default:
-                    break;
+            if(this.new_user.password !== this.new_user.repeat_password) {
+                alert("Lozinke se ne poklapaju");
+                return;
             }
+            
             var userNew = {
                 username : this.new_user.username.trim(),
                 password : this.new_user.password.trim(),
@@ -304,11 +306,11 @@ module.exports = {
                 lastName : this.new_user.last_name.trim(),
                 gender : this.new_user.gender.trim(),
                 birthDate : this.new_user.date.trim(),
-                role : role,
+                role : this.new_user.role,
                 isDeleted : this.new_user.is_deleted 
             };
+
             var userJSON = JSON.stringify(userNew);
-            console.log(userJSON);
             axios
 				.post("rest/users/register", userJSON, {
 					headers: {'content-type':'application/json'}
@@ -316,12 +318,11 @@ module.exports = {
 				.then(response => {
 					if(response.data != "") {
 						alert(userNew.username + " Uspesno dodat!");
-                        this.users.push(response.data);
+                        this.getUsers()
 					} else {
-						alert("Korisnik sa tim usernameom vec postoji!!!");
+						alert("Korisnik sa tim korisnickim imenom vec postoji!!!");
 					}
 				});
-            console.log(this.new_user);
         }
     }
 }
