@@ -14,7 +14,7 @@
             <div class="row">
               <div class="col mt-3">
                 <div class="d-flex">
-                  <div class="average_rating" v-if="manifestation_passed">
+                  <div class="average_rating" v-if="manifestation.manifestationPassed">
                     <span
                       class="fa fa-star"
                       v-bind:class="{ yellow: isCountedInAverageRating(1) }"
@@ -36,7 +36,7 @@
                       v-bind:class="{ yellow: isCountedInAverageRating(5) }"
                     ></span>
                   </div>
-                  <button v-if="!manifestation_passed" class="btn-pink manifestation-button" data-toggle="modal" data-target="#reservationModal">
+                  <button v-if="!manifestation.manifestationPassed" class="btn-pink manifestation-button" data-toggle="modal" data-target="#reservationModal">
                     Rezervacija karata
                   </button>
                 </div>
@@ -62,7 +62,7 @@
                 <div>
                   <div>Pocetak</div>
                   <small class="text-uppercase fw-light text-muted">{{
-                    manifestation.startTimeString
+                    manifestation.startTime
                   }}</small>
                 </div>
               </li>
@@ -71,7 +71,7 @@
                 <div>
                   <div>Kraj</div>
                   <small class="text-uppercase fw-light text-muted">{{
-                    manifestation.endTimeString
+                    manifestation.endTime
                   }}</small>
                 </div>
               </li>
@@ -80,18 +80,18 @@
                 <div>
                   <div>Lokacija</div>
                   <small class="text-uppercase fw-light text-muted" v-if="manifestation">
-                    {{locationString}}
+                    {{manifestation.location}}
                   </small>
                 </div>
               </li>
               <li class="d-flex">
                 <i
                   class="fa fa-check pt-3 pb-3 pr-3 pink"
-                  v-if="manifestation.status == 'ACTIVE'"
+                  v-if="manifestation.status == 'Aktivna'"
                 ></i>
                 <i
                   class="fa fa-times pt-3 pb-3 pr-3 pink"
-                  v-if="manifestation.status == 'INACTIVE'"
+                  v-if="manifestation.status == 'Neaktivna'"
                 ></i>
                 <div>
                   <div>Status</div>
@@ -103,22 +103,22 @@
               <li class="d-flex">
                 <i
                   class="fa fa-music pt-3 pb-3 pr-3 pink"
-                  v-if="manifestation.type == 'CONCERT'"
+                  v-if="manifestation.type == 'Koncert'"
                 ></i>
                 <i
                   class="material-icons pt-3 pb-3 pr-3 pink"
-                  v-if="manifestation.type == 'THEATER'"
+                  v-if="manifestation.type == 'Pozoriste'"
                   >movie_filter</i
                 >
                 <i
                   class="material-icons pt-3 pb-3 pr-3 pink"
-                  v-if="manifestation.type == 'FESTIVAL'"
+                  v-if="manifestation.type == 'Festival'"
                   >wb_sunny</i
                 >
                 <div>
                   <div>Tip</div>
                   <small class="text-uppercase fw-light text-muted">{{
-                    manifestation.formattedType
+                    manifestation.type
                   }}</small>
                 </div>
               </li>
@@ -163,8 +163,7 @@ module.exports = {
       manifestation_passed: false,
       manifestation_sold: false,
       comment_conditions: {},
-      location: null,
-      locationString: ""
+      location: null
     };
   },
   components: {
@@ -175,14 +174,6 @@ module.exports = {
     const manifestationId = this.$route.params.id;
     axios.get("rest/manifestations/" + manifestationId).then((response) => {
       this.manifestation = response.data;
-      this.manifestation.startTimeMonth = formatMonth(
-        this.manifestation.startTime.month
-      );
-      this.manifestation.endTimeMonth = formatMonth(
-        this.manifestation.endTime.month
-      );
-      formatType(this.manifestation);
-      this.validateAndFormatDate();
     });
 
     axios
@@ -192,62 +183,12 @@ module.exports = {
       .then((response) => {
         this.comment_conditions = response.data;
         this.comment_conditions.manifestation_passed = this.manifestation_passed;
-        axios
-          .get("rest/locations/" + this.manifestation.location)
-          .then(response => {
-            this.location = response.data;
-            console.log(this.location);
-            this.locationString = this.location.street + " " + this.location.number + ", " + this.location.city;
-            console.log(this.manifestation.locationString)
-          })
       });
-
-    
   },
   methods: {
     isCountedInAverageRating(num) {
-      console.log("rating: ", this.comment_conditions.manifestationRating);
       return !(num > this.comment_conditions.manifestationRating);
-    },
-    validateAndFormatDate() {
-      let date = new Date();
-      let manifestationDate = new Date(
-        this.manifestation.endTime.year,
-        this.manifestation.endTime.monthValue,
-        this.manifestation.endTime.dayOfMonth,
-        this.manifestation.endTime.hour,
-        this.manifestation.endTime.minute,
-        0
-      );
-      if (!validateRange(date, manifestationDate)) {
-        this.manifestation_passed = true;
-      }
-
-      this.manifestation_sold =
-        this.manifestation.remainingNumberOfSeats > 0 ? false : true;
-
-      this.manifestation.startTimeString =
-        this.manifestation.startTime.dayOfMonth +
-        " " +
-        this.manifestation.startTimeMonth +
-        ", " +
-        this.manifestation.startTime.year +
-        " " +
-        ("0" + this.manifestation.startTime.hour).slice(-2) +
-        ":" +
-        ("0" + this.manifestation.startTime.minute).slice(-2);
-
-      this.manifestation.endTimeString =
-        this.manifestation.endTime.dayOfMonth +
-        " " +
-        this.manifestation.endTimeMonth +
-        ", " +
-        this.manifestation.endTime.year +
-        " " +
-        ("0" + this.manifestation.endTime.hour).slice(-2) +
-        ":" +
-        ("0" + this.manifestation.endTime.minute).slice(-2);
-    },
+    }
   },
 };
 </script>

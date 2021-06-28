@@ -68,8 +68,10 @@ public class ManifestationService {
 	
 	public ManifestationForViewDTO getManifestation(String id) {
 		if(manifestationDAO.read(id) == null) return null;
+		Manifestation manifestation = manifestationDAO.read(id);
 		Seller seller = sellerDAO.getSellerForManifestation(id);
-		return new ManifestationForViewDTO(manifestationDAO.read(id), seller.getUsername());
+		Location location = locationDAO.read(manifestation.getLocation());
+		return new ManifestationForViewDTO(manifestation, seller.getUsername(), location);
 	}
 
 
