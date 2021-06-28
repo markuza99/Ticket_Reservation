@@ -9,12 +9,12 @@ import beans.CommentApproval;
 import beans.Manifestation;
 import beans.Seller;
 import beans.Ticket;
-import dao.TicketDAO;
 import dao.interfaces.ICommentDAO;
 import dao.interfaces.IManifestationDAO;
 import dao.interfaces.ISellerDAO;
 import dao.interfaces.ITicketDAO;
 import dto.CommentDTO;
+import dto.CommentForViewDTO;
 import dto.CommentingConditionsDTO;
 
 public class CommentService {
@@ -50,16 +50,16 @@ public class CommentService {
 				commentDTO.getRating(), CommentApproval.NOT_CHECKED, false));
 	}
 
-	public Comment approveComment(Comment comment) {
-		Comment c = commentDAO.read(comment.getUser() + comment.getManifestation());
+	public void approveComment(String commentId) {
+		Comment c = commentDAO.read(commentId);
 		c.setApproval("ACCEPTED");
-		return commentDAO.update(c);
+		commentDAO.update(c);
 	}
 	
-	public Comment declineComment(Comment comment) {
-		Comment c = commentDAO.read(comment.getUser() + comment.getManifestation());
+	public void declineComment(String commentId) {
+		Comment c = commentDAO.read(commentId);
 		c.setApproval("DENIED");
-		return commentDAO.update(c);
+		commentDAO.update(c);
 	}
 
 	public CommentingConditionsDTO getCommentingConditions(String username, String id) {
@@ -101,7 +101,7 @@ public class CommentService {
 		return sumOfRatings / n;
 	}
 
-	public List<Comment> getCommentsForSeller(String username) {
+	public List<CommentForViewDTO> getCommentsForSeller(String username) {
 		List<Comment> sellersComments = new ArrayList<Comment>();
 		
 		for(Comment comment : commentDAO.getAll()) {
@@ -112,11 +112,22 @@ public class CommentService {
 				}
 			}
 		}
-
-		return sellersComments;
+		
+		List<CommentForViewDTO> commentsDTO = new ArrayList<CommentForViewDTO>();
+		for(Comment c : sellersComments) {
+			Manifestation manifestation = manifestationDAO.read(c.getManifestation());
+			commentsDTO.add(new CommentForViewDTO(c, manifestation.getName()));
+		}
+		return commentsDTO;
 	}
 	
-	public List<Comment> getAllComments() {
-		return null;
+	public List<CommentForViewDTO> getAllComments() {
+		List<Comment> allComments = commentDAO.getAll();
+		List<CommentForViewDTO> commentsDTO = new ArrayList<CommentForViewDTO>();
+		for(Comment c : allComments) {
+			Manifestation manifestation = manifestationDAO.read(c.getManifestation());
+			commentsDTO.add(new CommentForViewDTO(c, manifestation.getName()));
+		}
+		return commentsDTO;
 	}
 }
