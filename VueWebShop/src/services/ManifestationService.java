@@ -13,6 +13,7 @@ import beans.ManifestationType;
 import beans.Seller;
 import beans.Status;
 import beans.Ticket;
+import beans.TicketStatus;
 import beans.value_objects.SortManifestations;
 import beans.value_objects.SortTickets;
 import dao.interfaces.ICustomerDAO;
@@ -383,6 +384,7 @@ public class ManifestationService {
 		List<Manifestation> manifestations = new ArrayList<Manifestation>();
 		for(String manifestationId : seller.getManifestations()) {
 			Manifestation manifestation = manifestationDAO.read(manifestationId);
+			if(manifestation.getIsDeleted()) continue;
 			manifestations.add(manifestation);
 		}
 		return searchSortFilterManifestations(manifestations, manifestationParamsDTO);
@@ -393,6 +395,7 @@ public class ManifestationService {
 		Customer customer = customerDAO.read(username);
 		for(String ticketId : customer.getTickets()) {
 			Ticket ticket = ticketDAO.read(ticketId);
+			if(ticket.getIsDeleted() || ticket.getTicketStatus() == TicketStatus.CANCELED) continue;
 			Manifestation manifestation = manifestationDAO.read(ticket.getManifestationId());
 			if(!manifestations.contains(manifestation)) {
 				manifestations.add(manifestation);

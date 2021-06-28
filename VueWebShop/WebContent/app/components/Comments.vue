@@ -16,10 +16,10 @@
                         <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
                         <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
                     </div>
-                    <button class="btn btn-success" v-on:click="approve(comment)">
+                    <button class="btn btn-success" v-on:click="approve(comment.id)">
                         Odobri:   <i class="fa fa-check"></i>
                     </button>
-                    <button class="btn btn-danger" v-on:click="decline(comment)">
+                    <button class="btn btn-danger" v-on:click="decline(comment.id)">
                         <i class="fa fa-times"></i>
                     </button>
                     </div>
@@ -40,12 +40,7 @@ module.exports = {
         }
     },
     mounted() {
-        axios
-            .get("rest/comments")
-            .then(response => {
-                this.comments = response.data;
-            });
-
+        this.getComments()
         axios
             .get("rest/users/role")
             .then(response => {
@@ -56,26 +51,29 @@ module.exports = {
         isCounted(num, comment) {
 			return !(num > comment.rating);
         },
-        approve(comment) {
+        approve(id) {
             axios
-                .put("rest/comments/approve",JSON.stringify(comment), {
-                    headers: {"content-type":"application/json"}
-                })
-                .then(response => {
-                    this.comments = response.data;
+                .put("rest/comments/approve/" + id)
+                .then(() => {
                     alert("Komentar odobren!");
+                    this.getComments()
                 });
 
         },
-        decline(comment) {
+        decline(id) {
             axios
-                .put("rest/comments/decline",JSON.stringify(comment), {
-                    headers: {"content-type":"application/json"}
-                })
-                .then(response => {
-                    this.comments = response.data;
+                .put("rest/comments/decline/" + id)
+                .then(() => {
                     alert("Komentar neodobren.");
+                    this.getComments()
                 });
+        },
+        getComments () {
+            axios
+            .get("rest/comments")
+            .then(response => {
+                this.comments = response.data;
+            });
         }
     }
 }

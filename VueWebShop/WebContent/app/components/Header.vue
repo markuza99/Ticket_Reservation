@@ -7,7 +7,7 @@
 			<a class="text-white p-2" v-on:click="profileSettings()">Profil</a>
 			<a class="text-white p-2" v-on:click="goToTickets()">Karte</a>
 			<a class="text-white p-2" v-on:click="goToManifestations()">Manifestacije</a>
-			<a class="text-white p-2" v-if="role != 'CUSTOMER'">Komentari</a>
+			<a class="text-white p-2" v-if="role != 'CUSTOMER'" v-on:click="goToComments()">Komentari</a>
 			<a class="text-white p-2" v-if="role != 'CUSTOMER'" v-on:click="goToUsers()">Korisnici</a>
 			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" v-on:click="signOut()">Odjava</button>
 		</form>
@@ -53,6 +53,9 @@ module.exports = {
 		},
 		goToUsers() {
 			this.$router.push('/users')
+		},
+		goToComments() {
+			this.$router.push('/comments')
 		}
 	},
 	mounted() {
