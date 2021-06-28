@@ -6,15 +6,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import beans.Role;
+import beans.Seller;
+import beans.Ticket;
 import beans.User;
+import dao.interfaces.ISellerDAO;
+import dao.interfaces.ITicketDAO;
 import dao.interfaces.IUserDAO;
 
 
 public class UserService {
 	private IUserDAO userDAO;
+	private ISellerDAO sellerDAO;
+	private ITicketDAO ticketDAO;
 	
-	public UserService(IUserDAO userDAO) {
+	public UserService(IUserDAO userDAO, ISellerDAO sellerDAO, ITicketDAO ticketDAO) {
 		this.userDAO = userDAO;
+		this.sellerDAO = sellerDAO;
+		this.ticketDAO = ticketDAO;
 	}
 	
 	public User login(User user) {
@@ -39,6 +47,34 @@ public class UserService {
 		return userDAO.getAll();
 	}
 	
+	public List<User> getUsersForList(User u) {
+//		if(u.getRole().equals("ADMIN")) {
+//			return userDAO.getAll();
+//		} else {
+//			return null;
+//		}
+		
+		System.out.println("OVO JE ROLA KORISNIKA DASDA " + u.getRole());
+		if(u.getRole().equals(Role.ADMIN)) {
+			return userDAO.getAll();
+		} else {
+			ArrayList<User> buyers = new ArrayList<User>();
+			Seller s = sellerDAO.read(u.getUsername());
+			ArrayList<Ticket> tickets = (ArrayList<Ticket>) ticketDAO.getAll();
+			for (String m : s.getManifestations()) {
+				for (Ticket ticket : tickets) {
+					if(m.equals(ticket.getManifestationId())) {
+						User buyer = userDAO.read(ticket.getUser());
+						if(!buyers.contains(buyer)) {
+							buyers.add(buyer);
+						}
+					}
+				}
+			}
+			return buyers;
+		}
+	}
+	
 	public User deleteUser(String username) {
 		return userDAO.delete(username);
 	}
@@ -47,20 +83,24 @@ public class UserService {
 		return userDAO.retrieve(username);
 	}
 	
-	public List<User> search(String searchQuery, String dateFrom, String dateTo) {
+	public List<User> search(User u,String searchQuery, String dateFrom, String dateTo) {
 		List<User> searchedUsers = new ArrayList<>();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate LdateFrom = null;
 		LocalDate LdateTo = null;
-		
+		ArrayList<User> usrs = new ArrayList<User>();
 		if(!dateFrom.equals("")) {
 			LdateFrom = LocalDate.parse(dateFrom, formatter);;
 		}
 		if(!dateTo.equals("")) {
 			LdateTo = LocalDate.parse(dateTo, formatter);
 		}
-		
-		for(User user : userDAO.getAll()) {
+		if(u.getRole().equals(Role.ADMIN)) {
+			usrs = (ArrayList<User>) userDAO.getAll();
+		} else {
+			usrs = (ArrayList<User>) getUsersForList(u);
+		}
+		for(User user : usrs) {
 			if(correspondsSearch(user, searchQuery, LdateFrom, LdateTo)) {
 				searchedUsers.add(user);
 			}
@@ -76,8 +116,8 @@ public class UserService {
 		return btext && bdateFrom && bdateTo;
 	}
 	
-	public List<User> filter(String searchQuery, String dateFrom, String dateTo, String role, String userStatus) {
-		List<User> searchedUsers = search(searchQuery, dateFrom, dateTo);
+	public List<User> filter(User u,String searchQuery, String dateFrom, String dateTo, String role, String userStatus) {
+		List<User> searchedUsers = search(u,searchQuery, dateFrom, dateTo);
 		List<User> filteredUsers = new ArrayList<>();
 		for(User user : searchedUsers) {
 			if(correspondsFilter(user, role, userStatus)) {
