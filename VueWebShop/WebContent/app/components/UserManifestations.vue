@@ -75,14 +75,16 @@
           <div class="col-lg-6 col-xl-4 col-md-6 col-sm-6" v-for="m in manifestations" :key="m.id">
             <div class="card mb-4 box-shadow manifestation">
               <div class="image-holder" v-on:click="goToManifestation(m.id)">
-                <img class="card-img-top" v-bind:src="m.image" alt="Card image cap">
+                <h5 v-if="manifestationStatus(m) == 'rejected'" class="rejected-h">Odbijena</h5>
+                <h5 v-if="manifestationStatus(m) == 'waiting'" class="waiting-h">Ceka se odobrenje</h5>
+                <img class="card-img-top" v-bind:src="m.image" alt="Card image cap" v-bind:class="{'grey-img' : manifestationStatus(m) == 'rejected', 'yellow-img' : manifestationStatus(m) == 'U cekanju'}">
               </div>
               <div class="card-body">
                 <div class="d-flex justify-content-between">
                   <h5 class="card-title" v-on:click="goToManifestation(m.id)">{{ m.name }}</h5>
                   <button class="btn btn-primary" data-toggle="modal" data-target="#updateManifestationModal"
                   v-on:click="getManifestation(m.id)"
-                  v-if="!m.manifestationPassed">izmeni</button>
+                  v-if="!m.manifestationPassed && role == 'SELLER' && manifestationStatus(m) != 'rejected'">izmeni</button>
                 </div>
                 <div class="modal fade" id="updateManifestationModal" tabindex="-1" aria-labelledby="updateManifestationModalLabel" aria-hidden="true">
                   <div class="modal-dialog">
@@ -452,6 +454,11 @@ module.exports = {
         .then(response => {
           this.manifestations = response.data
         })
+    },
+    manifestationStatus (manifestation) {
+      if(manifestation.status == 'Aktivna') return "accepted"
+      if(manifestation.status == 'Neaktivna' && manifestation.checked == false) return "waiting"
+      if(manifestation.status == 'Neaktivna' && manifestation.checked == true) return "rejected"
     }
   }
 }
@@ -478,6 +485,34 @@ module.exports = {
     overflow: hidden;
     position: relative;
     cursor: pointer;
+}
+
+.grey-img {
+  filter: grayscale(100%);
+}
+
+.rejected-h {
+  width: 100%;
+  position: absolute;
+  z-index: 100;
+  margin-top: 5em;
+  text-align: center;
+  color:white;
+  background: rgba(0,0,0,0.3);
+  font-weight: normal;
+  padding:0.5em;
+}
+
+.waiting-h {
+  width: 100%;
+  position: absolute;
+  z-index: 100;
+  margin-top: 5em;
+  text-align: center;
+  color:white;
+  background: rgba(0,0,0,0.3);
+  font-weight: normal;
+  padding:0.5em;
 }
 
 </style>

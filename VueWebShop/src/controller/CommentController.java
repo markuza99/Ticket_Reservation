@@ -83,7 +83,7 @@ public class CommentController {
 	@Produces(MediaType.APPLICATION_JSON)
 	public CommentingConditionsDTO getCommentParams(@Context HttpServletRequest request, @PathParam("id") String id) {
 		User user = (User) request.getSession().getAttribute("user");
-		if(user != null) {
+		if(user != null && user.getRole() == Role.CUSTOMER) {
 			return commentService.getCommentingConditions(user.getUsername(), id);
 		}
 		return new CommentingConditionsDTO(false, null, commentService.getManifestationRatingFromComments(id));

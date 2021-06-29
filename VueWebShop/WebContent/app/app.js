@@ -1,4 +1,4 @@
-const WelcomePage = { template: '<welcome-page></welcome-page>' }
+const WelcomePage = httpVueLoader('./app/components/Manifestations.vue');
 const Header = httpVueLoader('./app/components/Header.vue');
 const Registration = httpVueLoader('./app/components/RegistrationForm.vue');
 const loginForm = httpVueLoader('./app/components/LoginForm.vue');

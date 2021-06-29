@@ -72,8 +72,44 @@ public class ManifestationController {
 	@GET
 	@Path("/active")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ManifestationWithLocationDTO> getActiveManifestations() {
-		return manifestationService.getActiveManifestationsWithLocation();
+	public List<ManifestationForGridViewDTO> getActiveManifestations(@QueryParam("name") String name,
+			@QueryParam("place") String place,
+			@QueryParam("priceFrom") int priceFrom, 
+			@QueryParam("priceTo") int priceTo, 
+			@QueryParam("dateFrom") String dateFrom,
+			@QueryParam("dateTo") String dateTo, 
+			@QueryParam("sortBy") String sortBy, 
+			@QueryParam("type") String type,
+			@QueryParam("status") String status, 
+			@QueryParam("ticketCondition") String ticketCondition) throws ParseException {
+		return manifestationService.getActiveManifestations(
+				new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
+						dateTo, sortBy, type, status, ticketCondition)
+				);
+	}
+	
+	@GET
+	@Path("/list-mine")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public List<ManifestationForGridViewDTO> getMineManifestations(@Context HttpServletRequest request, @QueryParam("name") String name, @QueryParam("place") String place,
+			@QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("dateFrom") String dateFrom,
+			@QueryParam("dateTo") String dateTo, @QueryParam("sortBy") String sortBy, @QueryParam("type") String type,
+			@QueryParam("status") String status, @QueryParam("ticketCondition") String ticketCondition) throws ParseException {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		if(user.getRole() == Role.ADMIN) {
+			return manifestationService.listAllManifestations(new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
+			dateTo, sortBy, type, status, ticketCondition));
+		} else if(user.getRole() == Role.SELLER) {
+			return manifestationService.listSellerManifestations(
+				user.getUsername(),
+				new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
+				dateTo, sortBy, type, status, ticketCondition));
+		} else {
+			return manifestationService.listUserManifestations(user.getUsername(), 
+				new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
+				dateTo, sortBy, type, status, ticketCondition));
+		}
 	}
 	
 	@GET
@@ -111,56 +147,34 @@ public class ManifestationController {
 		manifestationService.retrieveManifestation(id);
 	}
 	
-	@GET
-	@Path("/search")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<ManifestationWithLocationDTO> searchManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo) throws ParseException {
-		List<Manifestation> searchedManifestations = manifestationService.searchAllManifestations(name, dateFrom, dateTo, place, priceFrom, priceTo);
-		return manifestationService.convertToManifestationsWithLocationDTO(searchedManifestations);
-	}
+//	@GET
+//	@Path("/search")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public List<ManifestationWithLocationDTO> searchManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo) throws ParseException {
+//		List<Manifestation> searchedManifestations = manifestationService.searchAllManifestations(name, dateFrom, dateTo, place, priceFrom, priceTo);
+//		return manifestationService.convertToManifestationsWithLocationDTO(searchedManifestations);
+//	}
+//	
+//	@GET
+//	@Path("/sort")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public List<ManifestationWithLocationDTO> sortManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("place") String place, @QueryParam("sortBy") String sortBy) {
+//		List<Manifestation> searchedManifestations = manifestationService.searchAllManifestations(name, dateFrom, dateTo, place, priceFrom, priceTo);
+//		List<Manifestation> sortedManifestations = manifestationService.sortManifestations(searchedManifestations, sortBy);
+//		return manifestationService.convertToManifestationsWithLocationDTO(sortedManifestations);
+//	}
+//	
+//	@GET
+//	@Path("/filter")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public List<ManifestationWithLocationDTO> filterManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("place") String place, @QueryParam("sortBy") String sortBy, @QueryParam("manifestationType") String manifestationType, @QueryParam("ticketCondition") String ticketCondition) throws ParseException {
+//		List<Manifestation> searchedManifestations = manifestationService.searchAllManifestations(name, dateFrom, dateTo, place, priceFrom, priceTo);
+//		List<Manifestation> sortedManifestations = manifestationService.sortGivenManifestations(searchedManifestations, sortBy);
+//		List<Manifestation> filteredManifestations = manifestationService.filterManifestations(sortedManifestations, manifestationType, ticketCondition);
+//		return manifestationService.convertToManifestationsWithLocationDTO(filteredManifestations);
+//	}
 	
-	@GET
-	@Path("/sort")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<ManifestationWithLocationDTO> sortManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("place") String place, @QueryParam("sortBy") String sortBy) {
-		List<Manifestation> searchedManifestations = manifestationService.searchAllManifestations(name, dateFrom, dateTo, place, priceFrom, priceTo);
-		List<Manifestation> sortedManifestations = manifestationService.sortManifestations(searchedManifestations, sortBy);
-		return manifestationService.convertToManifestationsWithLocationDTO(sortedManifestations);
-	}
 	
-	@GET
-	@Path("/filter")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<ManifestationWithLocationDTO> filterManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("place") String place, @QueryParam("sortBy") String sortBy, @QueryParam("manifestationType") String manifestationType, @QueryParam("ticketCondition") String ticketCondition) throws ParseException {
-		List<Manifestation> searchedManifestations = manifestationService.searchAllManifestations(name, dateFrom, dateTo, place, priceFrom, priceTo);
-		List<Manifestation> sortedManifestations = manifestationService.sortGivenManifestations(searchedManifestations, sortBy);
-		List<Manifestation> filteredManifestations = manifestationService.filterManifestations(sortedManifestations, manifestationType, ticketCondition);
-		return manifestationService.convertToManifestationsWithLocationDTO(filteredManifestations);
-	}
-	
-	@GET
-	@Path("/list-mine")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public List<ManifestationForGridViewDTO> getMineManifestations(@Context HttpServletRequest request, @QueryParam("name") String name, @QueryParam("place") String place,
-			@QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("dateFrom") String dateFrom,
-			@QueryParam("dateTo") String dateTo, @QueryParam("sortBy") String sortBy, @QueryParam("type") String type,
-			@QueryParam("status") String status, @QueryParam("ticketCondition") String ticketCondition) throws ParseException {
-		User user = (User) request.getSession().getAttribute("user");
-		if(user == null) return null;
-		if(user.getRole() == Role.ADMIN) {
-			return manifestationService.listAllManifestations(new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
-			dateTo, sortBy, type, status, ticketCondition));
-		} else if(user.getRole() == Role.SELLER) {
-			return manifestationService.listSellerManifestations(
-				user.getUsername(),
-				new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
-				dateTo, sortBy, type, status, ticketCondition));
-		} else {
-			return manifestationService.listUserManifestations(user.getUsername(), 
-				new ManifestationParamsDTO(name, place, priceFrom, priceTo, dateFrom,
-				dateTo, sortBy, type, status, ticketCondition));
-		}
-	}
 
 	@PUT
 	@Path("/")

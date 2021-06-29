@@ -36,7 +36,7 @@
                       v-bind:class="{ yellow: isCountedInAverageRating(5) }"
                     ></span>
                   </div>
-                  <button v-if="!manifestation.manifestationPassed" class="btn-pink manifestation-button" data-toggle="modal" data-target="#reservationModal">
+                  <button v-if="!manifestation.manifestationPassed && role =='CUSTOMER'" class="btn-pink manifestation-button" data-toggle="modal" data-target="#reservationModal">
                     Rezervacija karata
                   </button>
                 </div>
@@ -163,7 +163,8 @@ module.exports = {
       manifestation_passed: false,
       manifestation_sold: false,
       comment_conditions: {},
-      location: null
+      location: null,
+      role: null
     };
   },
   components: {
@@ -171,9 +172,16 @@ module.exports = {
     'reservation-modal':httpVueLoader('./modals/ReservationModal.vue')
   },
   created() {
+    axios
+      .get("rest/users/role")
+      .then(response => {
+          this.role = response.data;
+      })
     const manifestationId = this.$route.params.id;
     axios.get("rest/manifestations/" + manifestationId).then((response) => {
       this.manifestation = response.data;
+      this.manifestation.startTime = this.manifestation.startTime.split("T").join(" ")
+      this.manifestation.endTime = this.manifestation.endTime.split("T").join(" ")
     });
 
     axios
