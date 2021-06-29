@@ -2,7 +2,7 @@ package beans;
 
 import java.util.ArrayList;
 
-public class Customer {
+public class Customer extends User {
 	private String username;
 	private ArrayList<String> tickets;
 	private int points;

@@ -18,6 +18,7 @@ public class ManifestationForViewDTO {
 	private int ticketPrice;
 	private String status;
 	private String location;
+	private String locationId;
 	private String image;
 	private String seller;
 	private boolean manifestationPassed;
@@ -52,10 +53,19 @@ public class ManifestationForViewDTO {
 		this.image = manifestation.getImage();
 		this.seller = seller;
 		this.manifestationPassed = manifestation.getStartTime().isBefore(LocalDateTime.now());
-		setLocation(location);
+		setLocationString(location);
+		this.locationId = location.getId();
 	}
 	
-	private void setLocation(Location location) {
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	private void setLocationString(Location location) {
 		this.location = location.getStreet() + " " + location.getNumber() + ", " + location.getCity() + ", " + location.getState();
 	}
 	

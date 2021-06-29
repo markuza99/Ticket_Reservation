@@ -71,7 +71,7 @@
     </div>
     <div class="container">
       <div class="col-lg-12 col-md-12">
-        <div id="manifestations" class="row" v-if="role != 'ADMIN'">
+        <div id="manifestations" class="row mt-4" v-if="role != 'ADMIN'">
           <div class="col-lg-6 col-xl-4 col-md-6 col-sm-6" v-for="m in manifestations" :key="m.id">
             <div class="card mb-4 box-shadow manifestation">
               <div class="image-holder" v-on:click="goToManifestation(m.id)">
@@ -100,9 +100,9 @@
                           <div class="col-md-6">
                             <label>Tip manifestacije</label>
                             <select class="form-control" v-model="manifestation.type">
-                              <option value="CONCERT">Koncert</option>
-                              <option value="THEATER">Pozoriste</option>
-                              <option value="FESTIVAL">Festival</option>
+                              <option value="Koncert">Koncert</option>
+                              <option value="Pozoriste">Pozoriste</option>
+                              <option value="Festival">Festival</option>
                             </select>
                           </div>
                           <div class="col-12">
@@ -127,7 +127,7 @@
                           </div>
                           <div class="col-md-12">
                             <label>Lokacija</label>
-                            <input list="locations" class="form-control" v-model="manifestation.location">
+                            <input list="locations" class="form-control" v-model="manifestation.locationId">
                             <datalist id="locations">
                               <option v-for="location in locations" :key="location.id" :value="location.id">
                                 {{location.street}} {{location.number}}, {{location.city}}
@@ -140,7 +140,7 @@
                           </div>
                         </form>
                         <div class="image-holder-file">
-                          <img id="output">
+                          <img id="output" v-bind:src="manifestation.image">
                         </div>
                       </div>
                       <div class="modal-footer">
@@ -352,13 +352,28 @@ module.exports = {
         return;
       }
 
-      if(!this.locations.find(location => location.id === this.manifestation.location)) {
+      if(!this.locations.find(location => location.id === this.manifestation.locationId)) {
         alert("Lokacija ne postoji.")
         return;
       }
 
+      let manifestationForUpdate = this.manifestation
+      if(this.manifestation.type == 'Koncert') {
+        manifestationForUpdate.type = 'CONCERT'
+      } else if(this.manifestation.type == 'Pozoriste') {
+        manifestationForUpdate.type = 'THEATER'
+      } else {
+        manifestationForUpdate.type = 'FESTIVAL'
+      }
+
+      if(this.manifestation.status == 'Aktivna') {
+        manifestationForUpdate.status = 'ACTIVE'
+      } else {
+        manifestationForUpdate.status = 'INACTIVE'
+      }
+
       axios
-      .put('rest/manifestations', JSON.stringify(this.manifestation), {
+      .put('rest/manifestations', JSON.stringify(manifestationForUpdate), {
         headers: {"content-type":"application/json"}
       })
       .then(() => {
@@ -452,4 +467,17 @@ module.exports = {
 .image-holder-file img {
   max-width: 100%;
 }
+
+@media screen and (min-width: 1200px) {
+  .manifestation .image-holder {
+      height: 15em;
+  }
+}
+
+.manifestation .image-holder {
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+}
+
 </style>

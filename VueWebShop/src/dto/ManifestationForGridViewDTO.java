@@ -38,7 +38,7 @@ public class ManifestationForGridViewDTO {
 		this.deleted = manifestation.getIsDeleted();
 		this.checked = manifestation.isChecked();
 	}
-	
+
 	private String getStatus(Manifestation manifestation) {
 		if(manifestation.getStatus() == Status.ACTIVE) return "Aktivna";
 		else return "Neaktivna";

@@ -79,7 +79,7 @@ public class ManifestationService {
 	public Manifestation updateManifestation(ManifestationForViewDTO manifestationDTO) {
 		LocalDateTime startTime = LocalDateTime.parse(manifestationDTO.getStartTime());
 		LocalDateTime endTime = LocalDateTime.parse(manifestationDTO.getEndTime());
-		if(!checkManifestationMaintainance(startTime, endTime ,manifestationDTO.getLocation(), manifestationDTO.getId())) {
+		if(!checkManifestationMaintainance(startTime, endTime ,manifestationDTO.getLocationId(), manifestationDTO.getId())) {
 			return null;
 		}
 		
@@ -98,7 +98,7 @@ public class ManifestationService {
 		manifestation.setStartTime(manifestationDTO.getStartTime());
 		manifestation.setEndTime(manifestationDTO.getEndTime());
 		manifestation.setTicketPrice(manifestationDTO.getTicketPrice());
-		manifestation.setLocation(manifestationDTO.getLocation());
+		manifestation.setLocation(manifestationDTO.getLocationId());
 		manifestation.setImage(manifestationDTO.getImage());
 		
 		return manifestation;

@@ -2,7 +2,7 @@ package beans;
 
 import java.util.ArrayList;
 
-public class Seller {
+public class Seller extends User {
 	private String username;
 	private ArrayList<String> manifestations;
 	
