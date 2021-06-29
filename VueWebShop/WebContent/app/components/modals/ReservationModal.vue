@@ -105,7 +105,7 @@ module.exports = ({
         'are-you-sure-modal':httpVueLoader('./AreYouSureModal.vue'),
     },
     mounted() {
-        this.$root.$on("reserve-ticket-modal", () => {
+        this.$root.$on("reserve-ticket-modal", reserve => {
             this.reserve();
         });
     }
