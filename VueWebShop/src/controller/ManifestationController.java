@@ -146,35 +146,6 @@ public class ManifestationController {
 	public void retrieveManifestation(@PathParam("id") String id) {
 		manifestationService.retrieveManifestation(id);
 	}
-	
-//	@GET
-//	@Path("/search")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public List<ManifestationWithLocationDTO> searchManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("place") String place, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo) throws ParseException {
-//		List<Manifestation> searchedManifestations = manifestationService.searchAllManifestations(name, dateFrom, dateTo, place, priceFrom, priceTo);
-//		return manifestationService.convertToManifestationsWithLocationDTO(searchedManifestations);
-//	}
-//	
-//	@GET
-//	@Path("/sort")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public List<ManifestationWithLocationDTO> sortManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("place") String place, @QueryParam("sortBy") String sortBy) {
-//		List<Manifestation> searchedManifestations = manifestationService.searchAllManifestations(name, dateFrom, dateTo, place, priceFrom, priceTo);
-//		List<Manifestation> sortedManifestations = manifestationService.sortManifestations(searchedManifestations, sortBy);
-//		return manifestationService.convertToManifestationsWithLocationDTO(sortedManifestations);
-//	}
-//	
-//	@GET
-//	@Path("/filter")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public List<ManifestationWithLocationDTO> filterManifestations(@QueryParam("name") String name, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo, @QueryParam("priceFrom") int priceFrom, @QueryParam("priceTo") int priceTo, @QueryParam("place") String place, @QueryParam("sortBy") String sortBy, @QueryParam("manifestationType") String manifestationType, @QueryParam("ticketCondition") String ticketCondition) throws ParseException {
-//		List<Manifestation> searchedManifestations = manifestationService.searchAllManifestations(name, dateFrom, dateTo, place, priceFrom, priceTo);
-//		List<Manifestation> sortedManifestations = manifestationService.sortGivenManifestations(searchedManifestations, sortBy);
-//		List<Manifestation> filteredManifestations = manifestationService.filterManifestations(sortedManifestations, manifestationType, ticketCondition);
-//		return manifestationService.convertToManifestationsWithLocationDTO(filteredManifestations);
-//	}
-	
-	
 
 	@PUT
 	@Path("/")
