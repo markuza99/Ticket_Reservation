@@ -95,8 +95,6 @@
         </div>
       </div>
       <create-manifestation-modal></create-manifestation-modal>
-      <button hidden data-toggle="modal" href="#successModal" id="open-success-modal"></button>
-      <success-modal></success-modal>
     </div>
   </div>
   
@@ -121,9 +119,7 @@ module.exports = {
     };
   },
   components: {
-    "create-manifestation-modal": httpVueLoader("./modals/CreateManifestationModal.vue"),
-    "success-modal": httpVueLoader("./modals/SuccessModal.vue"),
-    "filtering-panel":httpVueLoader("./FilterAndSortPanel.vue")
+    "create-manifestation-modal": httpVueLoader("./modals/CreateManifestationModal.vue")
   },
   methods: {
     goToManifestation(id) {
@@ -159,15 +155,6 @@ module.exports = {
     }
   },
   mounted() {
-
-    this.$root.$on("create-manifestation", (manifestation) => {
-      formatType(manifestation);
-      makeDate(manifestation);
-      this.manifestations.push(manifestation);
-
-      this.$root.$emit('modal-called',"Kreiranje manifestacije", "Manifestacija " + manifestation.name + " uspesno kreirana!");
-      document.getElementById('open-success-modal').click();
-    });
 
     axios.get("rest/manifestations/active").then((response) => {
       this.manifestations = response.data;

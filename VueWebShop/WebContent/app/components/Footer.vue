@@ -10,5 +10,8 @@
 <style scoped>
 footer {
   height: 56px;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
 }
 </style>

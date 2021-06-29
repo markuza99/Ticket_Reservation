@@ -1,41 +1,43 @@
 <template>
  <div class="user-page container mt-3">
-    <form @submit.prevent="updateProfile">
+	 <div class="col-4 mt-5">
 		<div class="form-row">
 			<div class="form-group col-md-6">
-			<label for="inputFirstName">Ime</label>
-			<input type="text" class="form-control" id="inputFirstName" v-model="user.firstName">
+			<label>Ime</label>
+			<input type="text" class="form-control" id="firstNameInput" v-model="user.firstName" readonly>
 			</div>
 			<div class="form-group col-md-6">
-			<label for="inputLastName">Prezime</label>
-			<input type="text" class="form-control" id="inputLastName" v-model="user.lastName">
+			<label>Prezime</label>
+			<input type="text" class="form-control" id="lastNameInput" v-model="user.lastName" readonly>
 			</div>
 		</div>
 		<div class="form-group">
-			<label for="inputUsername">Korisnicko ime</label>
-			<input type="text" class="form-control" id="inputUsername" v-model="user.username">
+			<label >Korisnicko ime</label>
+			<input type="text" class="form-control" id="usernameInput" v-model="user.username" readonly>
 		</div>
 		<div class="form-group">
-			<label for="inputPassword">Lozinka</label>
-			<input type="text" class="form-control" id="inputPassword" v-model="user.password">
+			<label>Lozinka</label>
+			<input type="text" class="form-control" id="password" v-model="user.password" readonly>
 		</div>
 		<div class="form-group">
 			<div class="form-check form-check-inline">
-			<input class="form-check-input" type="radio" v-model="user.gender" name="inlineRadioOptions" id="inlineRadio1" value="MALE">
-			<label class="form-check-label" for="inlineRadio1">Musko</label>
+			<input class="form-check-input" type="radio" id="genderMale" v-model="user.gender" value="MALE" disabled>
+			<label class="form-check-label">Musko</label>
 			</div>
 			<div class="form-check form-check-inline">
-			<input class="form-check-input" type="radio" v-model="user.gender" name="inlineRadioOptions" id="inlineRadio2" value="FEMALE">
-			<label class="form-check-label" for="inlineRadio2">Zensko</label>
+			<input class="form-check-input" type="radio" id="genderFemale" v-model="user.gender" value="FEMALE" disabled>
+			<label class="form-check-label">Zensko</label>
 		</div> 
 		<div class="form-row">
-			<label for="inputDate">Datum rodjenja</label>
-			<input type="date" class="form-control" id="inputDate" v-model="user.birthDate"/>
+			<label>Datum rodjenja</label>
+			<input type="date" class="form-control" id="dateInput" v-model="user.date" readonly>
 		</div>
-		<button type="submit" class="btn btn-primary">Potvrdite izmenu</button>
-		<p id="message"></p>
-	</form>
-
+		<div class="form-row justify-content-between mt-4">
+			<button type="submit" class="btn btn-primary" v-on:click="updateProfile()">Potvrdite izmenu</button>
+			<button class="btn btn-primary" v-on:click="enableInputs()">Izmenite profil</button>
+		</div>
+		<p id="message" class="mt-3"></p>
+	 </div>
  </div>
 </template>
 
@@ -44,59 +46,52 @@
 module.exports = {
 	data() {
 		return {
-			isLoggedIn: false,
-			oldUsername: "",
-			user : {}
+			user : null
 		}	
 	},
 	methods: {
-		profileSettings: function() {
-			window.location.replace("/registration");
-		},
-		updateProfile: function() {
+		updateProfile() {
 			$('#message').html("");
-			this.user.isDeleted = "false";
 			if(areInputFieldsEmpty(this.user)) {
 				$('#message').html("Morate popuniti sva polja.");
 				return;
 			}
 			axios
-				.put("rest/users", JSON.stringify(this.user), {
+				.put("rest/users/me", JSON.stringify(this.user), {
 					headers: {'content-type':'application/json'}
 				})
-				.then(response => {
-					if(isEmpty(response.data)) {
-						$('#message').html("Korisnicko ime vec postoji.");
-						return;
-					}
-					this.user = response.data;
-					this.makeStringDate(this.user.birthDate);
+				.then(() => {
+					this.disableInputs()
 					$('#message').html("Korisnik uspesno izmenjen.");
 				});
 		},
-		makeStringDate(date) {
-			if(date.monthValue <= 9) {
-				date.monthValue = "0" + date.monthValue;
-			}
-			if(date.dayOfMonth <= 9) {
-				date.dayOfMonth = "0" + date.dayOfMonth;
-			}
-			this.user.birthDate = date.year + "-" + date.monthValue + "-" + date.dayOfMonth;
+		enableInputs () {
+			document.getElementById('firstNameInput').readOnly = false;
+			document.getElementById('lastNameInput').readOnly = false;
+			document.getElementById('usernameInput').readOnly = false;
+			document.getElementById('password').readOnly = false;
+			document.getElementById('dateInput').readOnly = false;
+			document.getElementById('genderMale').disabled = false;
+			document.getElementById('genderFemale').disabled = false;
+		},
+		disableInputs () {
+			document.getElementById('firstNameInput').readOnly = true;
+			document.getElementById('lastNameInput').readOnly = true;
+			document.getElementById('usernameInput').readOnly = true;
+			document.getElementById('password').readOnly = true;
+			document.getElementById('dateInput').readOnly = true;
+			document.getElementById('genderMale').disabled = true;
+			document.getElementById('genderFemale').disabled = true;
 		}
 	},
 	mounted() {
 		axios
 			.get("rest/users/me")
 			.then(response => {
-				if(isEmpty(response.data)) {
-					// location.redirect
+				if(response.data == "") {
+					this.$router.push('unauthorized')
 				}
-				this.user = response.data;
-				console.log(this.user);
-				this.oldUsername = this.user.username;
-				this.makeStringDate(this.user.birthDate);
-
-
+				this.user = response.data
 			});
 	}
 }

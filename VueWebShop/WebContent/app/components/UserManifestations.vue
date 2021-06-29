@@ -187,7 +187,7 @@
           <tbody>
             <tr v-for="m in manifestations" :key="m.id">
               <th scope="row">{{m.id}}</th>
-              <td>{{m.name}}</td>
+              <td v-on:click="goToManifestation(m.id)" style="cursor: pointer">{{m.name}}</td>
               <td>{{m.price}}</td>
               <td>{{m.date}}</td>
               <td>{{m.type}}</td>

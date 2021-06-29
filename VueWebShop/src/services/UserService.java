@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import beans.Customer;
-import beans.Manifestation;
 import beans.Role;
 import beans.Seller;
 import beans.Ticket;
@@ -15,7 +14,7 @@ import dao.interfaces.ISellerDAO;
 import dao.interfaces.ITicketDAO;
 import dao.interfaces.IUserDAO;
 import dto.SearchUsersDTO;
-import dto.TicketRepresentationDTO;
+import dto.UserDTO;
 import dto.UserForViewDTO;
 
 
@@ -156,6 +155,7 @@ public class UserService {
 			for (Ticket ticket : tickets) {
 				if(m.equals(ticket.getManifestationId())) {
 					User buyer = userDAO.read(ticket.getUser());
+					if(buyer.getIsDeleted()) continue;
 					if(!buyers.contains(buyer)) {
 						buyers.add(buyer);
 					}
@@ -172,50 +172,7 @@ public class UserService {
 	public User retrieveUser(String username) {
 		return userDAO.retrieve(username);
 	}
-	
-//	public List<User> search(User u,String searchQuery, String dateFrom, String dateTo) {
-//		List<User> searchedUsers = new ArrayList<>();
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//		LocalDate LdateFrom = null;
-//		LocalDate LdateTo = null;
-//		ArrayList<User> usrs = new ArrayList<User>();
-//		if(!dateFrom.equals("")) {
-//			LdateFrom = LocalDate.parse(dateFrom, formatter);;
-//		}
-//		if(!dateTo.equals("")) {
-//			LdateTo = LocalDate.parse(dateTo, formatter);
-//		}
-//		if(u.getRole().equals(Role.ADMIN)) {
-//			usrs = (ArrayList<User>) userDAO.getAll();
-//		} else {
-//			usrs = (ArrayList<User>) getUsersForList(u);
-//		}
-//		for(User user : usrs) {
-//			if(correspondsSearch(user, searchQuery, LdateFrom, LdateTo)) {
-//				searchedUsers.add(user);
-//			}
-//		}
-//		return searchedUsers;
-//	}
-	
-//	private boolean correspondsSearch(User user, String searchQuery, LocalDate dateFrom, LocalDate dateTo) {
-//		boolean btext = searchQuery.trim() == "" ? true : (user.getUsername().contains(searchQuery) || user.getFirstName().contains(searchQuery)
-//				|| user.getLastName().contains(searchQuery));
-//		boolean bdateFrom = dateFrom == null ? true : user.getBirthDate().isAfter(dateFrom) || user.getBirthDate().isEqual(dateFrom);
-//		boolean bdateTo = dateTo == null ? true : user.getBirthDate().isBefore(dateTo) || user.getBirthDate().isEqual(dateTo);
-//		return btext && bdateFrom && bdateTo;
-//	}
-	
-//	public List<User> filter(User u,String searchQuery, String dateFrom, String dateTo, String role, String userStatus) {
-//		List<User> searchedUsers = search(u,searchQuery, dateFrom, dateTo);
-//		List<User> filteredUsers = new ArrayList<>();
-//		for(User user : searchedUsers) {
-//			if(correspondsFilter(user, role, userStatus)) {
-//				filteredUsers.add(user);
-//			}
-//		}
-//		return filteredUsers;
-//	}
+
 	
 	private boolean correspondsFilter(User user, String type, String role) {
 		boolean buserRole = role.equals("all") || role.equals("") ? true : (user.getRole() == Role.valueOf(role));
@@ -237,23 +194,15 @@ public class UserService {
 		
 		return buserType && buserRole;
 	}
+
+	public void updateUser(String username, UserDTO userDTO) {
+		User userToUpdate = userDAO.read(username);
+		userToUpdate.setFirstName(userDTO.firstName);
+		userToUpdate.setLastName(userDTO.lastName);
+		userToUpdate.setPassword(userDTO.password);
+		userToUpdate.setBirthDate(userDTO.date);
+		userToUpdate.setGender(userDTO.gender);
+		userDAO.update(userToUpdate);
+	}
 	
-//	@PUT
-//	@Path("/")
-//	@Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public User createItem(@Context HttpServletRequest request, User user) {
-//		User u = (User) request.getSession().getAttribute("user");
-//		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
-//		User updatedUser = userDao.updateUser(user, u.getUsername());
-//		if(updatedUser==null) {
-//			return null;
-//		}
-//		TicketDAO TicketDao = (TicketDAO) ctx.getAttribute("TicketDAO");
-//		TicketDao.updateTicket(u.getUsername(), updatedUser.getUsername());
-//		CustomerDAO CustomerDao = (CustomerDAO) ctx.getAttribute("CustomerDAO");
-//		CustomerDao.updateCustomer(u.getUsername(), updatedUser.getUsername());
-//		request.getSession().setAttribute("user", updatedUser);
-//		return updatedUser;
-//	}
 }
