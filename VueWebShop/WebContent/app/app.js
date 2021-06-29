@@ -11,6 +11,7 @@ const Users = httpVueLoader("./app/components/Users.vue");
 const Comments = httpVueLoader("./app/components/Comments.vue");
 const Manifestations = httpVueLoader('./app/components/UserManifestations.vue')
 const Tickets = httpVueLoader('./app/components/Tickets.vue')
+const Maps = httpVueLoader('./app/components/Maps.vue')
 
 const router = new VueRouter({
     mode: 'hash',
@@ -25,6 +26,7 @@ const router = new VueRouter({
         { path: '/users', component: Users},
         { path: '/comments', component: Comments},
         { path: '/manifestations', component: Manifestations},
+        { path: '/maps', component: Maps},
         { path: '/tickets', component: Tickets}
     ]
 });
