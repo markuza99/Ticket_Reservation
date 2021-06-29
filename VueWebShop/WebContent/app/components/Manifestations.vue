@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="search-panel">
-      <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+      <nav class="navbar navbar-expand-lg navbar-light">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -26,7 +26,7 @@
               <input v-model="place" class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
             </li>
             <li class = "nav-item">
-              <button class="my-2 my-sm-0 search-button" type="submit" v-on:click="searchManifestations"><i class="fa fa-search"></i></button>
+              <button class="search-button btn-green-invert" type="submit" v-on:click="searchManifestations"><i class="fa fa-search"></i></button>
             </li>
           </ul>
         </div>
@@ -36,36 +36,37 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-3 col-md-4">
-          
-          <button type="button" class="btn btn-outline-primary mt-5" v-if="role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">
-            Dodaj manifestaciju
-          </button>
+          <div class="p-2">
+            <button type="button" class="btn btn-outline-primary mt-5" v-if="role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">
+              Dodaj manifestaciju
+            </button>
 
 
-          <div class="mb-2 mt-5 font-weight-bold">Sortiraj manifestacije</div>
-          <select class="form-control" v-model="sortBy">
-            <option value="price">Cena</option>
-            <option value="name">Naziv manifestacije</option>
-            <option value="date">Datum manifestacije</option>
-            <option value="location">Lokacija manifestacije</option>
-          </select>
-          <input type="radio" id="one" value="Asc" v-model="sortOrder" class="mt-3">
-          <label for="one">Rastuce</label>
-          <input type="radio" id="two" value="Desc" v-model="sortOrder" class="ml-3">
-          <label for="two">Opadajuce</label><br>
-          <label class="mb-2 mt-3 font-weight-bold">Tip manifestacije</label>
-          <select class="form-control" v-model="type">
-            <option value="all">Sve</option>
-            <option value="CONCERT">Koncert</option>
-            <option value="THEATER">Pozoriste</option>
-            <option value="FESTIVAL">Festival</option>
-          </select>
-          <label class="mb-2 mt-3 font-weight-bold">Filtriraj po</label>
-          <select class="form-control" v-model="ticketCondition">
-            <option value="all">Sve</option>
-            <option value="soldOut">Rasprodato</option>
-            <option value="notSoldOut">Nerasprodato</option>
-          </select>
+            <div class="mb-2 mt-5 font-weight-bold">Sortiraj manifestacije</div>
+            <select class="form-control my-select" v-model="sortBy">
+              <option value="price">Cena</option>
+              <option value="name">Naziv manifestacije</option>
+              <option value="date">Datum manifestacije</option>
+              <option value="location">Lokacija manifestacije</option>
+            </select>
+            <input type="radio" id="one" value="Asc" v-model="sortOrder" class="mt-3">
+            <label for="one">Rastuce</label>
+            <input type="radio" id="two" value="Desc" v-model="sortOrder" class="ml-3">
+            <label for="two">Opadajuce</label><br>
+            <label class="mb-2 mt-3 font-weight-bold">Tip manifestacije</label>
+            <select class="form-control" v-model="type">
+              <option value="all">Sve</option>
+              <option value="CONCERT">Koncert</option>
+              <option value="THEATER">Pozoriste</option>
+              <option value="FESTIVAL">Festival</option>
+            </select>
+            <label class="mb-2 mt-3 font-weight-bold">Filtriraj po</label>
+            <select class="form-control" v-model="ticketCondition">
+              <option value="all">Sve</option>
+              <option value="soldOut">Rasprodato</option>
+              <option value="notSoldOut">Nerasprodato</option>
+            </select>
+          </div>
         </div>
         <div class="col-lg-9 col-md-8">
           <div class="scroll-viewer">
@@ -80,7 +81,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                       <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-outline-secondary">{{ m.type }}</button>
-                        <button type="button" class="btn btn-sm btn-danger">{{ m.price }},00 RSD</button>
+                        <button type="button" class="btn btn-sm btn-green">{{ m.price }},00 RSD</button>
                       </div>
                       <small class="text-muted ml-2">
                         {{ m.date }}
@@ -179,9 +180,7 @@ module.exports = {
 }
 
 .manifestation {
-  border: 1px solid darkgray;
   margin-bottom: 20px;
-  box-shadow: 0px 0px 12px #767676;
 }
 
 .manifestation .image-holder {
@@ -249,7 +248,7 @@ module.exports = {
 }
 
 .search-panel {
-	background-color: #007bff;
+	background-color: #FFAAA7;
 	padding: 0px;
 	margin:0;
 	text-align: center;
@@ -269,7 +268,7 @@ module.exports = {
 	border:none;
 	height:calc(2.5em + .75rem + 2px);
 	padding:.375rem .75rem;
-	box-shadow: 0px 0px 8px #474747;
+	/* box-shadow: 0px 0px 8px #474747; */
 }
 
 .search-panel li input:focus {
@@ -288,9 +287,9 @@ module.exports = {
 }
 
 .search-panel .search-button {
-	padding: 15px 23px;
-	border:none;
-	box-shadow: 0px 0px 8px #000000;
+	padding: 14px 22px;
+	/* border:none; */
+	/* box-shadow: 0px 0px 8px #000000; */
 }
 
 .search-panel .search-button:hover {
@@ -316,4 +315,17 @@ module.exports = {
 ::-webkit-scrollbar {
   width: 10px;
 }
+
+.btn-green {
+  background-color: #98DDCA;
+  border: 1px solid #7cd4bc;
+}
+
+.btn-green-invert {
+  background-color: #98DDCA;
+  color:white;
+  border: 1px solid #7cd4bc;
+}
+
+
 </style>

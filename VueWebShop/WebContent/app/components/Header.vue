@@ -1,18 +1,18 @@
 <template>
  <div class="header-section">
-	<nav class="navbar navbar-light bg-primary justify-content-between navbar-fixed-top">
+	<nav class="navbar navbar-light justify-content-between navbar-fixed-top">
 		<a class="navbar-brand text-white" v-on:click="goToWelcomePage()">Ulaznice.rs</a>
 		
-		<form class="form-inline" v-if="isLoggedIn">
+		<form class="form-inline navbar-links" v-if="isLoggedIn">
 			<a class="text-white p-2" v-on:click="profileSettings()">Profil</a>
 			<a class="text-white p-2" v-on:click="goToTickets()">Karte</a>
 			<a class="text-white p-2" v-on:click="goToManifestations()">Manifestacije</a>
 			<a class="text-white p-2" v-if="role != 'CUSTOMER'" v-on:click="goToComments()">Komentari</a>
 			<a class="text-white p-2" v-if="role != 'CUSTOMER'" v-on:click="goToUsers()">Korisnici</a>
-			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" v-on:click="signOut()">Odjava</button>
+			<button class="btn btn-outline-light my-2 my-sm-0" v-on:click="signOut()">Odjava</button>
 		</form>
 		<form class="form-inline"  v-if="!isLoggedIn">
-			<button class="btn btn-primary btn-outline-light my-2 my-sm-0" type="submit" v-on:click="signIn">Prijava</button>
+			<button class="btn btn-outline-light my-2 my-sm-0" type="submit" v-on:click="signIn">Prijava</button>
 		</form>
 	</nav>
  </div>
@@ -81,5 +81,19 @@ form.form-inline {
 
 nav {
 	height: 56px;
+	background: #FFAAA7;
+}
+
+.header-section {
+	background: #FFAAA7;
+}
+
+.navbar-links a {
+	cursor: pointer;
+	margin: 0 1em;
+}
+
+.navbar-links a:hover {
+	text-decoration: none;
 }
 </style>

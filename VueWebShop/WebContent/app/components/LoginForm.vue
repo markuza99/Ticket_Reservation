@@ -11,7 +11,7 @@
 							</div>
 							<div class="form-group">
 								<label class="form-label">Lozinka</label>
-								<input type="password" class="form-control" v-model="user.password"/>
+								<input type="text" class="form-control" v-model="user.password"/>
 							</div>	
 							
 							<a class="btn btn-primary mt-2" href="#/registration" role="button">Registracija</a>

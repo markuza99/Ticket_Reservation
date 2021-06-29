@@ -11,7 +11,7 @@
 }
 
 .checked {
-  color: orange;
+  color: #FFD3B4;
 }
 
 .map {
@@ -34,4 +34,51 @@
   box-shadow: 0 0 10px rgb(40, 167, 69);
   padding: 2em;
   color: rgb(40, 167, 69);
+}
+
+input[type='radio']:after {
+  width: 17px;
+  height: 17px;
+  border-radius: 15px;
+  top: -2px;
+  left: -1px;
+  position: relative;
+  background-color: #d1d3d1;
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  border: 2px solid white;
+}
+
+input[type='radio']:checked:after {
+  width: 17px;
+  height: 17px;
+  border-radius: 15px;
+  top: -2px;
+  left: -1px;
+  position: relative;
+  background-color: #98DDCA;
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  border: 2px solid white;
+}
+
+.form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: rgb(152, 221, 202);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgb(152 221 202 / 50%);
+}
+
+.btn-green {
+  background-color: #98DDCA;
+  border: 1px solid #7cd4bc;
+}
+
+.btn-green-invert {
+  background-color: #98DDCA;
+  color:white;
+  border: 1px solid #7cd4bc;
 }

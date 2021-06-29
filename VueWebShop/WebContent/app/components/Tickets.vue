@@ -19,7 +19,7 @@
           <option value="RESERVED">Rezervisano</option>
           <option value="CANCELED">Otkazano</option>
         </select>
-        Sortiraj po: <select class="form-control" v-model="sortBy">
+        Sortiraj po: <select class="form-control mb-2" v-model="sortBy">
           <option value="price">Cena</option>
           <option value="manifestationName">Naziv manifestacije</option>
           <option value="manifestationDate">Datum manifestacije</option>
@@ -31,7 +31,7 @@
         <label for="two">Opadajuce</label>
 
         <div class="text-right mt-2">
-          <button class="btn btn-primary" type="submit" v-on:click="searchTickets()"><i class="fa fa-search"></i></button>
+          <button class="btn btn-green-invert" type="submit" v-on:click="searchTickets()"><i class="fa fa-search"></i></button>
         </div>
       </div>
       </div>
@@ -76,7 +76,7 @@
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                      <button type="button" class="btn btn-primary" data-dismiss="modal" v-on:click="cancelReservation()">Yes</button>
+                      <button type="button" class="btn btn-green-invert" data-dismiss="modal" v-on:click="cancelReservation()">Yes</button>
                     </div>
                   </div>
                 </div>

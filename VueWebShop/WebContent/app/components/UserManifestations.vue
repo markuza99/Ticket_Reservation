@@ -64,7 +64,7 @@
             </select>
           </div>
           <div class="col-md-1 pt-4 text-right">
-            <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            <button type="submit" class="btn btn-green mt-2">Potvrdi</button>
           </div>
         </div>
       </form>
@@ -155,7 +155,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-outline-secondary">{{ m.type }}</button>
-                    <button type="button" class="btn btn-sm btn-danger">{{ m.price }},00 RSD</button>
+                    <button type="button" class="btn btn-sm btn-green">{{ m.price }},00 RSD</button>
                   </div>
                   <small class="text-muted">
                     {{ m.date }}
@@ -513,6 +513,17 @@ module.exports = {
   background: rgba(0,0,0,0.3);
   font-weight: normal;
   padding:0.5em;
+}
+
+.btn-green {
+  background-color: #98DDCA;
+  border: 1px solid #7cd4bc;
+}
+
+.btn-green-invert {
+  background-color: #98DDCA;
+  color:white;
+  border: 1px solid #7cd4bc;
 }
 
 </style>

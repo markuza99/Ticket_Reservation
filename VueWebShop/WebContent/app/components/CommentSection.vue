@@ -1,9 +1,9 @@
 <template>
-  <div class="comment-section pb-4 mt-5 mb-5">
+  <div class="comment-section">
     <h3 v-if="comments.length == 0" class="p-4">Nema komentara</h3>
-    <div v-if="correspondsCommentPermission()">
+    <div v-if="correspondsCommentPermission()" class="mb-5">
       <div class="d-flex justify-content-between">
-        <div class="font-weight-bold pt-4 pl-4 pr-4">Komentarisi</div>
+        <div class="font-weight-bold pt-4">Komentarisi</div>
         <div class="rating mt-3 mr-3">
           <span
             class="fa fa-star five-stars"
@@ -28,19 +28,19 @@
         </div>
       </div>
 
-      <div class="p-3">
+      <div class="mt-3 mb-3">
         <textarea
           class="form-control comment-form"
           rows="3"
           v-model="description"
         ></textarea>
       </div>
-      <div class="d-flex justify-content-between pr-3">
+      <div class="d-flex justify-content-between">
         <p id="comment-error" class="ml-4"></p>
         <button class="btn-pink manifestation-button comment-button" v-on:click="comment()">Postavi komentar</button>
       </div>
     </div>
-    <div class="comment" v-for="comment in comments" :key="comment.id">
+    <!-- <div class="comment" v-for="comment in comments" :key="comment.id">
       <ul class="comment-info d-flex justify-content-between">
         <li class="comment-username">{{ comment.user }}</li>
         <li>
@@ -69,7 +69,27 @@
       <div class="comment-description shadow-sm">
         <p>{{ comment.description }}</p>
       </div>
+    </div> -->
+    <div class="scroll-comments">
+      <ul class="list-group">
+        <li class="list-group-item" v-for="comment in comments" :key="comment.id">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-secondary">{{comment.user}}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              {{comment.description}}
+              <div class="mb-2">
+                  <span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
+                  <span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
+                  <span class="fa fa-star" v-bind:class="{ checked : isCounted(3, comment) }"></span>
+                  <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
+                  <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
+              </div>
+            </div>
+        </li>
+      </ul>
     </div>
+    
 
     <div v-if="commenting_conditions.commentApproval == 'NOT_CHECKED'">
       <div class="comment-success">
@@ -97,7 +117,7 @@ module.exports = {
       comment_error: false
     };
   },
-  props: ["commenting_conditions"],
+  props: ["commenting_conditions","manifestation_passed"],
   created() {
     this.manifestation_id = this.$route.params.id;
     axios
@@ -113,7 +133,7 @@ module.exports = {
     correspondsCommentPermission() {
       return (
         this.commenting_conditions.userAttended &&
-        this.commenting_conditions.manifestation_passed &&
+        this.manifestation_passed &&
         this.commenting_conditions.commentApproval != "ACCEPTED" && 
         this.commenting_conditions.commentApproval != "NOT_CHECKED"
       );
@@ -166,14 +186,9 @@ module.exports = {
 
 .rating > span:hover:before,
 .rating > span:hover ~ span:before {
-  color: rgb(255, 222, 3);
+  color: #FFD3B4;
 }
 
-.comment-form:focus {
-  outline: none !important;
-  border: none;
-  box-shadow: 0 0 10px rgb(255, 2, 102);
-}
 
 .comment-button {
   border-radius: 0.25rem;
@@ -189,7 +204,7 @@ module.exports = {
   padding: 0;
   background-color: #ffe5f0;
   padding: 1em;
-  border-bottom: 1px solid rgb(255, 2, 102);
+  border-bottom: 1px solid #FFAAA7;
 }
 
 .comment-date {
@@ -207,5 +222,16 @@ module.exports = {
 
 .comment-info li {
   list-style: none;
+}
+
+.scroll-comments {
+  height: 300px;
+  overflow: auto;
+  margin: 3em 0;
+}
+
+::-webkit-scrollbar {
+  width: 1px;
+  background-color: #98DDCA;
 }
 </style>

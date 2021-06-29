@@ -14,28 +14,6 @@
             <div class="row">
               <div class="col mt-3">
                 <div class="d-flex">
-                  <div class="average_rating" v-if="manifestation.manifestationPassed">
-                    <span
-                      class="fa fa-star"
-                      v-bind:class="{ yellow: isCountedInAverageRating(1) }"
-                    ></span>
-                    <span
-                      class="fa fa-star"
-                      v-bind:class="{ yellow: isCountedInAverageRating(2) }"
-                    ></span>
-                    <span
-                      class="fa fa-star"
-                      v-bind:class="{ yellow: isCountedInAverageRating(3) }"
-                    ></span>
-                    <span
-                      class="fa fa-star"
-                      v-bind:class="{ yellow: isCountedInAverageRating(4) }"
-                    ></span>
-                    <span
-                      class="fa fa-star"
-                      v-bind:class="{ yellow: isCountedInAverageRating(5) }"
-                    ></span>
-                  </div>
                   <button v-if="!manifestation.manifestationPassed && role =='CUSTOMER'" class="btn-pink manifestation-button" data-toggle="modal" data-target="#reservationModal">
                     Rezervacija karata
                   </button>
@@ -47,7 +25,7 @@
               <reservation-modal v-if="manifestation" :manifestation-id="manifestation.id"></reservation-modal>
             </div>
             <comment-section
-              v-bind:commenting_conditions="comment_conditions"
+              v-bind:commenting_conditions="comment_conditions" v-bind:manifestation_passed="manifestation.manifestationPassed"
             ></comment-section>
           </div>
         </div>
@@ -147,6 +125,34 @@
                   >
                 </div>
               </li>
+              <li class="d-flex">
+                <i class="fa fa-ticket pt-3 pb-3 pr-3 pink"></i>
+                <div>
+                  <div>Ocena</div>
+                  <div class="average_rating" v-if="manifestation.manifestationPassed">
+                    <span
+                      class="fa fa-star"
+                      v-bind:class="{ yellow: isCountedInAverageRating(1) }"
+                    ></span>
+                    <span
+                      class="fa fa-star"
+                      v-bind:class="{ yellow: isCountedInAverageRating(2) }"
+                    ></span>
+                    <span
+                      class="fa fa-star"
+                      v-bind:class="{ yellow: isCountedInAverageRating(3) }"
+                    ></span>
+                    <span
+                      class="fa fa-star"
+                      v-bind:class="{ yellow: isCountedInAverageRating(4) }"
+                    ></span>
+                    <span
+                      class="fa fa-star"
+                      v-bind:class="{ yellow: isCountedInAverageRating(5) }"
+                    ></span>
+                  </div>
+                </div>
+              </li>
             </ul>
           </div>
         </div>
@@ -203,10 +209,10 @@ module.exports = {
 
 <style scoped>
 .manifestation-image-holder {
-  height: 30em;
+  height: 20em;
   overflow: hidden;
   border-radius: 10px;
-  border:1px solid rgb(255, 2, 102);
+  border:1px solid #FFAAA7;
 }
 
 .manifestation-details ul {
@@ -218,11 +224,11 @@ module.exports = {
 }
 
 .yellow {
-  color: rgb(255, 222, 3);
+  color: #FFD3B4;
 }
 
 .yellow-bg {
-  background-color: rgb(255, 222, 3);
+  background-color: #FFD3B4;
 }
 
 .blue {
@@ -230,7 +236,7 @@ module.exports = {
 }
 
 .pink {
-  color: rgb(255, 2, 102);
+  color: #FFAAA7;
 }
 
 .manifestation-details li {
@@ -251,15 +257,13 @@ module.exports = {
 }
 
 #manifestation .average_rating {
-  background-color: rgb(255, 2, 102);
   border-top-left-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
   padding: 5px 10px 0 10px;
 }
 
 #manifestation .manifestation-button {
-  border-top-right-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
+  border-radius: 0.25rem;
 
   display: inline-block;
   font-weight: 400;
@@ -277,9 +281,4 @@ module.exports = {
   font-size: 1rem;
 }
 
-.btn-pink {
-  color: #fff;
-  background-color: rgb(255, 2, 102);
-  border-color: rgb(255, 2, 102);
-}
 </style>
