@@ -1,6 +1,6 @@
 <template>
     <div id="users-panel">
-        <div class="container">
+        <div class="container" v-if="role == 'ADMIN'">
             <div class="row">
                 <div class="col-2">
                     <label>Uloga</label>
@@ -272,6 +272,7 @@ module.exports = {
         },
         searchUsers() {
             const sortBy = this.sortBy + this.sortOrder
+            console.log(sortBy)
             axios
                 .get("rest/users", {
                     params: {

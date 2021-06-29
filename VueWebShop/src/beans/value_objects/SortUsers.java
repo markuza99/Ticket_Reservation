@@ -12,6 +12,18 @@ import dao.interfaces.ICustomerDAO;
 
 public class SortUsers {
 	
+	public void sortByUsername(boolean ascending, List<User> users) {
+		Collections.sort(users, new Comparator<User>() {
+			@Override
+			public int compare(User o1, User o2) {
+				if(ascending) {
+					return o1.getUsername().compareTo(o2.getUsername());				
+				} else {
+					return o2.getUsername().compareTo(o1.getUsername());
+				}
+			}
+		});
+	}
 	
 	public void sortByFirstName(boolean ascending, List<User> users) {
 		Collections.sort(users, new Comparator<User>() {

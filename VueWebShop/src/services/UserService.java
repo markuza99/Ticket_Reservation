@@ -107,6 +107,12 @@ public class UserService {
 		case "lastNameDesc":
 			sort.sortByLastName(false, users);
 			break;
+		case "usernameAsc":
+			sort.sortByUsername(true, users);
+			break;
+		case "usernameDesc":
+			sort.sortByUsername(false, users);
+			break;
 		case "pointsAsc":
 			sort.sortByPoints(true, users, customerDAO);
 			break;

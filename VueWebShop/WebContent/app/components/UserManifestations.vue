@@ -377,7 +377,7 @@ module.exports = {
         headers: {"content-type":"application/json"}
       })
       .then(() => {
-        // this.$router.go()
+        this.$router.go()
       })
     },
     setModalType (type) {
