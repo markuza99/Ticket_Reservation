@@ -73,38 +73,43 @@
       }
 	},
     methods: {
-      	register() {
-			if(areInputFieldsEmpty(this.user)) {
-    			document.getElementById("error").innerText = "Morate popuniti sva polja.";
-        		return;
-			}
-			if(forbiddenSignInFields(this.user)) {
-                alert("Ne mozete koristiti ; znak");
-                return;
-            }
+      register() {
+				if(areInputFieldsEmpty(this.user)) {
+					document.getElementById("error").innerText = "Morate popuniti sva polja.";
+						return;
+				}
+				if(forbiddenSignInFields(this.user)) {
+					alert("Ne mozete koristiti ; znak");
+					return;
+				}
 
-			if(this.user.gender == "Musko") {
-				this.user.gender = "MALE";
-			} else {
-				this.user.gender = "FEMALE";
+				if(this.user.gender == "Musko") {
+					this.user.gender = "MALE";
+				} else {
+					this.user.gender = "FEMALE";
+				}
+				
+				this.user.username.trim()
+				this.user.firstName.trim()
+				this.user.lastName.trim()
+
+				var userJSON = JSON.stringify(this.user);
+				toastr.options.timeOut = 0;
+				axios
+					.post("rest/users/register", userJSON, {
+						headers: {'content-type':'application/json'}
+					})
+					.then(response => {
+						if(isEmpty(response.data)) {
+							$('#username').addClass("error");
+							this.username_error = true;
+							
+						} else {
+							//this.$router.push("login");
+							toastr.success('Are you the 6 fingered man?')
+						}
+					});
 			}
-			
-			var userJSON = JSON.stringify(this.user);
-			console.log(userJSON);
-			axios
-				.post("rest/users/register", userJSON, {
-					headers: {'content-type':'application/json'}
-				})
-				.then(response => {
-					if(isEmpty(response.data)) {
-						$('#username').addClass("error");
-						this.username_error = true;
-						
-					} else {
-						location.replace("#/login");
-					}
-				});
-		}
     },
 	
     mounted () {
