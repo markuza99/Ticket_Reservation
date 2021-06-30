@@ -16,15 +16,15 @@
                         <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
                         <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
                     </div>
-                    <button class="btn btn-success" v-on:click="approve(comment.id)">
+                    <button class="btn btn-green" v-on:click="approve(comment.id)">
                         Odobri:   <i class="fa fa-check"></i>
                     </button>
-                    <button class="btn btn-danger" v-on:click="decline(comment.id)">
+                    <button class="btn btn-pink-invert" v-on:click="decline(comment.id)">
                         <i class="fa fa-times"></i>
                     </button>
                     </div>
-                    <div class="btn btn-outline-danger" v-if="comment.approval == 'DENIED'" disabled>NEODOBREN</div>
-                    <div class="btn btn-outline-success" v-if="comment.approval == 'ACCEPTED'" disabled>ODOBREN</div>
+                    <div class="text-pink" v-if="comment.approval == 'DENIED'" disabled>NEODOBREN</div>
+                    <div class="text-green" v-if="comment.approval == 'ACCEPTED'" disabled>ODOBREN</div>
                 </div>
             </li>
         </ul>

@@ -14,8 +14,8 @@
 								<input type="text" class="form-control" v-model="user.password"/>
 							</div>	
 							
-							<a class="btn btn-primary mt-2" href="#/registration" role="button">Registracija</a>
-							<button type="submit" class="btn btn-primary mt-2 float-right">Prijava</button>
+							<a class="btn btn-green mt-2" href="#/registration" role="button">Registracija</a>
+							<button type="submit" class="btn btn-green mt-2 float-right">Prijava</button>
 							<p id="error"></p>
 						</form>
 					</div>

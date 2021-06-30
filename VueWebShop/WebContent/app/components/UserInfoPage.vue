@@ -4,37 +4,37 @@
 		<div class="form-row">
 			<div class="form-group col-md-6">
 			<label>Ime</label>
-			<input type="text" class="form-control" id="firstNameInput" v-model="user.firstName" readonly>
+			<input type="text" class="form-control" id="firstNameInput" v-model="user.firstName" :readonly="!updating">
 			</div>
 			<div class="form-group col-md-6">
 			<label>Prezime</label>
-			<input type="text" class="form-control" id="lastNameInput" v-model="user.lastName" readonly>
+			<input type="text" class="form-control" id="lastNameInput" v-model="user.lastName" :readonly="!updating">
 			</div>
 		</div>
 		<div class="form-group">
 			<label >Korisnicko ime</label>
-			<input type="text" class="form-control" id="usernameInput" v-model="user.username" readonly>
+			<input type="text" class="form-control" id="usernameInput" v-model="user.username" :readonly="!updating">
 		</div>
 		<div class="form-group">
 			<label>Lozinka</label>
-			<input type="text" class="form-control" id="password" v-model="user.password" readonly>
+			<input type="text" class="form-control" id="password" v-model="user.password" :readonly="!updating">
 		</div>
 		<div class="form-group">
 			<div class="form-check form-check-inline">
-			<input class="form-check-input" type="radio" id="genderMale" v-model="user.gender" value="MALE" disabled>
+			<input class="form-check-input" type="radio" id="genderMale" v-model="user.gender" value="MALE" :disabled="!updating">
 			<label class="form-check-label">Musko</label>
 			</div>
 			<div class="form-check form-check-inline">
-			<input class="form-check-input" type="radio" id="genderFemale" v-model="user.gender" value="FEMALE" disabled>
+			<input class="form-check-input" type="radio" id="genderFemale" v-model="user.gender" value="FEMALE" :disabled="!updating">
 			<label class="form-check-label">Zensko</label>
 		</div> 
 		<div class="form-row">
 			<label>Datum rodjenja</label>
-			<input type="date" class="form-control" id="dateInput" v-model="user.date" readonly>
+			<input type="date" class="form-control" id="dateInput" v-model="user.date" :readonly="!updating">
 		</div>
 		<div class="form-row justify-content-between mt-4">
-			<button type="submit" class="btn btn-primary" v-on:click="updateProfile()">Potvrdite izmenu</button>
-			<button class="btn btn-primary" v-on:click="enableInputs()">Izmenite profil</button>
+			<button type="submit" class="btn btn-green" v-on:click="updateProfile()">Potvrdite izmenu</button>
+			<button class="btn btn-pink" v-on:click="enableInputs()">Izmenite profil</button>
 		</div>
 		<p id="message" class="mt-3"></p>
 	 </div>
@@ -46,11 +46,13 @@
 module.exports = {
 	data() {
 		return {
-			user : null
+			user : {},
+			updating: false
 		}	
 	},
 	methods: {
 		updateProfile() {
+			if(!this.updating) return
 			$('#message').html("");
 			if(areInputFieldsEmpty(this.user)) {
 				$('#message').html("Morate popuniti sva polja.");
@@ -66,22 +68,10 @@ module.exports = {
 				});
 		},
 		enableInputs () {
-			document.getElementById('firstNameInput').readOnly = false;
-			document.getElementById('lastNameInput').readOnly = false;
-			document.getElementById('usernameInput').readOnly = false;
-			document.getElementById('password').readOnly = false;
-			document.getElementById('dateInput').readOnly = false;
-			document.getElementById('genderMale').disabled = false;
-			document.getElementById('genderFemale').disabled = false;
+			this.updating = true
 		},
 		disableInputs () {
-			document.getElementById('firstNameInput').readOnly = true;
-			document.getElementById('lastNameInput').readOnly = true;
-			document.getElementById('usernameInput').readOnly = true;
-			document.getElementById('password').readOnly = true;
-			document.getElementById('dateInput').readOnly = true;
-			document.getElementById('genderMale').disabled = true;
-			document.getElementById('genderFemale').disabled = true;
+			this.updating = false
 		}
 	},
 	mounted() {

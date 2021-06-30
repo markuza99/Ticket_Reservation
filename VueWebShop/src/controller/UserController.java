@@ -136,7 +136,7 @@ public class UserController {
 		return null;
 	}
 	
-	@DELETE
+	@PUT
 	@Path("/{username}")
 	public User deleteUser(@PathParam("username") String username) {
 		return userService.deleteUser(username);

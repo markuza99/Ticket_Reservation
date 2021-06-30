@@ -30,16 +30,16 @@
                     <small id="remaining_number_error" class="form-text">Cena Fan Pit karte je dva puta veca od regularne cene, a cena Vip karte je cetiri puta veca od regularne cene.</small>
                 </div>
                 <div class="form-group">
-                    <button type="button" class="btn btn-primary" v-on:click="countPrice()">Izracunaj ukupnu cenu</button>
+                    <button type="button" class="btn btn-green" v-on:click="countPrice()">Izracunaj ukupnu cenu</button>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Ukupna cena</label>
-                    <input class="form-control total-price" type="text" placeholder="Readonly input here…" readonly>
+                    <input class="form-control total-price" type="text" placeholder="Ukupna cena" readonly>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazite</button>
-                <button type="button" class="btn btn-primary reserve-button" 
+                <button type="button" class="btn btn-green reserve-button" 
                     data-dismiss="modal" data-toggle="modal" data-target="#areYouSureModal">Izvrsite rezervaciju</button>
             </div>
             </div>
@@ -64,7 +64,6 @@ module.exports = ({
             console.log(this.ticket_type, this.number_of_tickets)
             if(!isNumberInRange(1,5,this.number_of_tickets)) {
 				$('.total-price').attr("placeholder", "Mozete rezervisati od 0 do 5 karata u jednoj rezervaciji.");
-				$('.total-price').addClass("error");
 				$('.reserve-button').attr("disabled", true);
 				return;
 			}

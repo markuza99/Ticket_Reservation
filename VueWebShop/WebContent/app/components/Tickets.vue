@@ -3,23 +3,23 @@
     <div class="row mt-5">
       <div class="col-md-2">
         <div>
-        <input type="text" v-model="name" class="form-control mb-2" placeholder="name">
-        <input type="text" v-model="priceFrom" class="form-control mb-2" placeholder="price from">
-        <input type="text" v-model="priceTo" class="form-control mb-2" placeholder="price to">
-        <input type="date" v-model="dateFrom" class="form-control mb-2" placeholder="date from">
-        <input type="date" v-model="dateTo" class="form-control mb-2" placeholder="date to">
-        Tip karte: <select class="form-control mb-2" v-model="ticket_type">
+        Naziv manifestacije <input type="text" v-model="name" class="form-control mb-3" placeholder="name">
+        Cena od<input type="text" v-model="priceFrom" class="form-control mb-3" placeholder="price from">
+        Cena do<input type="text" v-model="priceTo" class="form-control mb-3" placeholder="price to">
+        Datum manifestacije od<input type="date" v-model="dateFrom" class="form-control mb-3" placeholder="date from">
+        Datum manifestacije do<input type="date" v-model="dateTo" class="form-control mb-3" placeholder="date to">
+        Tip karte <select class="form-control mb-3" v-model="ticket_type">
           <option value="all">Sve</option>
           <option value="VIP">Vip</option>
           <option value="REGULAR">Regular</option>
           <option value="FAN_PIT">Fan pit</option>
         </select>
-        Status karte: <select class="form-control mb-2" v-model="ticket_status">
+        Status karte <select class="form-control mb-3" v-model="ticket_status">
           <option value="all">Sve</option>
           <option value="RESERVED">Rezervisano</option>
           <option value="CANCELED">Otkazano</option>
         </select>
-        Sortiraj po: <select class="form-control mb-2" v-model="sortBy">
+        Sortiraj po <select class="form-control mb-3" v-model="sortBy">
           <option value="price">Cena</option>
           <option value="manifestationName">Naziv manifestacije</option>
           <option value="manifestationDate">Datum manifestacije</option>
@@ -36,7 +36,7 @@
       </div>
       </div>
       <div class="col-md-10">
-        <table class="table table-hover table-borderless">
+        <table class="table table-hover table-borderless table-striped">
         <thead>
           <tr>
             <th scope="col">Id</th>
@@ -61,7 +61,7 @@
             <td>{{t.type}}</td>
             <td>{{t.numberOfTickets}}</td>
             <td v-on:click="setTicketId(t.id)">
-              <button v-if="t.status == 'Rezervisano' && t.manifestationPassed == false && role == 'CUSTOMER'" class="btn text-primary" data-toggle="modal" data-target="#cancelReservationModal">otkazi</button>
+              <button v-if="t.status == 'Rezervisano' && t.manifestationPassed == false && role == 'CUSTOMER'" class="btn btn-green" data-toggle="modal" data-target="#cancelReservationModal">otkazi</button>
               <div class="modal fade" id="cancelReservationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">

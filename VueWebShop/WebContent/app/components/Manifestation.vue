@@ -14,7 +14,7 @@
             <div class="row">
               <div class="col mt-3">
                 <div class="d-flex">
-                  <button v-if="!manifestation.manifestationPassed && role =='CUSTOMER'" class="btn-pink manifestation-button" data-toggle="modal" data-target="#reservationModal">
+                  <button v-if="!manifestation.manifestationPassed && role =='CUSTOMER'" class="btn btn-green" data-toggle="modal" data-target="#reservationModal">
                     Rezervacija karata
                   </button>
                 </div>

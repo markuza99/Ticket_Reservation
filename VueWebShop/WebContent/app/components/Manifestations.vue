@@ -11,10 +11,10 @@
               <input v-model="name" type="text" class="form-control" placeholder="Naziv manifestacije..." id="nazivMan"/>
             </li>
             <li class="nav-item">
-              <input v-model="dateFrom" class="form-control" type="datetime-local" id="datumOdMan"/>
+              <input v-model="dateFrom" class="form-control" type="date" id="datumOdMan"/>
             </li>
             <li class="nav-item">
-              <input v-model="dateTo" class="form-control" type="datetime-local" id="datumDoMan"/>
+              <input v-model="dateTo" class="form-control" type="date" id="datumDoMan"/>
             </li>
             <li class="nav-item">
               <input v-model="priceFrom" class="form-control" type="number" placeholder="Cena od" id="cenaOdMan"/>
@@ -37,9 +37,7 @@
       <div class="row">
         <div class="col-lg-3 col-md-4">
           <div class="p-2">
-            <button type="button" class="btn btn-outline-primary mt-5" v-if="role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">
-              Dodaj manifestaciju
-            </button>
+            
 
 
             <div class="mb-2 mt-5 font-weight-bold">Sortiraj manifestacije</div>
@@ -69,6 +67,11 @@
           </div>
         </div>
         <div class="col-lg-9 col-md-8">
+          <div class="text-right pb-2 pt-3">
+            <button type="button" class="btn btn-green" v-if="role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">
+              Dodaj manifestaciju
+            </button>
+          </div>
           <div class="scroll-viewer">
             <div id="manifestations" class="row">
               <div class="col-lg-6 col-xl-4 col-md-6 col-sm-6" v-for="m in manifestations" :key="m.id">

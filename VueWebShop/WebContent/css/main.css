@@ -77,8 +77,27 @@ input[type='radio']:checked:after {
   border: 1px solid #7cd4bc;
 }
 
+.btn-pink {
+  background-color: #FFAAA7;
+  border: 1px solid #ff8a86;
+}
+
+.btn-pink-invert {
+  background-color: #FFAAA7;
+  border: 1px solid #ff8a86;
+  color:white;
+}
+
 .btn-green-invert {
   background-color: #98DDCA;
   color:white;
   border: 1px solid #7cd4bc;
+}
+
+.text-green {
+  color:#6cceb3
+}
+
+.text-pink {
+  color:#ff8a86;
 }

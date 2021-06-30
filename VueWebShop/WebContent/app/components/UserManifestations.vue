@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="pl-5 pr-5 pt-4 pb-5" style="background:#eee">
+    <div class="pl-5 pr-5 pt-4 pb-5" style="background:#e6f7f2">
       <form @submit.prevent="searchManifestations()">
         <div class="form-row">
           <div class="form-group col-md-6">
@@ -193,13 +193,13 @@
               <td>{{m.type}}</td>
               <td>{{m.location}}</td>
               <td>
-                <p v-bind:class="{'text-success': m.status == 'Aktivna', 'text-warning': m.status == 'Neaktivna'}">{{m.status}}</p>
+                <p v-bind:class="{'text-green': m.status == 'Aktivna', 'text-pink': m.status == 'Neaktivna'}">{{m.status}}</p>
               </td>
               <td>{{m.seller}}</td>
               <td v-on:click="setManifestationId(m.id)">
                 <div  v-if="m.status == 'Neaktivna' && m.checked == false" class="d-flex">
-                  <button v-on:click="setModalType('approve')" class="btn btn-success" data-toggle="modal" data-target="#manifestationModal">odobri</button>
-                  <button v-on:click="setModalType('decline')" class="btn btn-danger ml-1" data-toggle="modal" data-target="#manifestationModal">odbij</button>
+                  <button v-on:click="setModalType('approve')" class="btn btn-green" data-toggle="modal" data-target="#manifestationModal">odobri</button>
+                  <button v-on:click="setModalType('decline')" class="btn btn-pink ml-1" data-toggle="modal" data-target="#manifestationModal">odbij</button>
                 </div>
                 <div v-else>
                   <div v-if="m.deleted == true">
@@ -209,7 +209,7 @@
                 </div>
               </td>
               <td v-on:click="setManifestationId(m.id)">
-                <button v-if="m.deleted == false" class="btn text-primary" v-on:click="setModalType('delete')" data-toggle="modal" data-target="#manifestationModal">
+                <button v-if="m.deleted == false" class="btn btn-green" v-on:click="setModalType('delete')" data-toggle="modal" data-target="#manifestationModal">
                   <i class="fa fa-trash"></i>
                 </button>
                 <button v-else v-on:click="setModalType('retrieve')" class="btn btn-warning" data-toggle="modal" data-target="#manifestationModal">
@@ -220,7 +220,10 @@
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Brisanje manifestacije</h5>
+                        <h5 v-if="modalType == 'approve'" class="modal-title" id="exampleModalLabel">Odobravanje manifestacije</h5>
+                        <h5 v-if="modalType == 'decline'" class="modal-title" id="exampleModalLabel">Odbijanje manifestacije</h5>
+                        <h5 v-if="modalType == 'delete'" class="modal-title" id="exampleModalLabel">Brisanje manifestacije</h5>
+                        <h5 v-if="modalType == 'retrieve'" class="modal-title" id="exampleModalLabel">Povratak manifestacije</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                           <span aria-hidden="true">&times;</span>
                         </button>
@@ -241,7 +244,7 @@
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" v-on:click="makeActionOnManifestation()">Yes</button>
+                        <button type="button" class="btn btn-green" data-dismiss="modal" v-on:click="makeActionOnManifestation()">Yes</button>
                       </div>
                     </div>
                   </div>

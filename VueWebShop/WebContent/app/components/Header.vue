@@ -91,9 +91,15 @@ nav {
 .navbar-links a {
 	cursor: pointer;
 	margin: 0 1em;
+	text-transform: uppercase;
+	text-shadow: 3px 3px 3px #ff827e;
 }
 
 .navbar-links a:hover {
 	text-decoration: none;
+}
+
+.navbar-brand {
+	cursor: pointer;
 }
 </style>

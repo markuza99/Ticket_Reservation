@@ -40,55 +40,23 @@
         <button class="btn-pink manifestation-button comment-button" v-on:click="comment()">Postavi komentar</button>
       </div>
     </div>
-    <!-- <div class="comment" v-for="comment in comments" :key="comment.id">
-      <ul class="comment-info d-flex justify-content-between">
-        <li class="comment-username">{{ comment.user }}</li>
-        <li>
-          <span
-            class="fa fa-star"
-            v-bind:class="{ yellow: isCounted(1, comment) }"
-          ></span>
-          <span
-            class="fa fa-star"
-            v-bind:class="{ yellow: isCounted(2, comment) }"
-          ></span>
-          <span
-            class="fa fa-star"
-            v-bind:class="{ yellow: isCounted(3, comment) }"
-          ></span>
-          <span
-            class="fa fa-star"
-            v-bind:class="{ yellow: isCounted(4, comment) }"
-          ></span>
-          <span
-            class="fa fa-star"
-            v-bind:class="{ yellow: isCounted(5, comment) }"
-          ></span>
-        </li>
-      </ul>
-      <div class="comment-description shadow-sm">
-        <p>{{ comment.description }}</p>
-      </div>
-    </div> -->
-    <div class="scroll-comments">
-      <ul class="list-group">
-        <li class="list-group-item" v-for="comment in comments" :key="comment.id">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-secondary">{{comment.user}}</span>
+    <ul class="list-group mb-5">
+      <li class="list-group-item" v-for="comment in comments" :key="comment.id">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="text-secondary">{{comment.user}}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            {{comment.description}}
+            <div class="mb-2">
+                <span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
+                <span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
+                <span class="fa fa-star" v-bind:class="{ checked : isCounted(3, comment) }"></span>
+                <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
+                <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
             </div>
-            <div class="d-flex justify-content-between align-items-center">
-              {{comment.description}}
-              <div class="mb-2">
-                  <span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
-                  <span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
-                  <span class="fa fa-star" v-bind:class="{ checked : isCounted(3, comment) }"></span>
-                  <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
-                  <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
-              </div>
-            </div>
-        </li>
-      </ul>
-    </div>
+          </div>
+      </li>
+    </ul>
     
 
     <div v-if="commenting_conditions.commentApproval == 'NOT_CHECKED'">
@@ -224,11 +192,6 @@ module.exports = {
   list-style: none;
 }
 
-.scroll-comments {
-  height: 300px;
-  overflow: auto;
-  margin: 3em 0;
-}
 
 ::-webkit-scrollbar {
   width: 1px;

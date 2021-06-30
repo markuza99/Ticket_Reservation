@@ -38,6 +38,7 @@ public class UserService {
 		if (!user.getPassword().equals(existingUser.getPassword())) {
 			return null;
 		}
+		if(existingUser.getIsDeleted()) return null;
 		return existingUser;
 	}
 	public User registerUser(User user) {
