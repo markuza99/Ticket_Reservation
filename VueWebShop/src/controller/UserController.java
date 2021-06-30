@@ -26,6 +26,7 @@ import dao.SellerDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
 import dto.SearchUsersDTO;
+import dto.UserDTO;
 import dto.UserForViewDTO;
 import services.UserService;
 
@@ -91,8 +92,10 @@ public class UserController {
 	@Path("/me")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public User getUser(@Context HttpServletRequest request) {
-		return (User) request.getSession().getAttribute("user");
+	public UserDTO getUser(@Context HttpServletRequest request) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		return new UserDTO(user);
 	}
 	
 	@POST
@@ -133,10 +136,18 @@ public class UserController {
 		return null;
 	}
 	
-	@DELETE
+	@PUT
 	@Path("/{username}")
 	public User deleteUser(@PathParam("username") String username) {
 		return userService.deleteUser(username);
+	}
+	
+	@PUT
+	@Path("/me")
+	public void updateUser(@Context HttpServletRequest request, UserDTO userDTO) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return;
+		userService.updateUser(user.getUsername(), userDTO);
 	}
 	
 	@PUT
@@ -146,21 +157,5 @@ public class UserController {
 		return userService.retrieveUser(username);
 	}
 	
-//	@GET
-//	@Path("/search")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public List<User> search(@Context HttpServletRequest request, @QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo) {
-//		User u = (User) request.getSession().getAttribute("user");
-//		return userService.search(u,searchQuery, dateFrom, dateTo);
-//		
-//	}
-//	
-//	@GET
-//	@Path("/filter")
-//	public List<User> filter(@Context HttpServletRequest request,@QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom,
-//			@QueryParam("dateTo") String dateTo, @QueryParam("role") String role,
-//			@QueryParam("userStatus") String userStatus) {
-//		User u = (User) request.getSession().getAttribute("user");
-//		return userService.filter(u,searchQuery, dateFrom, dateTo, role, userStatus);
-//	}
+	
 }

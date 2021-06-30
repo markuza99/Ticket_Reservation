@@ -63,7 +63,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancel-create-manifestation">Otkazivanje</button>
-				<button type="button" class="btn btn-primary" v-on:click="createManifestation()">Potvrda</button>
+				<button type="button" class="btn btn-green" v-on:click="createManifestation()">Potvrda</button>
 			</div>
 			</div>
 		</div>
@@ -144,7 +144,6 @@ module.exports = {
 			})
 			.then(response => {
 				if(response.data != "") {
-					this.$root.$emit('create-manifestation',response.data);
 					document.getElementById('cancel-create-manifestation').click();
 					this.cleanModal();
 				} else {
@@ -153,8 +152,6 @@ module.exports = {
 			})
     },
 		loadFile(event) {
-			var filename = document.getElementById('file').value;
-			parts = filename.split("\\");
 
 			var reader = new FileReader();
 			let vueComponent = this;

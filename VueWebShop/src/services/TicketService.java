@@ -257,7 +257,7 @@ public class TicketService {
 
 	public List<TicketRepresentationDTO> getCustomerTickets(String username, SearchTicketsDTO searchTicketsDTO) {
 		Customer customer = customerDAO.read(username);
-		
+		if(customer == null) return null;
 		List<Ticket> customerTickets = new ArrayList<Ticket>();
 		for(String ticketId: customer.getTickets()) {
 			Ticket ticket = ticketDAO.read(ticketId);

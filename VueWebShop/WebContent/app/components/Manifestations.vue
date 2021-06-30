@@ -1,46 +1,109 @@
 <template>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-lg-3 col-md-4">
-        
-        <button type="button" class="btn btn-outline-primary mt-5" v-if="role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">
-          Dodaj manifestaciju
+  <div>
+    <div class="search-panel">
+      <nav class="navbar navbar-expand-lg navbar-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
         </button>
-        <filtering-panel></filtering-panel>
-      </div>
-      <div class="col-lg-9 col-md-8">
-        <div id="manifestations" class="row">
-          <div class="col-lg-6 col-xl-4 col-md-6 col-sm-6" v-for="m in manifestations" :key="m.id">
-            <div class="card mb-4 box-shadow manifestation" v-on:click="goToManifestation(m.id)">
-              <div class="image-holder">
-                <img class="card-img-top" v-bind:src="m.image" alt="Card image cap">
-              </div>
-              <div class="card-body">
-                <h5 class="card-title">{{ m.name }}</h5>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-outline-secondary">{{ m.formattedType }}</button>
-                    <button type="button" class="btn btn-sm btn-danger">{{ m.ticketPrice }},00 RSD</button>
+        <div class="collapse navbar-collapse search-navbar" id="navbarSupportedContent">
+          <ul class="nav navbar-nav navbar-center mr-auto">
+            <li class="nav-item">
+              <input v-model="name" type="text" class="form-control" placeholder="Naziv manifestacije..." id="nazivMan"/>
+            </li>
+            <li class="nav-item">
+              <input v-model="dateFrom" class="form-control" type="date" id="datumOdMan"/>
+            </li>
+            <li class="nav-item">
+              <input v-model="dateTo" class="form-control" type="date" id="datumDoMan"/>
+            </li>
+            <li class="nav-item">
+              <input v-model="priceFrom" class="form-control" type="number" placeholder="Cena od" id="cenaOdMan"/>
+            </li>
+            <li class="nav-item">
+              <input v-model="priceTo" class="form-control" type="number" pattern="[1-9][0-9]*" placeholder="Cena do" id="cenaDoMan"/>
+            </li>
+            <li class="nav-item">
+              <input v-model="place" class="form-control mr-sm-2" type="search" placeholder="Mesto" aria-label="Search" id="mestoMan"/>
+            </li>
+            <li class = "nav-item">
+              <button class="search-button btn-green-invert" type="submit" v-on:click="searchManifestations"><i class="fa fa-search"></i></button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-3 col-md-4">
+          <div class="p-2">
+            
+
+
+            <div class="mb-2 mt-5 font-weight-bold">Sortiraj manifestacije</div>
+            <select class="form-control my-select" v-model="sortBy">
+              <option value="price">Cena</option>
+              <option value="name">Naziv manifestacije</option>
+              <option value="date">Datum manifestacije</option>
+              <option value="location">Lokacija manifestacije</option>
+            </select>
+            <input type="radio" id="one" value="Asc" v-model="sortOrder" class="mt-3">
+            <label for="one">Rastuce</label>
+            <input type="radio" id="two" value="Desc" v-model="sortOrder" class="ml-3">
+            <label for="two">Opadajuce</label><br>
+            <label class="mb-2 mt-3 font-weight-bold">Tip manifestacije</label>
+            <select class="form-control" v-model="type">
+              <option value="all">Sve</option>
+              <option value="CONCERT">Koncert</option>
+              <option value="THEATER">Pozoriste</option>
+              <option value="FESTIVAL">Festival</option>
+            </select>
+            <label class="mb-2 mt-3 font-weight-bold">Filtriraj po</label>
+            <select class="form-control" v-model="ticketCondition">
+              <option value="all">Sve</option>
+              <option value="soldOut">Rasprodato</option>
+              <option value="notSoldOut">Nerasprodato</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-lg-9 col-md-8">
+          <div class="text-right pb-2 pt-3">
+            <button type="button" class="btn btn-green" v-if="role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">
+              Dodaj manifestaciju
+            </button>
+          </div>
+          <div class="scroll-viewer">
+            <div id="manifestations" class="row">
+              <div class="col-lg-6 col-xl-4 col-md-6 col-sm-6" v-for="m in manifestations" :key="m.id">
+                <div class="card mb-4 box-shadow manifestation" v-on:click="goToManifestation(m.id)">
+                  <div class="image-holder">
+                    <img class="card-img-top" v-bind:src="m.image" alt="Card image cap">
                   </div>
-                  <small class="text-muted">
-                    {{ m.startTime.dayOfMonth }}
-                    {{ m.formattedMonth }}
-                    {{ m.startTime.year }}
-                  </small>
+                  <div class="card-body">
+                    <h5 class="card-title">{{ m.name }}</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">{{ m.type }}</button>
+                        <button type="button" class="btn btn-sm btn-green">{{ m.price }},00 RSD</button>
+                      </div>
+                      <small class="text-muted ml-2">
+                        {{ m.date }}
+                      </small>
+                    </div>
+                  </div>
+                    <div class="card-footer text-muted">
+                      {{ m.location}}
+                    </div>
                 </div>
               </div>
-                <div class="card-footer text-muted">
-                  {{ m.location.street}} {{m.location.number}}, {{m.location.city}}, {{m.location.state}}
-                </div>
             </div>
           </div>
         </div>
       </div>
+      <create-manifestation-modal></create-manifestation-modal>
     </div>
-    <create-manifestation-modal></create-manifestation-modal>
-    <button hidden data-toggle="modal" href="#successModal" id="open-success-modal"></button>
-    <success-modal></success-modal>
   </div>
+  
 </template>
 
 <script>
@@ -48,47 +111,59 @@ module.exports = {
   data() {
     return {
       role: null,
-      manifestations: []
+      manifestations: [],
+      name: "",
+			dateFrom:"",
+			dateTo:"",
+			place:"",
+			priceFrom:"",
+			priceTo:"",
+      sortBy: 'date',
+      type: 'all',
+      ticketCondition: 'all',
+      sortOrder: 'Asc'
     };
   },
   components: {
-    "create-manifestation-modal": httpVueLoader("./modals/CreateManifestationModal.vue"),
-    "success-modal": httpVueLoader("./modals/SuccessModal.vue"),
-    "filtering-panel":httpVueLoader("./FilterAndSortPanel.vue")
+    "create-manifestation-modal": httpVueLoader("./modals/CreateManifestationModal.vue")
   },
   methods: {
     goToManifestation(id) {
-      location.replace("#/manifestation/" + id);
+      this.$router.push('manifestation/' + id)
     },
-
-    format() {
-      this.manifestations.forEach((manifestation) => formatType(manifestation));
-      this.manifestations.forEach((manifestation) => makeDate(manifestation));
-    },
+    searchManifestations () {
+      let dateFrom = ''
+      let dateTo = ''
+      if(this.dateFrom != '') {
+        dateFrom = this.dateFrom + 'T00:00:00'
+      }
+      if(this.dateTo != '') {
+        dateTo = this.dateTo + 'T00:00:00'
+      }
+      const sortBy = this.sortBy + this.sortOrder
+      axios
+        .get('rest/manifestations/active', {
+          params: {
+            name: this.name,
+            place: this.place,
+            dateFrom: dateFrom,
+            dateTo: dateTo,
+            priceFrom: this.priceFrom,
+            priceTo: this.priceTo,
+            sortBy: sortBy,
+            type: this.type,
+            ticketCondition: this.ticketCondition
+          }
+        })
+        .then(response => {
+          this.manifestations = response.data
+        })
+    }
   },
   mounted() {
-    this.$root.$on("searched-manifestations", (manifestations) => {
-      this.manifestations = manifestations;
-      this.format();
-    });
-    this.$root.$on('sorted-filtered-manifestations', (manifestations) => {
-      this.manifestations = manifestations;
-      this.format();
-    });
-
-    this.$root.$on("create-manifestation", (manifestation) => {
-      formatType(manifestation);
-      makeDate(manifestation);
-      this.manifestations.push(manifestation);
-
-      this.$root.$emit('modal-called',"Kreiranje manifestacije", "Manifestacija " + manifestation.name + " uspesno kreirana!");
-      document.getElementById('open-success-modal').click();
-    });
 
     axios.get("rest/manifestations/active").then((response) => {
       this.manifestations = response.data;
-      console.log(this.manifestations);
-      this.format();
     });
 
     axios.get("rest/users/role").then((response) => {
@@ -108,9 +183,7 @@ module.exports = {
 }
 
 .manifestation {
-  border: 1px solid darkgray;
   margin-bottom: 20px;
-  box-shadow: 0px 0px 12px #767676;
 }
 
 .manifestation .image-holder {
@@ -170,4 +243,92 @@ module.exports = {
     max-height: 30em;
   }
 }
+
+.error {
+    outline: none !important;
+    border:1px solid red;
+    box-shadow: 0 0 10px #f40b0b;
+}
+
+.search-panel {
+	background-color: #FFAAA7;
+	padding: 0px;
+	margin:0;
+	text-align: center;
+	padding-bottom: 20px;
+}
+
+.navbar-nav.navbar-center {
+    margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+}
+
+.search-panel li input {
+	background-color: #fff;
+	border-radius: 0;
+	border:none;
+	height:calc(2.5em + .75rem + 2px);
+	padding:.375rem .75rem;
+	/* box-shadow: 0px 0px 8px #474747; */
+}
+
+.search-panel li input:focus {
+	outline:0;
+}
+
+@media only screen and (max-width: 992px) {
+	.search-panel .search-button {
+		width: 100%;
+		text-align: right;
+	}
+
+	#navbarSupportedContent {
+		margin-top: 20px;
+	}
+}
+
+.search-panel .search-button {
+	padding: 14px 22px;
+	/* border:none; */
+	/* box-shadow: 0px 0px 8px #000000; */
+}
+
+.search-panel .search-button:hover {
+	background-color: #dddddd;
+	color:rgb(0, 123, 255);
+	transition:color .15s ease-in-out, background-color .15s ease-in-out;
+}
+
+.search-panel i {
+	border:none;
+}
+
+.search-panel .navbar .navbar-toggler{
+	background-color: #ffffff;
+	
+}
+
+.scroll-viewer {
+  height: calc(100vh - 200px);
+  overflow: auto;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+.btn-green {
+  background-color: #98DDCA;
+  border: 1px solid #7cd4bc;
+}
+
+.btn-green-invert {
+  background-color: #98DDCA;
+  color:white;
+  border: 1px solid #7cd4bc;
+}
+
+
 </style>
