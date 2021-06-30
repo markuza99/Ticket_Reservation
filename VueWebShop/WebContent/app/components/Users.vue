@@ -257,7 +257,7 @@ module.exports = {
         },
         deleteUser() {
             axios
-                .put("rest/users/" + this.selected_user)
+                .put("rest/users/delete/" + this.selected_user)
                 .then(() => {
                     this.getUsers()
                 });
@@ -332,10 +332,6 @@ module.exports = {
 
 #users-panel {
     padding-top: 3em;
-}
-
-.table_warning, .table_warning>td, .table_warning>th {
-    background-color: #D5ECC2;
 }
 
 .list-group-item.active {

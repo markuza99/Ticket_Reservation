@@ -62,21 +62,55 @@
             <td>{{t.numberOfTickets}}</td>
             <td v-on:click="setTicketId(t.id)">
               <button v-if="t.status == 'Rezervisano' && t.manifestationPassed == false && role == 'CUSTOMER'" class="btn btn-green" data-toggle="modal" data-target="#cancelReservationModal">otkazi</button>
+              <button v-if="t.deleted == false && role == 'ADMIN'" v-on:click="setModalType('delete')" class="btn btn-green" data-toggle="modal"
+               data-target="#ticketOperationsModal">
+                <i class="fa fa-trash"></i> 
+              </button>
+              <button v-if="t.deleted == true && role == 'ADMIN'" v-on:click="setModalType('retrieve')" class="btn btn-pink"
+               data-toggle="modal" data-target="#ticketOperationsModal">
+                <i class="fa fa-undo"></i>
+              </button>
+              
               <div class="modal fade" id="cancelReservationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="exampleModalLabel">Cancel reservation</h5>
+                      <h5 class="modal-title" id="exampleModalLabel">Otkazivanje rezervacije</h5>
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                       </button>
                     </div>
                     <div class="modal-body">
-                      Are you sure you want to cancel reservation?
+                      Da li ste sigurni da zelite da otkazete rezervaciju?
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
                       <button type="button" class="btn btn-green-invert" data-dismiss="modal" v-on:click="cancelReservation()">Yes</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal fade" id="ticketOperationsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" v-if="modalType == 'delete'" id="exampleModalLabel">Brisanje karte</h5>
+                      <h5 class="modal-title" v-if="modalType == 'retrieve'" id="exampleModalLabel">Povracaj karte</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <p v-if="modalType == 'delete'">
+                        Da li ste sigurni da zelite da obrisete kartu?
+                      </p>
+                      <p v-if="modalType == 'retrieve'">
+                        Da li ste sigurni da zelite da povratite kartu?
+                      </p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                      <button type="button" class="btn btn-green-invert" data-dismiss="modal" v-on:click="ticketOperation()">Yes</button>
                     </div>
                   </div>
                 </div>
@@ -105,6 +139,7 @@ module.exports = {
       dateTo: '',
       sortOrder: 'Asc',
       ticketId: '',
+      modalType: '',
       role: ''
     }
   },
@@ -119,6 +154,9 @@ module.exports = {
 			});
   },
   methods: {
+    setModalType (type) {
+      this.modalType = type
+    },
     setTicketId (id) {
       this.ticketId = id
     },
@@ -168,6 +206,28 @@ module.exports = {
             this.getTickets()
           }
         })
+    },
+    deleteTicket () {
+      axios
+        .put('rest/tickets/delete/' + this.ticketId)
+        .then(() => {
+          this.getTickets()
+        })
+    },
+    retrieveTicket () {
+      axios
+        .put('rest/tickets/retrieve/' + this.ticketId)
+        .then(() => {
+          this.getTickets()
+        })
+    },
+    ticketOperation () {
+      console.log(this.ticketId)
+      if(this.modalType == 'delete') {
+        this.deleteTicket()
+      } else if(this.modalType == 'retrieve') {
+        this.retrieveTicket()
+      }
     }
   }
 }

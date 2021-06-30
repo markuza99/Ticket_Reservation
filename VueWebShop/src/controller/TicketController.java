@@ -85,6 +85,20 @@ public class TicketController {
 	}
 	
 	@PUT
+	@Path("/delete/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void deleteTicket(@PathParam("id") String ticketId) {
+		ticketService.deleteTicket(ticketId);
+	}
+	
+	@PUT
+	@Path("/retrieve/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void retrieveTicket(@PathParam("id") String ticketId) {
+		ticketService.retrieveTicket(ticketId);
+	}
+	
+	@PUT
 	@Path("/cancel-reservation/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Ticket reserveTickets(@Context HttpServletRequest request, @PathParam("id") String ticketId) {

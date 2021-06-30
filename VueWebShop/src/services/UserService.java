@@ -3,13 +3,17 @@ package services;
 import java.util.ArrayList;
 import java.util.List;
 
+import beans.Comment;
 import beans.Customer;
+import beans.Manifestation;
 import beans.Role;
 import beans.Seller;
 import beans.Ticket;
 import beans.User;
 import beans.value_objects.SortUsers;
+import dao.interfaces.ICommentDAO;
 import dao.interfaces.ICustomerDAO;
+import dao.interfaces.IManifestationDAO;
 import dao.interfaces.ISellerDAO;
 import dao.interfaces.ITicketDAO;
 import dao.interfaces.IUserDAO;
@@ -23,12 +27,17 @@ public class UserService {
 	private ISellerDAO sellerDAO;
 	private ICustomerDAO customerDAO;
 	private ITicketDAO ticketDAO;
+	private ICommentDAO commentDAO;
+	private IManifestationDAO manifestationDAO;
 	
-	public UserService(IUserDAO userDAO, ISellerDAO sellerDAO, ICustomerDAO customerDAO, ITicketDAO ticketDAO) {
+	public UserService(IUserDAO userDAO, ISellerDAO sellerDAO, ICustomerDAO customerDAO, ITicketDAO ticketDAO,
+			ICommentDAO commentDAO, IManifestationDAO manifestationDAO) {
 		this.userDAO = userDAO;
 		this.sellerDAO = sellerDAO;
 		this.customerDAO = customerDAO;
 		this.ticketDAO = ticketDAO;
+		this.commentDAO = commentDAO;
+		this.manifestationDAO = manifestationDAO;
 	}
 	
 	public User login(User user) {
@@ -167,14 +176,94 @@ public class UserService {
 	}
 	
 	public User deleteUser(String username) {
+		User user = userDAO.read(username);
+		if(user.getRole() == Role.CUSTOMER) {
+			deleteCustomerTickets(username);
+			deleteCustomerComments(username);
+		} else if(user.getRole() == Role.SELLER) {
+			deleteSellerManifestations(username);
+		}
 		return userDAO.delete(username);
 	}
 	
+	private void deleteSellerManifestations(String username) {
+		Seller seller = sellerDAO.read(username);
+		if(seller == null) return;
+		for(String manifestationId : seller.getManifestations()) {
+			Manifestation manifestation = manifestationDAO.read(manifestationId);
+			if(manifestation.getIsDeleted()) continue;
+			manifestation.setIsDeleted("1");
+			manifestationDAO.update(manifestation);
+		}
+	}
+
+	private void deleteCustomerComments(String username) {
+		for(Comment comment : commentDAO.getAll()) {
+			if(comment.getUser().equals(username)) {
+				if(comment.getIsDeleted()) continue;
+				comment.setIsDeleted("1");
+				commentDAO.update(comment);
+			}
+			
+		}
+	}
+
+	private void deleteCustomerTickets(String username) {
+		Customer customer = customerDAO.read(username);
+		if(customer == null) return;
+		for(String tickedId : customer.getTickets()) {
+			Ticket ticket = ticketDAO.read(tickedId);
+			if(ticket.getIsDeleted()) continue;
+			ticket.setIsDeleted("1");
+			ticketDAO.update(ticket);
+		}
+	}
+	
 	public User retrieveUser(String username) {
+		User user = userDAO.read(username);
+		if(user.getRole() == Role.CUSTOMER) {
+			retrieveCustomerTickets(username);
+			retrieveCustomerComments(username);
+		} else if(user.getRole() == Role.SELLER) {
+			retrieveSellerManifestations(username);
+		}
 		return userDAO.retrieve(username);
 	}
 
 	
+	private void retrieveSellerManifestations(String username) {
+		Seller seller = sellerDAO.read(username);
+		if(seller == null) return;
+		for(String manifestationId : seller.getManifestations()) {
+			Manifestation manifestation = manifestationDAO.read(manifestationId);
+			if(!manifestation.getIsDeleted()) continue;
+			manifestation.setIsDeleted("0");
+			manifestationDAO.update(manifestation);
+		}
+	}
+
+	private void retrieveCustomerComments(String username) {
+		for(Comment comment : commentDAO.getAll()) {
+			if(comment.getUser().equals(username)) {
+				if(!comment.getIsDeleted()) continue;
+				comment.setIsDeleted("0");
+				commentDAO.update(comment);
+			}
+			
+		}
+	}
+
+	private void retrieveCustomerTickets(String username) {
+		Customer customer = customerDAO.read(username);
+		if(customer == null) return;
+		for(String tickedId : customer.getTickets()) {
+			Ticket ticket = ticketDAO.read(tickedId);
+			if(!ticket.getIsDeleted()) continue;
+			ticket.setIsDeleted("0");
+			ticketDAO.update(ticket);
+		}
+	}
+
 	private boolean correspondsFilter(User user, String type, String role) {
 		boolean buserRole = role.equals("all") || role.equals("") ? true : (user.getRole() == Role.valueOf(role));
 		boolean buserType = false;

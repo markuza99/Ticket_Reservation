@@ -19,10 +19,12 @@ import beans.Comment;
 import beans.Role;
 import beans.User;
 import dao.CommentDAO;
+import dao.CustomerDAO;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
 import dao.SellerDAO;
 import dao.TicketDAO;
+import dao.UserDAO;
 import dto.CommentDTO;
 import dto.CommentForViewDTO;
 import dto.CommentingConditionsDTO;
@@ -58,6 +60,7 @@ public class CommentController {
 		CommentDAO commentDAO = (CommentDAO) ctx.getAttribute("CommentDAO");
 		ManifestationDAO manifestationDAO = (ManifestationDAO) ctx.getAttribute("ManifestationDAO");
 		SellerDAO sellerDAO = (SellerDAO) ctx.getAttribute("SellerDAO");
+		
 		commentService = new CommentService(commentDAO, ticketDAO, manifestationDAO, sellerDAO);
 	}
 	

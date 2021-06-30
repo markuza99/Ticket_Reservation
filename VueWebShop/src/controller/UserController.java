@@ -6,7 +6,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -19,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 
 import beans.Role;
 import beans.User;
+import dao.CommentDAO;
 import dao.CustomerDAO;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
@@ -58,10 +58,15 @@ public class UserController {
 		if(ctx.getAttribute("UserDAO") == null) {
 			ctx.setAttribute("UserDAO", new UserDAO(contextPath));
 		}
+		if(ctx.getAttribute("CommentDAO") == null) {
+			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath));
+		}
 		userService = new UserService((UserDAO) ctx.getAttribute("UserDAO"),
 				(SellerDAO) ctx.getAttribute("SellerDAO"),
 				(CustomerDAO) ctx.getAttribute("CustomerDAO"),
-				(TicketDAO) ctx.getAttribute("TicketDAO"));
+				(TicketDAO) ctx.getAttribute("TicketDAO"),
+				(CommentDAO) ctx.getAttribute("CommentDAO"),
+				(ManifestationDAO) ctx.getAttribute("ManifestationDAO"));
 	}
 	
 	@POST
@@ -137,7 +142,7 @@ public class UserController {
 	}
 	
 	@PUT
-	@Path("/{username}")
+	@Path("/delete/{username}")
 	public User deleteUser(@PathParam("username") String username) {
 		return userService.deleteUser(username);
 	}

@@ -1,6 +1,6 @@
 package services;
 
-import java.time.LocalDateTime;
+import java.time.LocalDateTime; 
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +106,7 @@ public class CommentService {
 		List<Comment> sellersComments = new ArrayList<Comment>();
 		
 		for(Comment comment : commentDAO.getAll()) {
+			if(comment.getIsDeleted()) continue;
 			Seller seller = sellerDAO.read(username);
 			for(String manifestation : seller.getManifestations()) {
 				if(comment.getManifestation().equals(manifestation)) {

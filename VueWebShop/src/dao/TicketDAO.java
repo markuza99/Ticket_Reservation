@@ -100,7 +100,7 @@ public class TicketDAO implements ITicketDAO {
         }
 	}
 
-	private void writeToFile() {
+	public void writeToFile() {
         File file = new File(contextPath + "/repositories/tickets.txt");
 
         PrintWriter pw = null;
