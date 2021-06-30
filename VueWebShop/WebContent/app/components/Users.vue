@@ -182,7 +182,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazivanje</button>
-                    <button type="button" class="btn btn-primary" v-on:click="deleteUser" data-dismiss="modal">Potvrda</button>
+                    <button type="button" class="btn btn-green" v-on:click="deleteUser" data-dismiss="modal">Potvrda</button>
                 </div>
                 </div>
             </div>
@@ -202,7 +202,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazivanje</button>
-                    <button type="button" class="btn btn-primary" v-on:click="retrieveUser" data-dismiss="modal">Potvrda</button>
+                    <button type="button" class="btn btn-green" v-on:click="retrieveUser" data-dismiss="modal">Potvrda</button>
                 </div>
                 </div>
             </div>

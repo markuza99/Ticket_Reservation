@@ -43,10 +43,10 @@
 								<label class="form-label">Datum rodjenja</label>
 								<input type="date" v-model="user.birthDate" class="form-control" id="birthDate" value="2021-01-01" min="1900-01-01" max="2021-12-31"/>
 							</div>
-							
-							<a class="btn btn-primary mt-2" href="#/login" role="button">Prijava</a>
-							<button type="submit" class="btn btn-primary mt-2 float-right">Registracija</button>
 							<p id="error"></p>
+							<a class="btn btn-pink mt-2" href="#/login" role="button">Prijava</a>
+							<button type="submit" class="btn btn-green mt-2 float-right">Registracija</button>
+							
 						</form>
 					</div>
 				</div>

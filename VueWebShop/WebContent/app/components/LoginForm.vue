@@ -36,8 +36,7 @@
       }
 	},
     methods: {
-      	login : function() {
-			console.log("uslo");
+      login () {
 			$("#error").html("");
 			if(areInputFieldsEmpty(this.user)) {
     			$("#error").html("Morate popuniti sva polja.");
@@ -50,10 +49,11 @@
 				})
 				.then(response => {
 					if(!isEmpty(response.data)) {
-						redirect("#/");
-						window.location.reload();
+						this.$router.push('/')
+						this.$router.go()
+					} else {
+						$("#error").html("Pogresno korisnicko ime/lozinka");
 					}
-					$("#error").html("Pogresno korisnicko ime/lozinka");
 				});
 		}
     },
