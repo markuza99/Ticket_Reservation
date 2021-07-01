@@ -319,6 +319,9 @@ public class TicketService {
 			return null;
 		}
 		ticket.setTicketStatus(TicketStatus.CANCELED);
+		int remaining = manifestation.getRemainingNumberOfSeats();
+		manifestation.setRemainingNumberOfSeats(remaining+1);
+		manifestationDAO.update(manifestation);
 		return ticketDAO.update(ticket);
 	}
 

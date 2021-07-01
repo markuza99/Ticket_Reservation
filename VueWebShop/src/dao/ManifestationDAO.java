@@ -93,8 +93,12 @@ public class ManifestationDAO implements IManifestationDAO {
 			manifestationString.append("0;");
 		}
 		manifestationString.append(manifestation.getLocation() + ";"
-				+ manifestation.isChecked() + ";"
-				 + manifestation.getIsDeleted());
+				+ manifestation.isChecked() + ";");
+		if(manifestation.getIsDeleted()) {
+			manifestationString.append("1;");
+		} else {
+			manifestationString.append("0;");
+		}
         return manifestationString.toString();
 	}
 	
