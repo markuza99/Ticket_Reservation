@@ -43,10 +43,10 @@
 								<label class="form-label">Datum rodjenja</label>
 								<input type="date" v-model="user.birthDate" class="form-control" id="birthDate" value="2021-01-01" min="1900-01-01" max="2021-12-31"/>
 							</div>
-							
-							<a class="btn btn-primary mt-2" href="#/login" role="button">Prijava</a>
-							<button type="submit" class="btn btn-primary mt-2 float-right">Registracija</button>
 							<p id="error"></p>
+							<a class="btn btn-pink mt-2" href="#/login" role="button">Prijava</a>
+							<button type="submit" class="btn btn-green mt-2 float-right">Registracija</button>
+							
 						</form>
 					</div>
 				</div>
@@ -73,38 +73,43 @@
       }
 	},
     methods: {
-      	register() {
-			if(areInputFieldsEmpty(this.user)) {
-    			document.getElementById("error").innerText = "Morate popuniti sva polja.";
-        		return;
-			}
-			if(forbiddenSignInFields(this.user)) {
-                alert("Ne mozete koristiti ; znak");
-                return;
-            }
+      register() {
+				if(areInputFieldsEmpty(this.user)) {
+					document.getElementById("error").innerText = "Morate popuniti sva polja.";
+						return;
+				}
+				if(forbiddenSignInFields(this.user)) {
+					alert("Ne mozete koristiti ; znak");
+					return;
+				}
 
-			if(this.user.gender == "Musko") {
-				this.user.gender = "MALE";
-			} else {
-				this.user.gender = "FEMALE";
+				if(this.user.gender == "Musko") {
+					this.user.gender = "MALE";
+				} else {
+					this.user.gender = "FEMALE";
+				}
+				
+				this.user.username.trim()
+				this.user.firstName.trim()
+				this.user.lastName.trim()
+
+				var userJSON = JSON.stringify(this.user);
+				toastr.options.timeOut = 0;
+				axios
+					.post("rest/users/register", userJSON, {
+						headers: {'content-type':'application/json'}
+					})
+					.then(response => {
+						if(isEmpty(response.data)) {
+							$('#username').addClass("error");
+							this.username_error = true;
+							
+						} else {
+							//this.$router.push("login");
+							toastr.success('Are you the 6 fingered man?')
+						}
+					});
 			}
-			
-			var userJSON = JSON.stringify(this.user);
-			console.log(userJSON);
-			axios
-				.post("rest/users/register", userJSON, {
-					headers: {'content-type':'application/json'}
-				})
-				.then(response => {
-					if(isEmpty(response.data)) {
-						$('#username').addClass("error");
-						this.username_error = true;
-						
-					} else {
-						location.replace("#/login");
-					}
-				});
-		}
     },
 	
     mounted () {

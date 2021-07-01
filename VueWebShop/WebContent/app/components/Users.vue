@@ -37,12 +37,12 @@
                     <label for="two">Opadajuce</label>
                 </div>
                 <div class="col-2 text-right">
-                    <button v-if="role == 'ADMIN'" class="btn btn-success" data-toggle="modal" data-target="#createUserModal">Dodaj korisnika</button>
+                    <button v-if="role == 'ADMIN'" class="btn btn-green" data-toggle="modal" data-target="#createUserModal">Dodaj korisnika</button>
                 </div>
                 <div class="col-12 mb-3">
                     <div class="d-flex">
                         <input type="text"  v-model="searchQuery" class="mt-3 mr-3 form-control">
-                        <button type="submit" class="btn btn-primary mt-2" v-on:click="searchUsers">Submit</button>
+                        <button type="submit" class="btn btn-pink mt-2" v-on:click="searchUsers">Potvrdi</button>
                     </div>
                 </div>
             </div>
@@ -114,7 +114,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazivanje</button>
-                    <button type="button" class="btn btn-primary" v-on:click="createUser">Potvrda</button>
+                    <button type="button" class="btn btn-green" v-on:click="createUser">Potvrda</button>
                     
                 </div>
                 </div>
@@ -124,7 +124,7 @@
         <div class="container"> 
             <div class="row">
                 <div class="col-12">
-                    <table class="table table-hover" v-if="users">
+                    <table class="table table-hover table-borderless table-striped" v-if="users">
                         <thead>
                             <tr>
                             <th scope="col">Korisnicko ime</th>
@@ -148,13 +148,13 @@
                                 <td>{{user.points}}</td>
                                 <td>{{user.type}}</td>
                                 <td v-if="user.deleted == 0 && role=='ADMIN'">
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteUserModal"
+                                    <button type="button" class="btn btn-green" data-toggle="modal" data-target="#deleteUserModal"
                                     v-on:click="setSelectedUser(user.username)">
                                         <i class="fa fa-trash"></i>
                                     </button>
                                 </td>
                                 <td v-if="user.deleted == 1 && role=='ADMIN'" class="text-danger">
-                                    <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#retrieveUserModal"
+                                    <button type="button" class="btn btn-pink-invert" data-toggle="modal" data-target="#retrieveUserModal"
                                     v-on:click="setSelectedUser(user.username)">
                                         <i class="fa fa-undo"></i>
                                     </button>
@@ -182,7 +182,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazivanje</button>
-                    <button type="button" class="btn btn-primary" v-on:click="deleteUser" data-dismiss="modal">Potvrda</button>
+                    <button type="button" class="btn btn-green" v-on:click="deleteUser" data-dismiss="modal">Potvrda</button>
                 </div>
                 </div>
             </div>
@@ -202,7 +202,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Otkazivanje</button>
-                    <button type="button" class="btn btn-primary" v-on:click="retrieveUser" data-dismiss="modal">Potvrda</button>
+                    <button type="button" class="btn btn-green" v-on:click="retrieveUser" data-dismiss="modal">Potvrda</button>
                 </div>
                 </div>
             </div>
@@ -249,8 +249,7 @@ module.exports = {
             axios
             .get("rest/users")
             .then(response => {
-                this.users = response.data;
-                console.log(this.users)
+                this.users = response.data
             })
         },
         setSelectedUser(id) {
@@ -258,16 +257,16 @@ module.exports = {
         },
         deleteUser() {
             axios
-                .put("rest/users/" + this.selected_user)
-                .then(response => {
-                    this.users = response.data;
+                .put("rest/users/delete/" + this.selected_user)
+                .then(() => {
+                    this.getUsers()
                 });
         },
         retrieveUser() {
             axios
                 .put("rest/users/retrieve/" + this.selected_user)
-                .then(response => {
-                    this.users = response.data;
+                .then(() => {
+                    this.getUsers()
                 });
         },
         searchUsers() {
@@ -333,10 +332,6 @@ module.exports = {
 
 #users-panel {
     padding-top: 3em;
-}
-
-.table_warning, .table_warning>td, .table_warning>th {
-    background-color: #ffeeba;
 }
 
 .list-group-item.active {

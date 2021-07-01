@@ -14,8 +14,8 @@
 								<input type="text" class="form-control" v-model="user.password"/>
 							</div>	
 							
-							<a class="btn btn-primary mt-2" href="#/registration" role="button">Registracija</a>
-							<button type="submit" class="btn btn-primary mt-2 float-right">Prijava</button>
+							<a class="btn btn-green mt-2" href="#/registration" role="button">Registracija</a>
+							<button type="submit" class="btn btn-green mt-2 float-right">Prijava</button>
 							<p id="error"></p>
 						</form>
 					</div>
@@ -36,8 +36,7 @@
       }
 	},
     methods: {
-      	login : function() {
-			console.log("uslo");
+      login () {
 			$("#error").html("");
 			if(areInputFieldsEmpty(this.user)) {
     			$("#error").html("Morate popuniti sva polja.");
@@ -50,10 +49,11 @@
 				})
 				.then(response => {
 					if(!isEmpty(response.data)) {
-						redirect("#/");
-						window.location.reload();
+						this.$router.push('/')
+						this.$router.go()
+					} else {
+						$("#error").html("Pogresno korisnicko ime/lozinka");
 					}
-					$("#error").html("Pogresno korisnicko ime/lozinka");
 				});
 		}
     },

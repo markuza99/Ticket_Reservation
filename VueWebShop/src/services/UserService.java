@@ -3,6 +3,7 @@ package services;
 import java.util.ArrayList;
 import java.util.List;
 
+import beans.Comment;
 import beans.Customer;
 import beans.Manifestation;
 import beans.Role;
@@ -10,12 +11,14 @@ import beans.Seller;
 import beans.Ticket;
 import beans.User;
 import beans.value_objects.SortUsers;
+import dao.interfaces.ICommentDAO;
 import dao.interfaces.ICustomerDAO;
+import dao.interfaces.IManifestationDAO;
 import dao.interfaces.ISellerDAO;
 import dao.interfaces.ITicketDAO;
 import dao.interfaces.IUserDAO;
 import dto.SearchUsersDTO;
-import dto.TicketRepresentationDTO;
+import dto.UserDTO;
 import dto.UserForViewDTO;
 
 
@@ -24,12 +27,17 @@ public class UserService {
 	private ISellerDAO sellerDAO;
 	private ICustomerDAO customerDAO;
 	private ITicketDAO ticketDAO;
+	private ICommentDAO commentDAO;
+	private IManifestationDAO manifestationDAO;
 	
-	public UserService(IUserDAO userDAO, ISellerDAO sellerDAO, ICustomerDAO customerDAO, ITicketDAO ticketDAO) {
+	public UserService(IUserDAO userDAO, ISellerDAO sellerDAO, ICustomerDAO customerDAO, ITicketDAO ticketDAO,
+			ICommentDAO commentDAO, IManifestationDAO manifestationDAO) {
 		this.userDAO = userDAO;
 		this.sellerDAO = sellerDAO;
 		this.customerDAO = customerDAO;
 		this.ticketDAO = ticketDAO;
+		this.commentDAO = commentDAO;
+		this.manifestationDAO = manifestationDAO;
 	}
 	
 	public User login(User user) {
@@ -39,6 +47,7 @@ public class UserService {
 		if (!user.getPassword().equals(existingUser.getPassword())) {
 			return null;
 		}
+		if(existingUser.getIsDeleted()) return null;
 		return existingUser;
 	}
 	public User registerUser(User user) {
@@ -156,6 +165,7 @@ public class UserService {
 			for (Ticket ticket : tickets) {
 				if(m.equals(ticket.getManifestationId())) {
 					User buyer = userDAO.read(ticket.getUser());
+					if(buyer.getIsDeleted()) continue;
 					if(!buyers.contains(buyer)) {
 						buyers.add(buyer);
 					}
@@ -166,57 +176,94 @@ public class UserService {
 	}
 	
 	public User deleteUser(String username) {
+		User user = userDAO.read(username);
+		if(user.getRole() == Role.CUSTOMER) {
+			deleteCustomerTickets(username);
+			deleteCustomerComments(username);
+		} else if(user.getRole() == Role.SELLER) {
+			deleteSellerManifestations(username);
+		}
 		return userDAO.delete(username);
 	}
 	
-	public User retrieveUser(String username) {
-		return userDAO.retrieve(username);
+	private void deleteSellerManifestations(String username) {
+		Seller seller = sellerDAO.read(username);
+		if(seller == null) return;
+		for(String manifestationId : seller.getManifestations()) {
+			Manifestation manifestation = manifestationDAO.read(manifestationId);
+			if(manifestation.getIsDeleted()) continue;
+			manifestation.setIsDeleted("1");
+			manifestationDAO.update(manifestation);
+		}
+	}
+
+	private void deleteCustomerComments(String username) {
+		for(Comment comment : commentDAO.getAll()) {
+			if(comment.getUser().equals(username)) {
+				if(comment.getIsDeleted()) continue;
+				comment.setIsDeleted("1");
+				commentDAO.update(comment);
+			}
+			
+		}
+	}
+
+	private void deleteCustomerTickets(String username) {
+		Customer customer = customerDAO.read(username);
+		if(customer == null) return;
+		for(String tickedId : customer.getTickets()) {
+			Ticket ticket = ticketDAO.read(tickedId);
+			if(ticket.getIsDeleted()) continue;
+			ticket.setIsDeleted("1");
+			ticketDAO.update(ticket);
+		}
 	}
 	
-//	public List<User> search(User u,String searchQuery, String dateFrom, String dateTo) {
-//		List<User> searchedUsers = new ArrayList<>();
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//		LocalDate LdateFrom = null;
-//		LocalDate LdateTo = null;
-//		ArrayList<User> usrs = new ArrayList<User>();
-//		if(!dateFrom.equals("")) {
-//			LdateFrom = LocalDate.parse(dateFrom, formatter);;
-//		}
-//		if(!dateTo.equals("")) {
-//			LdateTo = LocalDate.parse(dateTo, formatter);
-//		}
-//		if(u.getRole().equals(Role.ADMIN)) {
-//			usrs = (ArrayList<User>) userDAO.getAll();
-//		} else {
-//			usrs = (ArrayList<User>) getUsersForList(u);
-//		}
-//		for(User user : usrs) {
-//			if(correspondsSearch(user, searchQuery, LdateFrom, LdateTo)) {
-//				searchedUsers.add(user);
-//			}
-//		}
-//		return searchedUsers;
-//	}
+	public User retrieveUser(String username) {
+		User user = userDAO.read(username);
+		if(user.getRole() == Role.CUSTOMER) {
+			retrieveCustomerTickets(username);
+			retrieveCustomerComments(username);
+		} else if(user.getRole() == Role.SELLER) {
+			retrieveSellerManifestations(username);
+		}
+		return userDAO.retrieve(username);
+	}
+
 	
-//	private boolean correspondsSearch(User user, String searchQuery, LocalDate dateFrom, LocalDate dateTo) {
-//		boolean btext = searchQuery.trim() == "" ? true : (user.getUsername().contains(searchQuery) || user.getFirstName().contains(searchQuery)
-//				|| user.getLastName().contains(searchQuery));
-//		boolean bdateFrom = dateFrom == null ? true : user.getBirthDate().isAfter(dateFrom) || user.getBirthDate().isEqual(dateFrom);
-//		boolean bdateTo = dateTo == null ? true : user.getBirthDate().isBefore(dateTo) || user.getBirthDate().isEqual(dateTo);
-//		return btext && bdateFrom && bdateTo;
-//	}
-	
-//	public List<User> filter(User u,String searchQuery, String dateFrom, String dateTo, String role, String userStatus) {
-//		List<User> searchedUsers = search(u,searchQuery, dateFrom, dateTo);
-//		List<User> filteredUsers = new ArrayList<>();
-//		for(User user : searchedUsers) {
-//			if(correspondsFilter(user, role, userStatus)) {
-//				filteredUsers.add(user);
-//			}
-//		}
-//		return filteredUsers;
-//	}
-	
+	private void retrieveSellerManifestations(String username) {
+		Seller seller = sellerDAO.read(username);
+		if(seller == null) return;
+		for(String manifestationId : seller.getManifestations()) {
+			Manifestation manifestation = manifestationDAO.read(manifestationId);
+			if(!manifestation.getIsDeleted()) continue;
+			manifestation.setIsDeleted("0");
+			manifestationDAO.update(manifestation);
+		}
+	}
+
+	private void retrieveCustomerComments(String username) {
+		for(Comment comment : commentDAO.getAll()) {
+			if(comment.getUser().equals(username)) {
+				if(!comment.getIsDeleted()) continue;
+				comment.setIsDeleted("0");
+				commentDAO.update(comment);
+			}
+			
+		}
+	}
+
+	private void retrieveCustomerTickets(String username) {
+		Customer customer = customerDAO.read(username);
+		if(customer == null) return;
+		for(String tickedId : customer.getTickets()) {
+			Ticket ticket = ticketDAO.read(tickedId);
+			if(!ticket.getIsDeleted()) continue;
+			ticket.setIsDeleted("0");
+			ticketDAO.update(ticket);
+		}
+	}
+
 	private boolean correspondsFilter(User user, String type, String role) {
 		boolean buserRole = role.equals("all") || role.equals("") ? true : (user.getRole() == Role.valueOf(role));
 		boolean buserType = false;
@@ -237,23 +284,15 @@ public class UserService {
 		
 		return buserType && buserRole;
 	}
+
+	public void updateUser(String username, UserDTO userDTO) {
+		User userToUpdate = userDAO.read(username);
+		userToUpdate.setFirstName(userDTO.firstName);
+		userToUpdate.setLastName(userDTO.lastName);
+		userToUpdate.setPassword(userDTO.password);
+		userToUpdate.setBirthDate(userDTO.date);
+		userToUpdate.setGender(userDTO.gender);
+		userDAO.update(userToUpdate);
+	}
 	
-//	@PUT
-//	@Path("/")
-//	@Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public User createItem(@Context HttpServletRequest request, User user) {
-//		User u = (User) request.getSession().getAttribute("user");
-//		UserDAO userDao = (UserDAO) ctx.getAttribute("UserDAO");
-//		User updatedUser = userDao.updateUser(user, u.getUsername());
-//		if(updatedUser==null) {
-//			return null;
-//		}
-//		TicketDAO TicketDao = (TicketDAO) ctx.getAttribute("TicketDAO");
-//		TicketDao.updateTicket(u.getUsername(), updatedUser.getUsername());
-//		CustomerDAO CustomerDao = (CustomerDAO) ctx.getAttribute("CustomerDAO");
-//		CustomerDao.updateCustomer(u.getUsername(), updatedUser.getUsername());
-//		request.getSession().setAttribute("user", updatedUser);
-//		return updatedUser;
-//	}
 }

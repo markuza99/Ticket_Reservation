@@ -1,6 +1,6 @@
 package services;
 
-import java.time.LocalDateTime;
+import java.time.LocalDateTime; 
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +64,8 @@ public class CommentService {
 
 	public CommentingConditionsDTO getCommentingConditions(String username, String id) {
 		Manifestation manifestation = manifestationDAO.read(id);
-		CommentingConditionsDTO ccDTO = new CommentingConditionsDTO(false, null, 0);
+		int rating = getManifestationRatingFromComments(id);
+		CommentingConditionsDTO ccDTO = new CommentingConditionsDTO(false, null, rating);
 		if(manifestation.getEndTime().isBefore(LocalDateTime.now())) {
 			
 			for (Ticket t : ticketDAO.getAll()) {
@@ -105,6 +106,7 @@ public class CommentService {
 		List<Comment> sellersComments = new ArrayList<Comment>();
 		
 		for(Comment comment : commentDAO.getAll()) {
+			if(comment.getIsDeleted()) continue;
 			Seller seller = sellerDAO.read(username);
 			for(String manifestation : seller.getManifestations()) {
 				if(comment.getManifestation().equals(manifestation)) {

@@ -22,6 +22,7 @@ public class TicketRepresentationDTO {
 	private String type;
 	private int numberOfTickets;
 	private boolean manifestationPassed;
+	private boolean deleted;
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 	
 	public TicketRepresentationDTO() {}
@@ -37,8 +38,18 @@ public class TicketRepresentationDTO {
 		this.type = getTicketType(ticket.getTicketType());
 		this.numberOfTickets = ticket.getNumberOfTickets();
 		this.manifestationPassed = manifestation.getStartTime().isBefore(LocalDateTime.now());
+		this.deleted = ticket.getIsDeleted();
 	}
 	
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
 	private String getTicketStatus(TicketStatus status) {
 		if(status == TicketStatus.RESERVED) return "Rezervisano";
 		return "Otkazano";

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="pl-5 pr-5 pt-4 pb-5" style="background:#eee">
+    <div class="pl-5 pr-5 pt-4 pb-5" style="background:#e6f7f2">
       <form @submit.prevent="searchManifestations()">
         <div class="form-row">
           <div class="form-group col-md-6">
@@ -64,7 +64,7 @@
             </select>
           </div>
           <div class="col-md-1 pt-4 text-right">
-            <button type="submit" class="btn btn-primary mt-2">Submit</button>
+            <button type="submit" class="btn btn-green mt-2">Potvrdi</button>
           </div>
         </div>
       </form>
@@ -75,14 +75,16 @@
           <div class="col-lg-6 col-xl-4 col-md-6 col-sm-6" v-for="m in manifestations" :key="m.id">
             <div class="card mb-4 box-shadow manifestation">
               <div class="image-holder" v-on:click="goToManifestation(m.id)">
-                <img class="card-img-top" v-bind:src="m.image" alt="Card image cap">
+                <h5 v-if="manifestationStatus(m) == 'rejected'" class="rejected-h">Odbijena</h5>
+                <h5 v-if="manifestationStatus(m) == 'waiting'" class="waiting-h">Ceka se odobrenje</h5>
+                <img class="card-img-top" v-bind:src="m.image" alt="Card image cap" v-bind:class="{'grey-img' : manifestationStatus(m) == 'rejected', 'yellow-img' : manifestationStatus(m) == 'U cekanju'}">
               </div>
               <div class="card-body">
                 <div class="d-flex justify-content-between">
                   <h5 class="card-title" v-on:click="goToManifestation(m.id)">{{ m.name }}</h5>
                   <button class="btn btn-primary" data-toggle="modal" data-target="#updateManifestationModal"
                   v-on:click="getManifestation(m.id)"
-                  v-if="!m.manifestationPassed">izmeni</button>
+                  v-if="!m.manifestationPassed && role == 'SELLER' && manifestationStatus(m) != 'rejected'">izmeni</button>
                 </div>
                 <div class="modal fade" id="updateManifestationModal" tabindex="-1" aria-labelledby="updateManifestationModalLabel" aria-hidden="true">
                   <div class="modal-dialog">
@@ -153,7 +155,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-outline-secondary">{{ m.type }}</button>
-                    <button type="button" class="btn btn-sm btn-danger">{{ m.price }},00 RSD</button>
+                    <button type="button" class="btn btn-sm btn-green">{{ m.price }},00 RSD</button>
                   </div>
                   <small class="text-muted">
                     {{ m.date }}
@@ -185,19 +187,19 @@
           <tbody>
             <tr v-for="m in manifestations" :key="m.id">
               <th scope="row">{{m.id}}</th>
-              <td>{{m.name}}</td>
+              <td v-on:click="goToManifestation(m.id)" style="cursor: pointer">{{m.name}}</td>
               <td>{{m.price}}</td>
               <td>{{m.date}}</td>
               <td>{{m.type}}</td>
               <td>{{m.location}}</td>
               <td>
-                <p v-bind:class="{'text-success': m.status == 'Aktivna', 'text-warning': m.status == 'Neaktivna'}">{{m.status}}</p>
+                <p v-bind:class="{'text-green': m.status == 'Aktivna', 'text-pink': m.status == 'Neaktivna'}">{{m.status}}</p>
               </td>
               <td>{{m.seller}}</td>
               <td v-on:click="setManifestationId(m.id)">
                 <div  v-if="m.status == 'Neaktivna' && m.checked == false" class="d-flex">
-                  <button v-on:click="setModalType('approve')" class="btn btn-success" data-toggle="modal" data-target="#manifestationModal">odobri</button>
-                  <button v-on:click="setModalType('decline')" class="btn btn-danger ml-1" data-toggle="modal" data-target="#manifestationModal">odbij</button>
+                  <button v-on:click="setModalType('approve')" class="btn btn-green" data-toggle="modal" data-target="#manifestationModal">odobri</button>
+                  <button v-on:click="setModalType('decline')" class="btn btn-pink ml-1" data-toggle="modal" data-target="#manifestationModal">odbij</button>
                 </div>
                 <div v-else>
                   <div v-if="m.deleted == true">
@@ -207,7 +209,7 @@
                 </div>
               </td>
               <td v-on:click="setManifestationId(m.id)">
-                <button v-if="m.deleted == false" class="btn text-primary" v-on:click="setModalType('delete')" data-toggle="modal" data-target="#manifestationModal">
+                <button v-if="m.deleted == false" class="btn btn-green" v-on:click="setModalType('delete')" data-toggle="modal" data-target="#manifestationModal">
                   <i class="fa fa-trash"></i>
                 </button>
                 <button v-else v-on:click="setModalType('retrieve')" class="btn btn-warning" data-toggle="modal" data-target="#manifestationModal">
@@ -218,7 +220,10 @@
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Brisanje manifestacije</h5>
+                        <h5 v-if="modalType == 'approve'" class="modal-title" id="exampleModalLabel">Odobravanje manifestacije</h5>
+                        <h5 v-if="modalType == 'decline'" class="modal-title" id="exampleModalLabel">Odbijanje manifestacije</h5>
+                        <h5 v-if="modalType == 'delete'" class="modal-title" id="exampleModalLabel">Brisanje manifestacije</h5>
+                        <h5 v-if="modalType == 'retrieve'" class="modal-title" id="exampleModalLabel">Povratak manifestacije</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                           <span aria-hidden="true">&times;</span>
                         </button>
@@ -239,7 +244,7 @@
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" v-on:click="makeActionOnManifestation()">Yes</button>
+                        <button type="button" class="btn btn-green" data-dismiss="modal" v-on:click="makeActionOnManifestation()">Yes</button>
                       </div>
                     </div>
                   </div>
@@ -452,6 +457,11 @@ module.exports = {
         .then(response => {
           this.manifestations = response.data
         })
+    },
+    manifestationStatus (manifestation) {
+      if(manifestation.status == 'Aktivna') return "accepted"
+      if(manifestation.status == 'Neaktivna' && manifestation.checked == false) return "waiting"
+      if(manifestation.status == 'Neaktivna' && manifestation.checked == true) return "rejected"
     }
   }
 }
@@ -478,6 +488,45 @@ module.exports = {
     overflow: hidden;
     position: relative;
     cursor: pointer;
+}
+
+.grey-img {
+  filter: grayscale(100%);
+}
+
+.rejected-h {
+  width: 100%;
+  position: absolute;
+  z-index: 100;
+  margin-top: 5em;
+  text-align: center;
+  color:white;
+  background: rgba(0,0,0,0.3);
+  font-weight: normal;
+  padding:0.5em;
+}
+
+.waiting-h {
+  width: 100%;
+  position: absolute;
+  z-index: 100;
+  margin-top: 5em;
+  text-align: center;
+  color:white;
+  background: rgba(0,0,0,0.3);
+  font-weight: normal;
+  padding:0.5em;
+}
+
+.btn-green {
+  background-color: #98DDCA;
+  border: 1px solid #7cd4bc;
+}
+
+.btn-green-invert {
+  background-color: #98DDCA;
+  color:white;
+  border: 1px solid #7cd4bc;
 }
 
 </style>

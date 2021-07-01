@@ -257,10 +257,11 @@ public class TicketService {
 
 	public List<TicketRepresentationDTO> getCustomerTickets(String username, SearchTicketsDTO searchTicketsDTO) {
 		Customer customer = customerDAO.read(username);
-		
+		if(customer == null) return null;
 		List<Ticket> customerTickets = new ArrayList<Ticket>();
 		for(String ticketId: customer.getTickets()) {
 			Ticket ticket = ticketDAO.read(ticketId);
+			if(ticket.getIsDeleted()) continue;
 			customerTickets.add(ticket);
 		}
 		
@@ -272,6 +273,7 @@ public class TicketService {
 		Seller seller = sellerDAO.read(username);
 		List<Ticket> sellerTickets = new ArrayList<Ticket>();
 		for(Ticket ticket : ticketDAO.getAll()) {
+			if(ticket.getIsDeleted()) continue;
 			for(String manifestation : seller.getManifestations()) {
 				if(ticket.getManifestationId().equals(manifestation)) {
 					sellerTickets.add(ticket);
@@ -317,8 +319,23 @@ public class TicketService {
 			return null;
 		}
 		ticket.setTicketStatus(TicketStatus.CANCELED);
+		int remaining = manifestation.getRemainingNumberOfSeats();
+		manifestation.setRemainingNumberOfSeats(remaining+1);
+		manifestationDAO.update(manifestation);
 		return ticketDAO.update(ticket);
 	}
 
-	
+	public void deleteTicket(String ticketId) {
+		Ticket ticket = ticketDAO.read(ticketId);
+		if(ticket == null) return;
+		ticket.setIsDeleted("1");
+		ticketDAO.update(ticket);
+	}
+
+	public void retrieveTicket(String ticketId) {
+		Ticket ticket = ticketDAO.read(ticketId);
+		if(ticket == null) return;
+		ticket.setIsDeleted("0");
+		ticketDAO.update(ticket);
+	}
 }

@@ -6,7 +6,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -19,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 
 import beans.Role;
 import beans.User;
+import dao.CommentDAO;
 import dao.CustomerDAO;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
@@ -26,6 +26,7 @@ import dao.SellerDAO;
 import dao.TicketDAO;
 import dao.UserDAO;
 import dto.SearchUsersDTO;
+import dto.UserDTO;
 import dto.UserForViewDTO;
 import services.UserService;
 
@@ -57,10 +58,15 @@ public class UserController {
 		if(ctx.getAttribute("UserDAO") == null) {
 			ctx.setAttribute("UserDAO", new UserDAO(contextPath));
 		}
+		if(ctx.getAttribute("CommentDAO") == null) {
+			ctx.setAttribute("CommentDAO", new CommentDAO(contextPath));
+		}
 		userService = new UserService((UserDAO) ctx.getAttribute("UserDAO"),
 				(SellerDAO) ctx.getAttribute("SellerDAO"),
 				(CustomerDAO) ctx.getAttribute("CustomerDAO"),
-				(TicketDAO) ctx.getAttribute("TicketDAO"));
+				(TicketDAO) ctx.getAttribute("TicketDAO"),
+				(CommentDAO) ctx.getAttribute("CommentDAO"),
+				(ManifestationDAO) ctx.getAttribute("ManifestationDAO"));
 	}
 	
 	@POST
@@ -91,8 +97,10 @@ public class UserController {
 	@Path("/me")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public User getUser(@Context HttpServletRequest request) {
-		return (User) request.getSession().getAttribute("user");
+	public UserDTO getUser(@Context HttpServletRequest request) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		return new UserDTO(user);
 	}
 	
 	@POST
@@ -133,10 +141,18 @@ public class UserController {
 		return null;
 	}
 	
-	@DELETE
-	@Path("/{username}")
+	@PUT
+	@Path("/delete/{username}")
 	public User deleteUser(@PathParam("username") String username) {
 		return userService.deleteUser(username);
+	}
+	
+	@PUT
+	@Path("/me")
+	public void updateUser(@Context HttpServletRequest request, UserDTO userDTO) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return;
+		userService.updateUser(user.getUsername(), userDTO);
 	}
 	
 	@PUT
@@ -146,21 +162,5 @@ public class UserController {
 		return userService.retrieveUser(username);
 	}
 	
-//	@GET
-//	@Path("/search")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public List<User> search(@Context HttpServletRequest request, @QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom, @QueryParam("dateTo") String dateTo) {
-//		User u = (User) request.getSession().getAttribute("user");
-//		return userService.search(u,searchQuery, dateFrom, dateTo);
-//		
-//	}
-//	
-//	@GET
-//	@Path("/filter")
-//	public List<User> filter(@Context HttpServletRequest request,@QueryParam("searchQuery") String searchQuery, @QueryParam("dateFrom") String dateFrom,
-//			@QueryParam("dateTo") String dateTo, @QueryParam("role") String role,
-//			@QueryParam("userStatus") String userStatus) {
-//		User u = (User) request.getSession().getAttribute("user");
-//		return userService.filter(u,searchQuery, dateFrom, dateTo, role, userStatus);
-//	}
+	
 }
