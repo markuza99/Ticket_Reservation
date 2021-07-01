@@ -346,7 +346,7 @@ public class ManifestationService {
 			Ticket ticket = ticketDAO.read(ticketId);
 			if(ticket.getIsDeleted() || ticket.getTicketStatus() == TicketStatus.CANCELED) continue;
 			Manifestation manifestation = manifestationDAO.read(ticket.getManifestationId());
-			if(!manifestation.getIsDeleted() || manifestation.getStatus() == Status.ACTIVE) {
+			if(!manifestation.getIsDeleted() && manifestation.getStatus() == Status.ACTIVE) {
 				if(!manifestations.contains(manifestation)) {
 					manifestations.add(manifestation);
 				}

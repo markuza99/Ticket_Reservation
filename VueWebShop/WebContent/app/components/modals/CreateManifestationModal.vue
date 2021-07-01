@@ -137,7 +137,10 @@ module.exports = {
 			$('#error').html("Odabran je pogresan datum.");
 			return;
 		}
-		console.log(this.new_manifestation)
+		
+		this.new_manifestation.id.trim()
+		this.new_manifestation.name.trim()
+		
 		axios
 			.post("rest/manifestations/add", JSON.stringify(this.new_manifestation), {
 				headers: {'content-type':'application/json'}

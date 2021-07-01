@@ -120,6 +120,7 @@ module.exports = {
         return;
       }
 
+      this.description.trim()
       commentDTO = {
         manifestation: this.manifestation_id,
         description: this.description,
