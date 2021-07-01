@@ -1,5 +1,7 @@
 package beans;
 
+import dto.LocationDTO;
+
 public class Location {
 	private String id;
 	private double longitude;
@@ -20,6 +22,16 @@ public class Location {
 		this.number = number;
 		this.postNumber = postNumber;
 		this.state = state;
+	}
+	
+	public Location(LocationDTO locationDTO) {
+		this.longitude = locationDTO.longitude;
+		this.latitude = locationDTO.latitude;
+		this.street = locationDTO.street;
+		this.city = locationDTO.city;
+		this.number = locationDTO.number;
+		this.postNumber = locationDTO.postNumber;
+		this.state = locationDTO.state;
 	}
 
 	public int getNumber() {

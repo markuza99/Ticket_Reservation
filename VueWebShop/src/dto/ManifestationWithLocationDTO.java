@@ -15,12 +15,13 @@ public class ManifestationWithLocationDTO {
 	private LocalDateTime endTime;
 	private int ticketPrice;
 	private Status status;
-	private Location location;
+	private LocationDTO location;
 	private String image;
 	private boolean isDeleted;
 	
-	public ManifestationWithLocationDTO(String id, String name, ManifestationType type, LocalDateTime startTime, LocalDateTime endTime,
-			int ticketPrice, Status status, Location location, String image, boolean isDeleted) {
+	public ManifestationWithLocationDTO(String id, String name, ManifestationType type, LocalDateTime startTime,
+			LocalDateTime endTime, int ticketPrice, Status status, LocationDTO location, String image,
+			boolean isDeleted) {
 		this.id = id;
 		this.name = name;
 		this.type = type;
@@ -32,6 +33,16 @@ public class ManifestationWithLocationDTO {
 		this.image = image;
 		this.isDeleted = isDeleted;
 	}
+	
+	
+	public LocationDTO getLocation() {
+		return location;
+	}
+
+	public void setLocation(LocationDTO location) {
+		this.location = location;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -78,12 +89,6 @@ public class ManifestationWithLocationDTO {
 	}
 	public void setStatus(Status status) {
 		this.status = status;
-	}
-	public Location getLocation() {
-		return location;
-	}
-	public void setLocation(Location location) {
-		this.location = location;
 	}
 	public String getImage() {
 		return image;

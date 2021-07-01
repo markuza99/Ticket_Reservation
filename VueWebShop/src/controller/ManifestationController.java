@@ -113,10 +113,19 @@ public class ManifestationController {
 	}
 	
 	@GET
+	@Path("/view/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ManifestationForViewDTO getManifestationForView(@PathParam("id") String id) {
+		return manifestationService.getManifestationForView(id);
+	}
+	
+	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ManifestationForViewDTO getManifestation(@PathParam("id") String id) {
-		return manifestationService.getManifestation(id);
+	public ManifestationDTO getManifestation(@Context HttpServletRequest request, @PathParam("id") String id) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		return manifestationService.getManifestation(id, user.getUsername());
 	}
 	
 	@PUT
@@ -147,22 +156,25 @@ public class ManifestationController {
 		manifestationService.retrieveManifestation(id);
 	}
 
-	@PUT
-	@Path("/")
+	@POST
+	@Path("/update")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Manifestation updateManifestation(ManifestationForViewDTO manifestation) {
-		return manifestationService.updateManifestation(manifestation);
+	public Manifestation updateManifestation(@Context HttpServletRequest request, ManifestationDTO manifestation) {
+		User user = (User) request.getSession().getAttribute("user");
+		if(user == null) return null;
+		if(user.getRole() == Role.SELLER) {
+			return manifestationService.updateManifestation(manifestation);
+		}
+		return null;
 	}
 
 	@POST
 	@Path("/add")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public ManifestationWithLocationDTO addManifestation(@Context HttpServletRequest request, ManifestationDTO manifestationDTO) {
+	public Manifestation addManifestation(@Context HttpServletRequest request, ManifestationDTO manifestationDTO) {
 		User user = (User) request.getSession().getAttribute("user");
 		try {
-			Manifestation manifestation = manifestationService.addManifestation(manifestationDTO, user.getUsername());
-			if(manifestation == null) return null;
-			return manifestationService.convertToManifestationWithLocationDTO(manifestation);
+			return manifestationService.addManifestation(manifestationDTO, user.getUsername());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -1,8 +1,12 @@
 package dao;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +26,39 @@ public class LocationDAO implements ILocationDAO {
 	}
 
 	@Override
-	public Location create(Location entity) {
-		return null;
+	public Location create(Location location) {
+		locations.put(location.getId(), location);
+		appendToFile(ticketCSVRepresentation(location));
+		return location;
+	}
+
+	private void appendToFile(String ticketCSVRepresentation) {
+		File file = new File(contextPath + "/repositories/locations.txt");
+
+        PrintWriter pw = null;
+        try {
+            pw = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
+            	pw.println(ticketCSVRepresentation);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(pw != null) {
+                try {
+                    pw.close();
+                }
+                catch (Exception e) {}
+            }
+        }
+	}
+
+	private String ticketCSVRepresentation(Location location) {
+		StringBuilder locationString = new StringBuilder();
+		locationString.append(location.getId() + ";" + location.getLongitude() + ";"
+				+ location.getLatitude() + ";" + location.getStreet() + ";"
+				+ location.getNumber() + ";" + location.getPostNumber() + ";"
+				+ location.getCity() + ";" + location.getState());
+        return locationString.toString();
 	}
 
 	@Override
@@ -51,15 +86,6 @@ public class LocationDAO implements ILocationDAO {
 		return null;
 	}
 	
-//	
-//	public List<String> getLocationsId() {
-//		List<String> locationsId = new ArrayList<>();
-//		for(String key : locations.keySet()) {
-//			locationsId.add(key);
-//		}
-//		return locationsId;
-//	}
-//	
 	private Location loadLocations() {
 		BufferedReader reader = null;
 		try {

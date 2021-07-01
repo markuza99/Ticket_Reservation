@@ -19,6 +19,7 @@ public class ManifestationForViewDTO {
 	private String status;
 	private String location;
 	private String locationId;
+	private LocationDTO locationDTO;
 	private String image;
 	private String seller;
 	private boolean manifestationPassed;
@@ -55,8 +56,17 @@ public class ManifestationForViewDTO {
 		this.manifestationPassed = manifestation.getStartTime().isBefore(LocalDateTime.now());
 		setLocationString(location);
 		this.locationId = location.getId();
+		this.locationDTO = new LocationDTO(location);
 	}
 	
+	public LocationDTO getLocationDTO() {
+		return locationDTO;
+	}
+
+	public void setLocationDTO(LocationDTO locationDTO) {
+		this.locationDTO = locationDTO;
+	}
+
 	public String getLocationId() {
 		return locationId;
 	}
