@@ -14,7 +14,7 @@
             <div class="row">
               <div class="col mt-3">
                 <div class="d-flex">
-                  <button v-if="!manifestation.manifestationPassed && role =='CUSTOMER'" class="btn btn-green" data-toggle="modal" data-target="#reservationModal">
+                  <button v-if="!manifestation.manifestationPassed && role =='CUSTOMER' && manifestation.status == 'Aktivna'" class="btn btn-green" data-toggle="modal" data-target="#reservationModal">
                     Rezervacija karata
                   </button>
                 </div>
@@ -227,6 +227,7 @@
         </div>
       </div>
     </div>
+    <div id="map" class="map" ></div>
   </div>
 </template>
 
@@ -234,6 +235,7 @@
 module.exports = {
   data() {
     return {
+      currentPosition: {lat: 45.252600, lon: 19.830002, adresa: "Cirpanova 51, Novi Sad"},
       manifestation: null,
       manifestation_passed: false,
       manifestation_sold: false,
@@ -315,12 +317,57 @@ module.exports = {
             type: 'success'
           });
 				});
-    }
+    },
+    showMap (){
+			let self = this;
+			
+			var vectorSource = new ol.source.Vector({});
+		    var vectorLayer = new ol.layer.Vector({source: vectorSource});
+			console.log('desi se')
+			var map = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          }),vectorLayer
+        ],
+        view: new ol.View({
+          center: ol.proj.fromLonLat([19.8335, 45.2671]),
+          zoom: 11
+        })
+      });
+		      
+			var marker;
+			  
+			setMarker = function(position) {
+				marker = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat(position)));
+				vectorSource.addFeature(marker);
+			}
+			
+			// map.on("click", function(event) {
+			// 	let position = ol.proj.toLonLat(event.coordinate);
+			// 	self.currentPosition.lat = parseFloat(position.toString().split(",")[1]).toFixed(6);
+			// 	self.currentPosition.lon = parseFloat(position.toString().split(",")[0]).toFixed(6);
+			// 	vectorSource.clear();
+			// 	setMarker(position);
+			// 	self.reverseGeolocation(position);
+			// });
+		} 
   },
+  mounted () {
+    let temp = this;
+		this.showMap();
+  }
 };
 </script>
 
 <style scoped>
+
+.map {
+  height: 400px;
+  width: 100%;
+}
+
 .manifestation-image-holder {
   height: 20em;
   overflow: hidden;

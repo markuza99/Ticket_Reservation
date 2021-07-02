@@ -255,7 +255,7 @@ public class ManifestationService {
 	
 	private boolean locationsAreSame(Location location, LocationDTO newLocation) {
 		return (location.getState().equals(newLocation.state) && location.getCity().equals(newLocation.city)
-			&& location.getStreet().equals(newLocation.street) && location.getNumber() == newLocation.number);
+			&& location.getStreet().equals(newLocation.street) && location.getNumber().equals(newLocation.number));
 	}
 
 	public List<ManifestationForGridViewDTO> getActiveManifestations(ManifestationParamsDTO manifestationParamsDTO) throws ParseException {
@@ -267,20 +267,6 @@ public class ManifestationService {
 		}
 		return searchSortFilterManifestations(activeManifestations, manifestationParamsDTO);
 	}
-
-//	public List<ManifestationWithLocationDTO> convertToManifestationsWithLocationDTO(List<Manifestation> manifestations) {
-//		List<ManifestationWithLocationDTO> convertedManifestations = new ArrayList<ManifestationWithLocationDTO>();
-//		for(Manifestation manifestation : manifestations) {
-//			convertedManifestations.add(convertToManifestationWithLocationDTO(manifestation));
-//		}
-//		return convertedManifestations;
-//	}
-
-//	public ManifestationWithLocationDTO convertToManifestationWithLocationDTO(Manifestation m) {
-//		Location location = locationDAO.read(m.getLocation());
-//		return new ManifestationWithLocationDTO(m.getId(), m.getName(), m.getType(), m.getStartTime(), m.getEndTime(), m.getTicketPrice(),
-//				m.getStatus(), location , m.getImage(), m.getIsDeleted());
-//	}
 
 	public void approveManifestation(String id) {
 		Manifestation manifestation = manifestationDAO.read(id);

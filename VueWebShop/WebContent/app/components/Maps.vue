@@ -79,7 +79,7 @@ module.exports = {
 					longitude: 0,
 					latitude: 0,
 					street: "",
-					number: "",
+					number: "0",
 					postNumber: 0,
 					city: "",
 					state: ""
