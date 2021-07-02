@@ -9,22 +9,31 @@
                 <div class="d-flex justify-content-between align-items-center">
                     {{comment.description}}
                     <div v-if="comment.approval =='NOT_CHECKED' && role == 'SELLER'">
-                    <div class="mb-2">
-                        <span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
-                        <span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
-                        <span class="fa fa-star" v-bind:class="{ checked : isCounted(3, comment) }"></span>
-                        <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
-                        <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
+                        <div class="mb-2">
+                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
+                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
+                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(3, comment) }"></span>
+                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
+                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
+                        </div>
+                        <button class="btn btn-green" v-on:click="approve(comment.id)">
+                            Odobri:   <i class="fa fa-check"></i>
+                        </button>
+                        <button class="btn btn-pink-invert" v-on:click="decline(comment.id)">
+                            <i class="fa fa-times"></i>
+                        </button>
                     </div>
-                    <button class="btn btn-green" v-on:click="approve(comment.id)">
-                        Odobri:   <i class="fa fa-check"></i>
-                    </button>
-                    <button class="btn btn-pink-invert" v-on:click="decline(comment.id)">
-                        <i class="fa fa-times"></i>
-                    </button>
+                    <div>
+                        <div class="text-pink" v-if="comment.approval == 'DENIED'" disabled>NEODOBREN</div>
+                        <div class="text-green" v-if="comment.approval == 'ACCEPTED'" disabled>ODOBREN</div>
+                        <div class="mb-2">
+                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
+                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
+                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(3, comment) }"></span>
+                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
+                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
+                        </div>
                     </div>
-                    <div class="text-pink" v-if="comment.approval == 'DENIED'" disabled>NEODOBREN</div>
-                    <div class="text-green" v-if="comment.approval == 'ACCEPTED'" disabled>ODOBREN</div>
                 </div>
             </li>
         </ul>
