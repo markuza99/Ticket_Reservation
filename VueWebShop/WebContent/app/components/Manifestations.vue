@@ -68,7 +68,7 @@
         </div>
         <div class="col-lg-9 col-md-8">
           <div class="text-right pb-2 pt-3">
-            <button type="button" class="btn btn-green" v-if="role == 'SELLER'" data-toggle="modal" data-target="#createManifestationModal">
+            <button type="button" class="btn btn-green" v-if="role == 'SELLER'" v-on:click="goToCreateManifestation()">
               Dodaj manifestaciju
             </button>
           </div>
@@ -100,7 +100,6 @@
           </div>
         </div>
       </div>
-      <create-manifestation-modal></create-manifestation-modal>
     </div>
   </div>
   
@@ -121,15 +120,15 @@ module.exports = {
       sortBy: 'date',
       type: 'all',
       ticketCondition: 'all',
-      sortOrder: 'Asc'
+      sortOrder: 'Desc'
     };
   },
-  components: {
-    "create-manifestation-modal": httpVueLoader("./modals/CreateManifestationModal.vue")
-  },
   methods: {
+    goToCreateManifestation () {
+      this.$router.push('/create-manifestation')
+    },
     goToManifestation(id) {
-      this.$router.push('manifestation/' + id)
+      this.$router.push('/manifestation/' + id)
     },
     searchManifestations () {
       let dateFrom = ''
@@ -162,7 +161,20 @@ module.exports = {
   },
   mounted() {
 
-    axios.get("rest/manifestations/active").then((response) => {
+    axios.get("rest/manifestations/active", {
+      params: {
+        name: this.name,
+        place: this.place,
+        dateFrom: null,
+        dateTo: null,
+        priceFrom: this.priceFrom,
+        priceTo: this.priceTo,
+        sortBy: "dateDesc",
+        type: this.type,
+        ticketCondition: this.ticketCondition
+      }
+    })
+    .then((response) => {
       this.manifestations = response.data;
     });
 

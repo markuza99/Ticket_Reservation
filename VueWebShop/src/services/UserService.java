@@ -9,6 +9,7 @@ import beans.Manifestation;
 import beans.Role;
 import beans.Seller;
 import beans.Ticket;
+import beans.TicketStatus;
 import beans.User;
 import beans.value_objects.SortUsers;
 import dao.interfaces.ICommentDAO;
@@ -163,6 +164,7 @@ public class UserService {
 		ArrayList<Ticket> tickets = (ArrayList<Ticket>) ticketDAO.getAll();
 		for (String m : seller.getManifestations()) {
 			for (Ticket ticket : tickets) {
+				if(ticket.getIsDeleted() || ticket.getTicketStatus() == TicketStatus.CANCELED) continue;
 				if(m.equals(ticket.getManifestationId())) {
 					User buyer = userDAO.read(ticket.getUser());
 					if(buyer.getIsDeleted()) continue;

@@ -4,11 +4,6 @@
   box-shadow: 0 0 10px #f40b0b;
 }
 
-.success {
-  outline: none !important;
-  border: 1px solid green;
-  box-shadow: 0 0 10px green;
-}
 
 .checked {
   color: #FFD3B4;
@@ -100,4 +95,13 @@ input[type='radio']:checked:after {
 
 .text-pink {
   color:#ff8a86;
+}
+
+.btn-orange {
+  background-color: #FFD3B4;
+  border: 1px solid #ffbb8b;
+}
+
+.text-orange {
+  color: #ffaa6e;
 }

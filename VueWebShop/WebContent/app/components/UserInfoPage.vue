@@ -13,7 +13,7 @@
 		</div>
 		<div class="form-group">
 			<label >Korisnicko ime</label>
-			<input type="text" class="form-control" id="usernameInput" v-model="user.username" :readonly="!updating">
+			<input type="text" class="form-control" id="usernameInput" v-model="user.username" readonly>
 		</div>
 		<div class="form-group">
 			<label>Lozinka</label>
@@ -64,7 +64,10 @@ module.exports = {
 				})
 				.then(() => {
 					this.disableInputs()
-					$('#message').html("Korisnik uspesno izmenjen.");
+					new Toast({
+						message: 'Korisnik uspesno izmenjen!',
+						type: 'success'
+					});
 				});
 		},
 		enableInputs () {

@@ -14,9 +14,10 @@
             <div class="row">
               <div class="col mt-3">
                 <div class="d-flex">
-                  <button v-if="!manifestation.manifestationPassed && role =='CUSTOMER'" class="btn btn-green" data-toggle="modal" data-target="#reservationModal">
+                  <button v-if="!manifestation.manifestationPassed && role =='CUSTOMER' && manifestation.status == 'Aktivna'" class="btn btn-green" data-toggle="modal" data-target="#reservationModal">
                     Rezervacija karata
                   </button>
+                  <button v-on:click="showMap()" id="show-map-button" class="btn btn-pink">Prikazi mapu</button>
                 </div>
               </div>
               <div class="col text-right">
@@ -227,6 +228,8 @@
         </div>
       </div>
     </div>
+    <div id="map" class="map" >
+    </div>
   </div>
 </template>
 
@@ -234,6 +237,7 @@
 module.exports = {
   data() {
     return {
+      currentPosition: {lat: 45.252600, lon: 19.830002, adresa: "Cirpanova 51, Novi Sad"},
       manifestation: null,
       manifestation_passed: false,
       manifestation_sold: false,
@@ -255,7 +259,7 @@ module.exports = {
           this.role = response.data;
       })
     const manifestationId = this.$route.params.id;
-    axios.get("rest/manifestations/" + manifestationId).then((response) => {
+    axios.get("rest/manifestations/view/" + manifestationId).then((response) => {
       this.manifestation = response.data;
       this.manifestation.startTime = this.manifestation.startTime.split("T").join(" ")
       this.manifestation.endTime = this.manifestation.endTime.split("T").join(" ")
@@ -310,14 +314,55 @@ module.exports = {
 					headers: {'content-type':'application/json'}
 				})
 				.then(() => {
-					alert("Rezervacija uspesno izvrsena!");
+					new Toast({
+            message: 'Rezervacija uspesno izvrsena!',
+            type: 'success'
+          });
 				});
-    }
-  },
+    },
+    showMap (){
+			let self = this;
+      document.getElementById('show-map-button').disabled = true
+			
+			var vectorSource = new ol.source.Vector({});
+		    var vectorLayer = new ol.layer.Vector({source: vectorSource});
+			const lon = this.manifestation.locationDTO.longitude
+      const lat = this.manifestation.locationDTO.latitude
+      console.log('evo ima godina', lon, lat)
+			var map = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          }),vectorLayer
+        ],
+        view: new ol.View({
+          center: ol.proj.fromLonLat([lat, lon]),
+          zoom: 16
+        })
+      });
+		      
+			var marker;
+			  
+			setMarker = function(position) {
+        console.log('pozvano')
+				marker = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat(position)));
+				vectorSource.addFeature(marker);
+			}
+
+			setMarker(ol.proj.fromLonLat([lat, lon]));
+		} 
+  }
 };
 </script>
 
 <style scoped>
+
+.map {
+  height: 400px;
+  width: 100%;
+}
+
 .manifestation-image-holder {
   height: 20em;
   overflow: hidden;
@@ -390,5 +435,6 @@ module.exports = {
   padding: 0.375rem 0.75rem;
   font-size: 1rem;
 }
+
 
 </style>

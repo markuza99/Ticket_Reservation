@@ -82,8 +82,8 @@
               <div class="card-body">
                 <div class="d-flex justify-content-between">
                   <h5 class="card-title" v-on:click="goToManifestation(m.id)">{{ m.name }}</h5>
-                  <button class="btn btn-primary" data-toggle="modal" data-target="#updateManifestationModal"
-                  v-on:click="getManifestation(m.id)"
+                  <button class="btn btn-primary"
+                  v-on:click="goToEditManifestation(m.id)"
                   v-if="!m.manifestationPassed && role == 'SELLER' && manifestationStatus(m) != 'rejected'">izmeni</button>
                 </div>
                 <div class="modal fade" id="updateManifestationModal" tabindex="-1" aria-labelledby="updateManifestationModalLabel" aria-hidden="true">
@@ -203,16 +203,16 @@
                 </div>
                 <div v-else>
                   <div v-if="m.deleted == true">
-                    <p class="text-danger">Obrisana</p>
+                    <p class="text-orange">Obrisana</p>
                   </div>
                   
                 </div>
               </td>
               <td v-on:click="setManifestationId(m.id)">
-                <button v-if="m.deleted == false" class="btn btn-green" v-on:click="setModalType('delete')" data-toggle="modal" data-target="#manifestationModal">
+                <button v-if="m.deleted == false && m.status == 'Aktivna'" class="btn btn-green" v-on:click="setModalType('delete')" data-toggle="modal" data-target="#manifestationModal">
                   <i class="fa fa-trash"></i>
                 </button>
-                <button v-else v-on:click="setModalType('retrieve')" class="btn btn-warning" data-toggle="modal" data-target="#manifestationModal">
+                <button v-else-if="m.deleted == true" v-on:click="setModalType('retrieve')" class="btn btn-orange" data-toggle="modal" data-target="#manifestationModal">
                   <i class="fa fa-undo"></i>
                 </button>
               </td>
@@ -306,13 +306,8 @@ module.exports = {
     goToManifestation (id) {
       this.$router.push('/manifestation/' + id);
     },
-    getManifestation (id) {
-      axios
-      .get('rest/manifestations/' + id)
-      .then(response => {
-        this.manifestation = response.data
-        
-      })
+    goToEditManifestation (id) {
+      this.$router.push('/edit-manifestation/' + id)
     },
     loadFile(event) {
 			var filename = document.getElementById('file').value;
@@ -407,6 +402,10 @@ module.exports = {
         .put('rest/manifestations/approve/' + this.manifestationId)
         .then(() => {
           this.getMineManifestations()
+          new Toast({
+            message: 'Manifestacija uspesno odobrena!',
+            type: 'success'
+          });
         })
     },
     declineManifestation () {
@@ -414,6 +413,10 @@ module.exports = {
         .put('rest/manifestations/decline/' + this.manifestationId)
         .then(() => {
           this.getMineManifestations()
+          new Toast({
+            message: 'Manifestacija uspesno odbijena!',
+            type: 'success'
+          });
         })
     },
     deleteManifestation () {
@@ -421,6 +424,10 @@ module.exports = {
         .put('rest/manifestations/delete/' + this.manifestationId)
         .then(() => {
           this.getMineManifestations()
+          new Toast({
+            message: 'Manifestacija uspesno obrisana!',
+            type: 'success'
+          });
         })
     },
     retrieveManifestation () {
@@ -428,6 +435,10 @@ module.exports = {
         .put('rest/manifestations/retrieve/' + this.manifestationId)
         .then(() => {
           this.getMineManifestations()
+          new Toast({
+            message: 'Manifestacija uspesno povracena!',
+            type: 'success'
+          });
         })
     },
     searchManifestations () {

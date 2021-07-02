@@ -2,19 +2,36 @@ package dto;
 
 import java.time.LocalDateTime;
 
+import beans.Location;
+import beans.Manifestation;
 import beans.ManifestationType;
 
 public class ManifestationDTO {
 	private String id;
 	private String name;
-	private ManifestationType type;
+	private String type;
 	private int numberOfSeats;
-	private LocalDateTime startTime;
-	private LocalDateTime endTime;
+	private String startTime;
+	private String endTime;
 	private int ticketPrice;
-	private String location;
 	private String image64base;
+	public LocationDTO locationDTO;
 	public boolean checked;
+	
+	public ManifestationDTO(Manifestation manifestation, Location location) {
+		this.id = manifestation.getId();
+		this.name = manifestation.getName();
+		this.type = manifestation.getType().toString();
+		this.numberOfSeats = manifestation.getNumberOfSeats();
+		this.startTime = manifestation.getStartTime().toString();
+		this.endTime = manifestation.getEndTime().toString();
+		this.ticketPrice = manifestation.getTicketPrice();
+		this.image64base = manifestation.getImage();
+		this.locationDTO = new LocationDTO(location);
+		this.checked = manifestation.isChecked();
+	}
+	
+	public ManifestationDTO() {}
 	
 	public boolean isChecked() {
 		return checked;
@@ -22,6 +39,14 @@ public class ManifestationDTO {
 
 	public void setChecked(boolean checked) {
 		this.checked = checked;
+	}
+
+	public LocationDTO getLocationDTO() {
+		return locationDTO;
+	}
+
+	public void setLocationDTO(LocationDTO location) {
+		this.locationDTO = location;
 	}
 
 	public String getId() {
@@ -40,12 +65,12 @@ public class ManifestationDTO {
 		this.name = name;
 	}
 	
-	public ManifestationType getType() {
+	public String getType() {
 		return type;
 	}
 	
 	public void setType(String type) {
-		this.type = ManifestationType.valueOf(type);
+		this.type = type;
 	}
 	
 	public int getNumberOfSeats() {
@@ -56,36 +81,28 @@ public class ManifestationDTO {
 		this.numberOfSeats = numberOfSeats;
 	}
 	
-	public LocalDateTime getStartTime() {
+	public String getStartTime() {
 		return startTime;
 	}
 
 	public void setStartTime(String startTime) {
-		this.startTime = LocalDateTime.parse(startTime);
+		this.startTime = startTime;
 	}
 
-	public LocalDateTime getEndTime() {
+	public String getEndTime() {
 		return endTime;
 	}
 
 	public void setEndTime(String endTime) {
-		this.endTime = LocalDateTime.parse(endTime);
+		this.endTime = endTime;
 	}
-	
+
 	public int getTicketPrice() {
 		return ticketPrice;
 	}
 	
 	public void setTicketPrice(int ticketPrice) {
 		this.ticketPrice = ticketPrice;
-	}
-	
-	public String getLocation() {
-		return location;
-	}
-	
-	public void setLocation(String location) {
-		this.location = location;
 	}
 	
 	public String getImage64base() {
