@@ -260,6 +260,10 @@ module.exports = {
                 .put("rest/users/delete/" + this.selected_user)
                 .then(() => {
                     this.getUsers()
+                    new Toast({
+                        message: 'Korisnik uspesno obrisan!',
+                        type: 'success'
+                    });
                 });
         },
         retrieveUser() {
@@ -267,6 +271,10 @@ module.exports = {
                 .put("rest/users/retrieve/" + this.selected_user)
                 .then(() => {
                     this.getUsers()
+                    new Toast({
+                        message: 'Korisnik uspesno povracen!',
+                        type: 'success'
+                    });
                 });
         },
         searchUsers() {
@@ -317,10 +325,16 @@ module.exports = {
 				})
 				.then(response => {
 					if(response.data != "") {
-						alert(userNew.username + " Uspesno dodat!");
+						new Toast({
+                            message: 'Korisnik uspesno kreiran!',
+                            type: 'success'
+                        });
                         this.getUsers()
 					} else {
-						alert("Korisnik sa tim korisnickim imenom vec postoji!!!");
+						new Toast({
+                            message: 'Korisnik sa tim korisnickim imenom vec postoji!',
+                            type: 'danger'
+                        });
 					}
 				});
         }

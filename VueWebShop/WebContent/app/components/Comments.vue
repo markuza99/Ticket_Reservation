@@ -55,7 +55,10 @@ module.exports = {
             axios
                 .put("rest/comments/approve/" + id)
                 .then(() => {
-                    alert("Komentar odobren!");
+                    new Toast({
+                        message: 'Komentar je uspesno odobren!',
+                        type: 'success'
+                    });
                     this.getComments()
                 });
 
@@ -64,7 +67,10 @@ module.exports = {
             axios
                 .put("rest/comments/decline/" + id)
                 .then(() => {
-                    alert("Komentar neodobren.");
+                    new Toast({
+                        message: 'Komentar je uspesno odbijen',
+                        type: 'success'
+                    });
                     this.getComments()
                 });
         },

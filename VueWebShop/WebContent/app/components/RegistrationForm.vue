@@ -94,7 +94,6 @@
 				this.user.lastName.trim()
 
 				var userJSON = JSON.stringify(this.user);
-				toastr.options.timeOut = 0;
 				axios
 					.post("rest/users/register", userJSON, {
 						headers: {'content-type':'application/json'}
@@ -103,10 +102,11 @@
 						if(isEmpty(response.data)) {
 							$('#username').addClass("error");
 							this.username_error = true;
-							
 						} else {
-							//this.$router.push("login");
-							toastr.success('Are you the 6 fingered man?')
+							new Toast({
+								message: 'Registracija uspesno izvrsena!',
+								type: 'success'
+							});
 						}
 					});
 			}

@@ -25,7 +25,8 @@ const router = new VueRouter({
         { path: '/users', component: Users},
         { path: '/comments', component: Comments},
         { path: '/manifestations', component: Manifestations},
-        { path: '/maps', component: Maps},
+        { path: '/create-manifestation', component: Maps},
+        { path: '/edit-manifestation/:id', component: Maps},
         { path: '/tickets', component: Tickets}
     ]
 });

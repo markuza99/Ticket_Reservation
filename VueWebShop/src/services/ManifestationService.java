@@ -56,6 +56,7 @@ public class ManifestationService {
 	public ManifestationForViewDTO getManifestationForView(String id) {
 		if(manifestationDAO.read(id) == null) return null;
 		Manifestation manifestation = manifestationDAO.read(id);
+		if(manifestation.getIsDeleted()) return null;
 		Seller seller = sellerDAO.getSellerForManifestation(id);
 		Location location = locationDAO.read(manifestation.getLocation());
 		return new ManifestationForViewDTO(manifestation, seller.getUsername(), location);
@@ -67,8 +68,6 @@ public class ManifestationService {
 		if(!checkManifestationMaintainance(startTime, endTime ,manifestationDTO.getLocationDTO(), manifestationDTO.getId())) {
 			return null;
 		}
-		
-		
 		
 		LocationDTO locationDTO = manifestationDTO.getLocationDTO();
 		Location location = new Location(locationDTO);

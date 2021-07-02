@@ -104,7 +104,7 @@ public class LocationDAO implements ILocationDAO {
 					Double longitude = Double.parseDouble(st.nextToken().trim());
 					Double latitude = Double.parseDouble(st.nextToken().trim());
 					String street = st.nextToken().trim();
-					int number = Integer.parseInt(st.nextToken().trim());
+					String number = st.nextToken().trim();
 					int postNumber = Integer.parseInt(st.nextToken().trim());
 					String city = st.nextToken().trim();
 					String state = st.nextToken().trim();

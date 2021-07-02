@@ -13,7 +13,7 @@ public class TicketRepresentationDTO {
 	
 	private String id;
 	private String manifestationName;
-	//private String manifestationId;
+	private String manifestationId;
 	private double price;
 	private String reservationDate;
 	private String manifestationDate;
@@ -31,6 +31,7 @@ public class TicketRepresentationDTO {
 		this.id = ticket.getId();
 		this.manifestationName = manifestation.getName();
 		this.price = ticket.getPrice();
+		this.manifestationId = manifestation.getId();
 		this.reservationDate = formatter.format(ticket.getDateTime());
 		this.manifestationDate = formatter.format(manifestation.getStartTime());
 		this.user = username;
@@ -41,6 +42,14 @@ public class TicketRepresentationDTO {
 		this.deleted = ticket.getIsDeleted();
 	}
 	
+
+	public String getManifestationId() {
+		return manifestationId;
+	}
+
+	public void setManifestationId(String manifestationId) {
+		this.manifestationId = manifestationId;
+	}
 
 	public boolean isDeleted() {
 		return deleted;

@@ -3,11 +3,11 @@
     <div class="row mt-5">
       <div class="col-md-2">
         <div>
-        Naziv manifestacije <input type="text" v-model="name" class="form-control mb-3" placeholder="name">
-        Cena od<input type="text" v-model="priceFrom" class="form-control mb-3" placeholder="price from">
-        Cena do<input type="text" v-model="priceTo" class="form-control mb-3" placeholder="price to">
-        Datum manifestacije od<input type="date" v-model="dateFrom" class="form-control mb-3" placeholder="date from">
-        Datum manifestacije do<input type="date" v-model="dateTo" class="form-control mb-3" placeholder="date to">
+        Naziv manifestacije <input type="text" v-model="name" class="form-control mb-3">
+        Cena od<input type="text" v-model="priceFrom" class="form-control mb-3">
+        Cena do<input type="text" v-model="priceTo" class="form-control mb-3">
+        Datum manifestacije od<input type="date" v-model="dateFrom" class="form-control mb-3">
+        Datum manifestacije do<input type="date" v-model="dateTo" class="form-control mb-3">
         Tip karte <select class="form-control mb-3" v-model="ticket_type">
           <option value="all">Sve</option>
           <option value="VIP">Vip</option>
@@ -53,7 +53,7 @@
         <tbody>
           <tr v-for="t in tickets" :key="t.id">
             <th scope="row">{{t.id}}</th>
-            <td>{{t.manifestationName}}</td>
+            <td v-on:click="goToManifestation(t.manifestationId)" style="cursor:pointer">{{t.manifestationName}}</td>
             <td>{{t.price}}</td>
             <td>{{t.manifestationDate}}</td>
             <td>{{t.user}}</td>
@@ -154,6 +154,9 @@ module.exports = {
 			});
   },
   methods: {
+    goToManifestation (id) {
+      this.$router.push('/manifestation/' + id);
+    },
     setModalType (type) {
       this.modalType = type
     },
@@ -202,7 +205,10 @@ module.exports = {
         .put('rest/tickets/cancel-reservation/' + this.ticketId)
         .then(response => {
           if(response.data != "") {
-            alert('Rezervacija otkazana')
+            new Toast({
+              message: 'Rezervacija uspesno otkazana!',
+              type: 'success'
+            });
             this.getTickets()
           }
         })
@@ -212,6 +218,10 @@ module.exports = {
         .put('rest/tickets/delete/' + this.ticketId)
         .then(() => {
           this.getTickets()
+          new Toast({
+            message: 'Karta uspesno obrisana',
+            type: 'success'
+          });
         })
     },
     retrieveTicket () {
@@ -219,6 +229,10 @@ module.exports = {
         .put('rest/tickets/retrieve/' + this.ticketId)
         .then(() => {
           this.getTickets()
+          new Toast({
+            message: 'Karta uspesno povracena!',
+            type: 'success'
+          });
         })
     },
     ticketOperation () {

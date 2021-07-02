@@ -7,12 +7,12 @@ public class Location {
 	private double longitude;
 	private double latitude;
 	private String street;
-	private int number;
+	private String number;
 	private int postNumber;
 	private String city;
 	private String state;
 	
-	public Location(String id, double longitude, double latitude, String street, int number,
+	public Location(String id, double longitude, double latitude, String street, String number,
 			int postNumber, String city, String state) {
 		this.id = id;
 		this.longitude = longitude;
@@ -34,11 +34,11 @@ public class Location {
 		this.state = locationDTO.state;
 	}
 
-	public int getNumber() {
+	public String getNumber() {
 		return number;
 	}
 
-	public void setNumber(int number) {
+	public void setNumber(String number) {
 		this.number = number;
 	}
 

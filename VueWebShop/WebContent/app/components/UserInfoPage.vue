@@ -64,7 +64,10 @@ module.exports = {
 				})
 				.then(() => {
 					this.disableInputs()
-					$('#message').html("Korisnik uspesno izmenjen.");
+					new Toast({
+						message: 'Korisnik uspesno izmenjen!',
+						type: 'success'
+					});
 				});
 		},
 		enableInputs () {

@@ -255,7 +255,7 @@ module.exports = {
           this.role = response.data;
       })
     const manifestationId = this.$route.params.id;
-    axios.get("rest/manifestations/" + manifestationId).then((response) => {
+    axios.get("rest/manifestations/view/" + manifestationId).then((response) => {
       this.manifestation = response.data;
       this.manifestation.startTime = this.manifestation.startTime.split("T").join(" ")
       this.manifestation.endTime = this.manifestation.endTime.split("T").join(" ")
@@ -310,7 +310,10 @@ module.exports = {
 					headers: {'content-type':'application/json'}
 				})
 				.then(() => {
-					alert("Rezervacija uspesno izvrsena!");
+					new Toast({
+            message: 'Rezervacija uspesno izvrsena!',
+            type: 'success'
+          });
 				});
     }
   },
