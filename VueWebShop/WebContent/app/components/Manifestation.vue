@@ -341,16 +341,29 @@ module.exports = {
           zoom: 16
         })
       });
-		      
-			var marker;
-			  
-			setMarker = function(position) {
-        console.log('pozvano')
-				marker = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat(position)));
-				vectorSource.addFeature(marker);
-			}
+		  var myStyle = new ol.style.Style({
+      image: new ol.style.Circle({
+        radius: 8,
+        fill: new ol.style.Fill({color: 'red'}),
+        stroke: new ol.style.Stroke({
+          color: [255,0,0], width: 2
+        })
+      })
+    })
+			var layer = new ol.layer.Vector({
+     source: new ol.source.Vector({
+         features: [
+             new ol.Feature({
+                 geometry: new ol.geom.Point(ol.proj.fromLonLat([lat, lon]))
+             })
+         ]
+    
+     }),
+     style: myStyle
 
-			setMarker(ol.proj.fromLonLat([lat, lon]));
+ });
+ console.log(layer);
+ map.addLayer(layer);
 		} 
   }
 };
