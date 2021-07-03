@@ -154,7 +154,7 @@ module.exports = {
 							type: 'success'
 						});
 					} else {
-						$('#error').html("Pogresan unos.");
+						$('#error').html("Datum za manifestaciju se poklapa sa datumom neke druge manifestacije na istoj lokaciji.");
 					}
 				})
     },
