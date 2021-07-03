@@ -105,7 +105,7 @@ public class TicketController {
 		User user = (User) request.getSession().getAttribute("user");
 		if(user == null) return null;
 		if(user.getRole() != Role.CUSTOMER) return null;
-		return ticketService.cancelReservation(ticketId);
+		return ticketService.cancelReservation(ticketId, user.getUsername());
 	}
 	
 	@GET

@@ -4,11 +4,7 @@
             <li class="list-group-item" v-for="comment in comments" :key="comment.id">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     Manifestacija: {{comment.manifestation}}
-                    <span class="text-secondary">{{comment.user}}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    {{comment.description}}
-                    <div v-if="comment.approval =='NOT_CHECKED' && role == 'SELLER'">
+                    <span class="text-secondary">{{comment.user}}
                         <div class="mb-2">
                             <span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
                             <span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
@@ -16,6 +12,11 @@
                             <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
                             <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
                         </div>
+                    </span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    {{comment.description}}
+                    <div v-if="comment.approval =='NOT_CHECKED' && role == 'SELLER'">
                         <button class="btn btn-green" v-on:click="approve(comment.id)">
                             Odobri:   <i class="fa fa-check"></i>
                         </button>
@@ -23,16 +24,9 @@
                             <i class="fa fa-times"></i>
                         </button>
                     </div>
-                    <div>
+                    <div v-else>
                         <div class="text-pink" v-if="comment.approval == 'DENIED'" disabled>NEODOBREN</div>
                         <div class="text-green" v-if="comment.approval == 'ACCEPTED'" disabled>ODOBREN</div>
-                        <div class="mb-2">
-                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(1, comment) }"></span>
-                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(2, comment) }"></span>
-                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(3, comment) }"></span>
-                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(4, comment) }"></span>
-                            <span class="fa fa-star" v-bind:class="{ checked : isCounted(5, comment) }"></span>
-                        </div>
                     </div>
                 </div>
             </li>

@@ -103,6 +103,7 @@
 							$('#username').addClass("error");
 							this.username_error = true;
 						} else {
+							this.$router.push('/login')
 							new Toast({
 								message: 'Registracija uspesno izvrsena!',
 								type: 'success'
@@ -117,7 +118,7 @@
 			.get("rest/users/role")
 			.then(response => {
 				if(!isEmpty(response.data)) {
-					redirect("#/home");
+					this.$router.push("/home");
 				}
 			});
 	}

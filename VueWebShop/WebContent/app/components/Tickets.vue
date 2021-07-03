@@ -168,6 +168,7 @@ module.exports = {
       .get('rest/tickets')
       .then(response => {
         this.tickets = response.data
+        console.log(this.tickets)
       })
     },
     searchTickets () {

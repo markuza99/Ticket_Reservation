@@ -82,7 +82,7 @@
               <div class="card-body">
                 <div class="d-flex justify-content-between">
                   <h5 class="card-title" v-on:click="goToManifestation(m.id)">{{ m.name }}</h5>
-                  <button class="btn btn-primary"
+                  <button class="btn btn-pink"
                   v-on:click="goToEditManifestation(m.id)"
                   v-if="!m.manifestationPassed && role == 'SELLER' && manifestationStatus(m) != 'rejected'">izmeni</button>
                 </div>

@@ -32,6 +32,14 @@
 			<label>Datum rodjenja</label>
 			<input type="date" class="form-control" id="dateInput" v-model="user.date" :readonly="!updating">
 		</div>
+		<div class="form-row" v-if="customer">
+			<label>Broj bodova</label>
+			<input type="number" class="form-control" v-model="customer.points" readonly>
+		</div>
+		<div class="form-row" v-if="customer">
+			<label>Tip kupca</label>
+			<input type="text" class="form-control" v-model="customer.customerType.typeName" readonly>
+		</div>
 		<div class="form-row justify-content-between mt-4">
 			<button type="submit" class="btn btn-green" v-on:click="updateProfile()">Potvrdite izmenu</button>
 			<button class="btn btn-pink" v-on:click="enableInputs()">Izmenite profil</button>
@@ -47,7 +55,8 @@ module.exports = {
 	data() {
 		return {
 			user : {},
-			updating: false
+			updating: false,
+			customer: null
 		}	
 	},
 	methods: {
@@ -85,6 +94,13 @@ module.exports = {
 					this.$router.push('unauthorized')
 				}
 				this.user = response.data
+				if(this.user.role == 'CUSTOMER') {
+					axios
+						.get('rest/customers/me')
+						.then(response => {
+							this.customer = response.data
+						})
+				}
 			});
 	}
 }

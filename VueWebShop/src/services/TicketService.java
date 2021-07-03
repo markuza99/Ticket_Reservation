@@ -262,6 +262,8 @@ public class TicketService {
 		for(String ticketId: customer.getTickets()) {
 			Ticket ticket = ticketDAO.read(ticketId);
 			if(ticket.getIsDeleted()) continue;
+			Manifestation manifestation = manifestationDAO.read(ticket.getManifestationId());
+			if(manifestation.getIsDeleted()) continue;
 			customerTickets.add(ticket);
 		}
 		
@@ -312,7 +314,7 @@ public class TicketService {
 		return searchSortFilterTickets(tickets, searchTicketsDTO);
 	}
 
-	public Ticket cancelReservation(String ticketId) {
+	public Ticket cancelReservation(String ticketId, String username) {
 		Ticket ticket = ticketDAO.read(ticketId);
 		Manifestation manifestation = manifestationDAO.read(ticket.getManifestationId());
 		if(manifestation.getStartTime().isBefore(LocalDateTime.now()) || ticket.getTicketStatus() == TicketStatus.CANCELED) {
@@ -321,8 +323,40 @@ public class TicketService {
 		ticket.setTicketStatus(TicketStatus.CANCELED);
 		int remaining = manifestation.getRemainingNumberOfSeats();
 		manifestation.setRemainingNumberOfSeats(remaining+1);
+		removeCustomerPoints(username, ticket.getPrice());
 		manifestationDAO.update(manifestation);
 		return ticketDAO.update(ticket);
+	}
+
+	private void removeCustomerPoints(String username, double price) {
+		List<CustomerType> customerTypes = customerDAO.getCustomerTypes();
+		Collections.sort(customerTypes);
+		Customer customer = customerDAO.read(username);
+		int currentPoints = customer.getPoints();
+		int points = (int) (price/1000 * 133 * 4);
+		int newPoints = currentPoints - points;
+		if(newPoints < 0) {
+			newPoints = 0;
+		}
+		customer.setPoints(newPoints);
+		
+		int typePosition = customerTypes.indexOf(getInitialCustomerType());
+		int typesSize = customerTypes.size();
+		if(typesSize - typePosition != 1) {
+			while(true) {
+				CustomerType newType = customerTypes.get(typePosition + 1);
+				if(newPoints > newType.getPoints())
+					customer.setCustomerType(newType);
+				else {
+					break;
+				}
+				typePosition++;
+				if(typesSize - typePosition == 1)
+					break;
+			} 
+			
+		}
+		customerDAO.update(customer);
 	}
 
 	public void deleteTicket(String ticketId) {

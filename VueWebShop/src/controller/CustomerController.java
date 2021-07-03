@@ -1,10 +1,16 @@
 package controller;
 
-import javax.annotation.PostConstruct; 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
+import beans.Customer;
+import beans.User;
 import dao.CustomerDAO;
 import dao.LocationDAO;
 import dao.ManifestationDAO;
@@ -34,20 +40,13 @@ public class CustomerController {
 		}
 		customerService = new CustomerService((CustomerDAO) ctx.getAttribute("CustomerDAO"));
 	}
-	//????
-//	@GET
-//	@Path("/get-customer")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public Customer getCustomer(@Context HttpServletRequest request) {
-//		User user = (User) request.getSession().getAttribute("user");
-//		return customerService.getCustomer(user.getUsername());
-//	}
-
 	
-//	@POST
-//	@Path("/reserve-ticket")
-//	@Consumes(MediaType.APPLICATION_JSON)
-//	public void reserveTickets(ReservationDTO reservationDTO) {
-//		customerService.reserveTickets(reservationDTO);
-//	}
+	@GET
+	@Path("/me")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Customer getCustomer(@Context HttpServletRequest request) {
+		User user = (User) request.getSession().getAttribute("user");
+		return customerService.getCustomer(user.getUsername());
+	}
+
 }
