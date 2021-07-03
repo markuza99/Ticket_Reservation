@@ -2,6 +2,9 @@ package controller;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -42,6 +45,12 @@ public class ManifestationController {
 	@PostConstruct
 	public void init() {
 		String contextPath = ctx.getRealPath("");
+		LocalDateTime dt1 = LocalDateTime.now();
+		String str = "2021-07-04 13:20";
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+		LocalDateTime dt2 = LocalDateTime.parse(str, formatter);
+		int seconds = (int) ChronoUnit.SECONDS.between(dt1, dt2);
+		System.out.println(" OVO SU SEKUNDE " + seconds);
 		if(ctx.getAttribute("LocationDAO") == null) {
 			ctx.setAttribute("LocationDAO", new LocationDAO(contextPath));
 		}

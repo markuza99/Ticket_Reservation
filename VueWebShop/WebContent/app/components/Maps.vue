@@ -178,18 +178,29 @@ module.exports = {
 							return response.json();
 					}).then(function(json) {
 							console.log(json);
-							if (json.address.house_number == undefined){
-							}else{
-								self.locationString = json.address.road + " " + self.new_manifestation.locationDTO.number + ", " + json.address.city;
+
 								self.new_manifestation.locationDTO.longitude = coords[1]
 								self.new_manifestation.locationDTO.latitude = coords[0]
 								self.new_manifestation.locationDTO.street = json.address.road
-								self.new_manifestation.locationDTO.number = json.address.house_number
+								if(json.address.house_number == undefined) {
+									self.new_manifestation.locationDTO.number = "0"
+								} else {
+									self.new_manifestation.locationDTO.number = json.address.house_number
+								}
+								
 								self.new_manifestation.locationDTO.postNumber = json.address.postcode
 								self.new_manifestation.locationDTO.state = json.address.country
-								self.new_manifestation.locationDTO.city = json.address.city
+								if(json.address.city != undefined) {
+									self.new_manifestation.locationDTO.city = json.address.city
+								} else if(json.address.town != undefined) {
+									self.new_manifestation.locationDTO.city = json.address.town
+								} else if(json.address.village != undefined) {
+									self.new_manifestation.locationDTO.city = json.address.village
+								}
+								
+								self.locationString = self.new_manifestation.locationDTO.street + " " + self.new_manifestation.locationDTO.number + ", " + self.new_manifestation.locationDTO.city;
 
-							}
+							
 							
 					});
 		},

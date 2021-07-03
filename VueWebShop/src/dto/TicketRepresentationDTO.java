@@ -2,6 +2,7 @@ package dto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 import beans.Manifestation;
 import beans.Ticket;
@@ -38,7 +39,7 @@ public class TicketRepresentationDTO {
 		this.status = getTicketStatus(ticket.getTicketStatus());
 		this.type = getTicketType(ticket.getTicketType());
 		this.numberOfTickets = ticket.getNumberOfTickets();
-		this.manifestationPassed = manifestation.getStartTime().isBefore(LocalDateTime.now());
+		this.manifestationPassed = (manifestation.getStartTime().isBefore(LocalDateTime.now())) || ((int) ChronoUnit.DAYS.between(LocalDateTime.now(), manifestation.getStartTime())<7);
 		this.deleted = ticket.getIsDeleted();
 	}
 	
