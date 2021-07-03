@@ -325,11 +325,10 @@ module.exports = {
       document.getElementById('show-map-button').disabled = true
 			
 			var vectorSource = new ol.source.Vector({});
-		    var vectorLayer = new ol.layer.Vector({source: vectorSource});
+		  var vectorLayer = new ol.layer.Vector({source: vectorSource});
 			const lon = this.manifestation.locationDTO.longitude
       const lat = this.manifestation.locationDTO.latitude
-      console.log('evo ima godina', lon, lat)
-			var map = new ol.Map({
+      var map = new ol.Map({
         target: 'map',
         layers: [
           new ol.layer.Tile({
@@ -341,17 +340,28 @@ module.exports = {
           zoom: 16
         })
       });
-		      
-			var marker;
-			  
-			setMarker = function(position) {
-        console.log('pozvano')
-				marker = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat(position)));
-				vectorSource.addFeature(marker);
-			}
+      var myStyle = new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 8,
+          fill: new ol.style.Fill({color: 'red'}),
+          stroke: new ol.style.Stroke({
+            color: [255,0,0], width: 2
+          })
+        })
+      })
+			var layer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+          features: [
+              new ol.Feature({
+                  geometry: new ol.geom.Point(ol.proj.fromLonLat([lat, lon]))
+              })
+          ]
+      }),
+      style: myStyle
 
-			setMarker(ol.proj.fromLonLat([lat, lon]));
-		} 
+      });
+      map.addLayer(layer);
+    } 
   }
 };
 </script>
